@@ -1,0 +1,14 @@
+{% extends "users/base.html" %} 
+
+<!-- Include static for routing to the JS file -->
+{% load static %}
+
+{% block title %} Home Page {% endblock %}
+{% block content %}
+<div id="signed_in"></div>
+
+<p>Welcome to the Home Page!</p>
+
+<!-- Link the JavaScript file for user-related functionality -->
+<script type="module" src="{% static 'users/js/home.js' %}"></script>
+{% endblock %}
