@@ -82,11 +82,11 @@ async function signupUser(name, email, password) {
     try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
-        const userToken = await user.getIdToken();
+        const userToken = await user.getIdToken(true);
         await createSession(userToken, name);
         console.log('User created:', userCredential.user);
         messages.textContent = "User created successfully.";
-        window.location.href = "/users/"; 
+        window.location.href = "/dashboard/"; 
     } catch (error) {
         console.error('Error creating user:', error);
         displayError(error.code);
@@ -97,11 +97,11 @@ async function loginUser(name, email, password) {
     try {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
-        const userToken = await user.getIdToken();
+        const userToken = await user.getIdToken(true);
         await createSession(userToken, name);
         console.log('User logged in:', userCredential.user);
         messages.textContent = "User logged in successfully.";
-        window.location.href = "/users/"; 
+        window.location.href = "/dashboard/"; 
     } catch (error) {
         console.error('Error logging in user:', error);
         displayError(error.code);

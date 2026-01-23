@@ -1,37 +1,36 @@
 from django.shortcuts import render, HttpResponse
 from django.http import JsonResponse
-from .models import ToDoItem, UserInformation
+from .models import UserInformation
 import firebase_admin
 from firebase_admin import auth, credentials
 import json
 import os
+import time
 
 if not firebase_admin._apps:
     cred = credentials.Certificate(os.environ["GOOGLE_APPLICATION_CREDENTIALS"])
     firebase_admin.initialize_app(cred)
-
+    
+# Helper for timing issues with firebase tokens
+def verify_with_retry(token, max_retries=3, base_delay=.25):
+    for attempt in range(max_retries):
+        try:
+            return firebase_admin.auth.verify_id_token(token)
+        except Exception as e:
+            msg = str(e)
+            if "Token used too early" in msg and attempt < max_retries - 1:
+                time.sleep(base_delay * (2 ** attempt))
+                continue
+            raise
 
 # Create your views here.
 def home(request):
     return render(request, "users/home.html")
 
-def todos(request):
-    items = ToDoItem.objects.all()
-    return render(request, "users/todos.html", {"todos": items})
-
 def users(request):
     items = UserInformation.objects.all()
     return render(request, "users/users.html", {"users": items})
 
-def in_database(request):
-    test_id = (89043, "Joshua", "ehduhe")
-    # If created == True that means a user was not found and created, if created == False that means that id was already in the database
-    user, created = UserInformation.objects.get_or_create(firebase_uid=test_id[0], defaults={"name": test_id[1], "email": test_id[2]})
-    if created:
-        return HttpResponse("User Not Found - Account Created")
-    else:
-        return HttpResponse("User Found")
-    
 def user_sessions(request):
     if request.method == "POST":
         auth_header = request.META.get('HTTP_AUTHORIZATION')
@@ -57,7 +56,7 @@ def user_sessions(request):
                 return JsonResponse(data, status=401)
             else:
                 try:
-                    user_token = firebase_admin.auth.verify_id_token(token)
+                    user_token = verify_with_retry(token)
                     user_uid = user_token['uid']
                     user_email = user_token.get('email', None)
                     user_name = user_token.get('name', None)
@@ -102,6 +101,9 @@ def user_sessions(request):
                             changed = True
                         if changed:
                             user.save()
+                    request.session['firebase_uid'] = user.firebase_uid
+                    request.session['username'] = user.name
+                    request.session['email'] = user.email
                     data = {
                         'ok': True,
                         'user': {
@@ -119,6 +121,29 @@ def user_sessions(request):
                         'details': str(e)
                     }
                     return JsonResponse(data, status=401)
+    else:
+        data = {
+            'ok': False,
+            'error': 'Only POST requests are allowed'
+        }
+        return JsonResponse(data, status=405)
+    
+def user_logout(request):
+    if request.method == "POST":
+        try:
+            request.session.flush()
+            data = {
+                'ok': True,
+                'message': 'User logged out successfully'
+            }
+            return JsonResponse(data, status=200)
+        except Exception as e:
+            data = {
+                'ok': False,
+                'error': 'Error logging out user',
+                'details': str(e)
+            }
+            return JsonResponse(data, status=500)
     else:
         data = {
             'ok': False,

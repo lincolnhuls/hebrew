@@ -51,7 +51,8 @@ onAuthStateChanged(auth, async user => {
                 headers: {
                     "Authorization": `Bearer ${token}`,
                     "Content-Type": "application/json",
-                    "X-CSRFToken": getCookie("csrftoken")
+                    "X-CSRFToken": getCookie('csrftoken')
+                    
                 },
                 credentials: "same-origin",
             });
@@ -100,16 +101,12 @@ onAuthStateChanged(auth, async user => {
 
 if (signOutButton) { signOutButton.onclick = async (event) => {
     event.preventDefault();
-    const csrfToken = getCookie("csrftoken");
     try {
         console.log('Signing out user...');
         await signOut(auth);
         await fetch("/users/logout/", { 
             method: "POST",
             credentials: "include",
-            headers: {
-                "X-CSRFToken": csrfToken
-            }
         })
         console.log('User signed out successfully.');
         window.location.href = "/"; 
