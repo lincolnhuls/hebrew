@@ -4,18 +4,9 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebas
 // Import other Firebase services as needed
 import { onAuthStateChanged, getAuth, signOut } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
 
+// Import the firebaseConfig from the separate configuration file
+import { firebaseConfig } from "./firebaseConfig.js";
 
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-// Your web app's Firebase configuration
-const firebaseConfig = {
-    apiKey: "AIzaSyBuJ-q4SaECbrc6VAW7z94ubGHelkdPPWo",
-    authDomain: "auth-b32fb.firebaseapp.com",
-    projectId: "auth-b32fb",
-    storageBucket: "auth-b32fb.firebasestorage.app",
-    messagingSenderId: "512245365222",
-    appId: "1:512245365222:web:5a03f94e2438d36fcbbe27"
-};
 console.log("Loaded File")
 
 // Initialize Firebase
@@ -43,27 +34,24 @@ function getCookie(name) {
 
 onAuthStateChanged(auth, async user => {
     if (user) {
-        if (sessionStorage.getItem('username')) {}
-        else {
-            const token = await user.getIdToken();
-            const response = await fetch("/users/sessions/", {
-                method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": getCookie("csrftoken")
-                },
-                credentials: "same-origin",
-            });
+        const token = await user.getIdToken();
 
-            if (response.ok) {
-                const data = await response.json();
-                sessionStorage.setItem('username', data.user.name);
-                sessionStorage.setItem('email', data.user.email);
-                sessionStorage.setItem('firebase_uid', data.user.firebase_uid);
-            }
+        let name = '';
+
+        const response = await fetch("/users/sessions/", {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json",
+                "X-CSRFToken": getCookie('csrftoken')
+            },
+            credentials: "same-origin",
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            name = data?.user?.name || '';
         }
-        let name = sessionStorage.getItem('username');
         console.log("User name from sessionStorage:", name);
         if (signInButton) {
             signInButton.classList.add('hidden');
@@ -81,9 +69,6 @@ onAuthStateChanged(auth, async user => {
         }
         console.log('User is signed in:', user);
     } else {
-        sessionStorage.removeItem('username');
-        sessionStorage.removeItem('email');
-        sessionStorage.removeItem('firebase_uid');
         if (userGreeting) {
             userGreeting.textContent = '';
             userGreeting.classList.add('hidden');

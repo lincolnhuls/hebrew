@@ -8,14 +8,8 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebas
 // Import other Firebase services as needed
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
 
-const firebaseConfig = {
-    apiKey: "AIzaSyBuJ-q4SaECbrc6VAW7z94ubGHelkdPPWo",
-    authDomain: "auth-b32fb.firebaseapp.com",
-    projectId: "auth-b32fb",
-    storageBucket: "auth-b32fb.firebasestorage.app",
-    messagingSenderId: "512245365222",
-    appId: "1:512245365222:web:5a03f94e2438d36fcbbe27"
-};
+// Your web app's Firebase configuration
+import { firebaseConfig } from "./firebaseConfig.js";
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
@@ -70,9 +64,6 @@ async function createSession(idToken, name='') {
     }
     console.log("Session created on server.");
     const data = await response.json();
-    sessionStorage.setItem('username', data.user.name);
-    sessionStorage.setItem('email', data.user.email);
-    sessionStorage.setItem('firebase_uid', data.user.firebase_uid);
     console.log("Server response:", data);
 
     return data;
