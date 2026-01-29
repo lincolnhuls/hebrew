@@ -15,8 +15,8 @@ and paste the same code multiple times -->
         Hewbrew for Everyone!
       {% endblock %}
     </title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"  rel="stylesheet" />
-    <link rel="stylesheet" href="../../static/users/css/base.css"/>
+    <link rel="stylesheet" href="{% static 'users/css/base.css' %}">
+
   </head>
   <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -46,8 +46,6 @@ and paste the same code multiple times -->
     </nav>
     <span id="userGreeting" class="hidden">Hello!</span>
     <div class="container">{% block content %} {% endblock %}</div>
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js" ></script>
     <script type="module" src="{% static 'users/js/base.js' %}"></script>
   </body>
 </html>

@@ -5,6 +5,10 @@
 <!-- Useful for creating a base template that I can use for the full page without having to copy
 and paste the same code multiple times -->
 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -15,9 +19,7 @@ and paste the same code multiple times -->
         Hewbrew for Everyone!
       {% endblock %}
     </title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"  rel="stylesheet" />
-    <link rel="stylesheet" href="../../static/users/css/base.css"/>
-  </head>
+    <link rel="stylesheet" href="../../static/main/css/base.css">
   <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
       <a class="navbar-brand" href="#">Hewbrew for Everyone!</a>
@@ -35,19 +37,17 @@ and paste the same code multiple times -->
           </li>
           <li class="nav-item">
             <!-- <button type="submit" name="action" value="login">Log In</button> -->
-            <button type="button" id="signOutButton" name="action" value="signOut" class="hidden">Sign Out</button>
+            <button type="button" id="signOutButton" name="action" value="signOut" class="hidden btn">Sign Out</button>
           </li>
           <li class="nav-item">
             <!-- <button type="submit" name="action" value="login">Log In</button> -->
-            <button type="button" id="signInButton" name="action" value="signIn" class="hidden">Sign In</button>
+            <button type="button" id="signInButton" name="action" value="signIn" class="hidden btn">Sign In</button>
           </li>
         </ul>
       </div>
     </nav>
     <span id="userGreeting" class="hidden">Hello!</span>
     <div class="container">{% block content %} {% endblock %}</div>
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js" ></script>
     <script type="module" src="{% static 'main/js/base.js' %}" defer></script>
   </body>
 </html>

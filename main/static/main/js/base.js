@@ -5,7 +5,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebas
 import { onAuthStateChanged, getAuth, signOut } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
 
 // Import the firebaseConfig from the separate configuration file
-import { firebaseConfig } from "../../../../users/static/users/js/firebaseConfig.js";
+import { firebaseConfig } from "./firebaseConfig.js";
 
 console.log("Loaded File")
 
