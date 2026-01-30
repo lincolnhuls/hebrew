@@ -6,110 +6,34 @@
 {% block title %} Home Page {% endblock %}
 {% block content %}
 <div id="signed_in"></div>
-
-<p>Welcome to the Home Page!</p>
-
-<!-- Link the JavaScript file for user-related functionality -->
-
-<!-- Test code for Css start -->
+<div class="hero">
+  <div class="stack">
+    <h1>Learn Biblical Hebrew</h1>
+    <h3>Like Never Before</h3>
+    <p>Learn basic Biblical Hebrew through interactive <br> lessons, gamified learning, and daily practice</p>
+    <div class="hero-actions">
+      <a href="{% url 'users:account' %}" class="btn-primary btn" id="hero-cta">Start Learning For Free</a>
+    </div>
+  </div>
+</div>
 <section class="features">
-  <div class="container">
-    <div class="features-grid">
-      <div class="card">
-        <h3>Card 1</h3>
-        <p>This paragraph is for testing.</p>
-        <p>This should be in card 1</p>
-      </div>
-      <div class="card">
-        <h3>Card 2</h3>
-        <p>This paragraph is for testing.</p>
-        <p>This should be in card 2</p>
-      </div>
-      <div class="card">
-        <h3>Card 3</h3>
-        <p>This paragraph is for testing.</p>
-        <p>This should be in card 3</p>
-      </div>
+  <h2>Section Title</h2>
+  <div class="features-grid">
+    <div class="card">
+      <h3>Title</h3>
+      <p>Short description</p>
+    </div>    
+    <div class="card">
+      <h3>Title</h3>
+      <p>Short description</p>
+    </div>
+    <div class="card">
+      <h3>Title</h3>
+      <p>Short description</p>
     </div>
   </div>
 </section>
+
 
 <!-- Test code for Css end -->
 {% endblock %}
-
-
-
-
-
- <!-- <section class="hero">
-    <div class="container">
-        <div class="stack">
-            <h1>Testing h1</h1>
-            <p>Testing p</p>
-            <button class="btn btn-primary">Testing Button</button>
-        </div>
-    </div>
- </section>
-
- 
- <div class="container">
-  <div class="card">
-    <h2>Card Title</h2>
-    <p>This is normal text inside a card.</p>
-    <p class="text-muted">This is muted helper text.</p>
-  </div>
-
-  <div class="card">
-    <p>Second card to test spacing and margins.</p>
-  </div>
-</div>
-<div style="margin-top: 1rem;">
-  <button class="btn btn-primary">Primary Action</button>
-  <button class="btn btn-secondary">Secondary Action</button>
-</div>
-
-<section class="hero">
-  <div class="container">
-    <div class="stack">
-      <h1>Learn Biblical Hebrew</h1>
-      <p class="text-muted">
-        Master the foundations of Biblical Hebrew through guided lessons,
-        daily practice, and clear progress tracking.
-      </p>
-      <button class="btn btn-primary">Start Learning Free</button>
-    </div>
-  </div>
-</section>
-
-<div class="container" style="margin-top: 3rem;">
-  <h2>Section Heading</h2>
-
-  <div class="card">
-    <h3>Card Title</h3>
-    <p>
-      This is normal body text. It should be readable, comfortable,
-      and not too small or tight.
-    </p>
-    <p class="text-muted">
-      This is muted helper text for descriptions or metadata.
-    </p>
-    <button class="btn btn-secondary">Secondary Action</button>
-  </div>
-
-  <div class="card">
-    <h3>Another Card</h3>
-    <p>
-      Cards are used everywhere: dashboard stats, lessons, progress,
-      and feature highlights.
-    </p>
-    <div class="stack">
-      <button class="btn btn-primary">Primary</button>
-      <button class="btn btn-secondary">Secondary</button>
-    </div>
-  </div>
-
-  <p>
-    Plain paragraph outside of cards. This helps you judge default body
-    spacing and line height.
-  </p>
-</div> -->

@@ -1,53 +1,76 @@
-<!-- Include static for routing to the JS file -->
 {% load static %}
-
-
-<!-- Useful for creating a base template that I can use for the full page without having to copy
-and paste the same code multiple times -->
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
 
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>
-      {% block title %}
-        Hewbrew for Everyone!
-      {% endblock %}
-    </title>
-    <link rel="stylesheet" href="../../static/main/css/base.css">
-  <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <a class="navbar-brand" href="#">Hewbrew for Everyone!</a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav">
-          <li class="nav-item active">
-            <a class="nav-link" href="#">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">About</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Contact</a>
-          </li>
-          <li class="nav-item">
-            <!-- <button type="submit" name="action" value="login">Log In</button> -->
-            <button type="button" id="signOutButton" name="action" value="signOut" class="hidden btn">Sign Out</button>
-          </li>
-          <li class="nav-item">
-            <!-- <button type="submit" name="action" value="login">Log In</button> -->
-            <button type="button" id="signInButton" name="action" value="signIn" class="hidden btn">Sign In</button>
-          </li>
-        </ul>
-      </div>
-    </nav>
-    <span id="userGreeting" class="hidden">Hello!</span>
-    <div class="container">{% block content %} {% endblock %}</div>
-    <script type="module" src="{% static 'main/js/base.js' %}" defer></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>
+    {% block title %}Hebrew for Everyone{% endblock %}
+  </title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet">
+
+  <!-- Base CSS -->
+  <link rel="stylesheet" href="{% static 'main/css/base.css' %}">
+  {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+
+  <!-- Top Navigation -->
+  <header class="topbar">
+    <div class="topbar-inner container">
+
+      <!-- Brand -->
+      <a class="brand-pill" href="{% url 'main:home' %}">
+        Biblical Hebrew
+      </a>
+
+      <!-- Actions -->
+      <nav class="topbar-actions">
+        <a
+          href="{% url 'users:account' %}"
+          id="signInLink"
+          class="btn btn-secondary hidden"
+        >
+          Sign In
+        </a>
+
+        <a
+          href="{% url 'users:account' %}"
+          id="getStartedLink"
+          class="btn btn-primary hidden"
+        >
+          Get Started
+        </a>
+
+        <button
+          type="button"
+          id="signOutButton"
+          class="btn btn-secondary hidden"
+        >
+          Sign Out
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Greeting -->
+  <span id="userGreeting" class="hidden"></span>
+
+  <!-- Main Content -->
+  <main class="container">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Base JS -->
+  <script type="module" src="{% static 'main/js/base.js' %}" defer></script>
+  {% block extra_js %}{% endblock %}
+
+</body>
 </html>

@@ -59,14 +59,14 @@ onAuthStateChanged(auth, async user => {
         if (signOutButton) {
             signOutButton.classList.remove('hidden');
         }
-        if (userGreeting) {
-            if (name == null || name === '') {
-                userGreeting.textContent = `Hello!`;
-            } else {
-                userGreeting.textContent = `Hello, ${name}!`;
-            }
-            userGreeting.classList.remove('hidden');
-        }
+        // if (userGreeting) {
+        //     if (name == null || name === '') {
+        //         userGreeting.textContent = `Hello!`;
+        //     } else {
+        //         userGreeting.textContent = `Hello, ${name}!`;
+        //     }
+        //     userGreeting.classList.remove('hidden');
+        // }
         console.log('User is signed in:', user);
     } else {
         if (userGreeting) {
