@@ -32,14 +32,26 @@ function getCookie(name) {
 function setNavSignedIn(isSignedIn) {
     if (isSignedIn) {
         // signed in: ONLY sign out
-        if (signInLink) signInLink.classList.add("hidden");
-        if (getStartedLink) getStartedLink.classList.add("hidden");
-        if (signOutButton) signOutButton.classList.remove("hidden");
+        if (signInLink) {
+            signInLink.classList.add("hidden");
+        }
+        if (getStartedLink) {
+            getStartedLink.classList.add("hidden");
+        }
+        if (signOutButton) {
+            signOutButton.classList.remove("hidden");
+        }
     } else {
         // signed out: show sign in + get started, hide sign out
-        if (signInLink) signInLink.classList.remove("hidden");
-        if (getStartedLink) getStartedLink.classList.remove("hidden");
-        if (signOutButton) signOutButton.classList.add("hidden");
+        if (signInLink) {
+            signInLink.classList.remove("hidden");
+        }
+        if (getStartedLink) {
+            getStartedLink.classList.remove("hidden");
+        }
+        if (signOutButton) {
+            signOutButton.classList.add("hidden");
+        }
     }
 }
 

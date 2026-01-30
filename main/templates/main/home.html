@@ -8,32 +8,43 @@
 <div id="signed_in"></div>
 <div class="hero">
   <div class="stack">
-    <h1>Learn Biblical Hebrew</h1>
-    <h3>Like Never Before</h3>
-    <p>Learn basic Biblical Hebrew through interactive <br> lessons, gamified learning, and daily practice</p>
+    <h1>🎓 Learn Biblical Hebrew</h1>
+    <h2>Like Never Before</h2>
+    <p>Master ancient Hebrew through interactive</p>
+    <p>lessons, gamified learning, and daily practice</p>
     <div class="hero-actions">
-      <a href="{% url 'users:account' %}" class="btn-primary btn" id="hero-cta">Start Learning For Free</a>
+      <a href="{% url 'users:account' %}" class="hero-cta" id="hero-cta">Start Learning Free →</a>
     </div>
   </div>
 </div>
 <section class="features">
-  <h2>Section Title</h2>
   <div class="features-grid">
-    <div class="card">
-      <h3>Title</h3>
-      <p>Short description</p>
+    <div class="feature-card">
+      <div class="feature-card-emoji">📚</div>
+      <div class="feature-card-title">Interactive</div>
+      <div class="feature-card-title">Lessons</div>
+      <div class="feature-card-description">Learn at</div>
+      <div class="feature-card-description">your pace</div>
     </div>    
-    <div class="card">
-      <h3>Title</h3>
-      <p>Short description</p>
+    <div class="feature-card">
+      <div class="feature-card-emoji">🎯</div>
+      <div class="feature-card-title">Gamified</div>
+      <div class="feature-card-title">Progress</div>
+      <div class="feature-card-description">Track your</div>
+      <div class="feature-card-description">mastery</div>
     </div>
-    <div class="card">
-      <h3>Title</h3>
-      <p>Short description</p>
+    <div class="feature-card">
+      <div class="feature-card-emoji">🔥</div>
+      <div class="feature-card-title">Daily</div>
+      <div class="feature-card-title">Streaks</div>
+      <div class="feature-card-description">Build</div>
+      <div class="feature-card-description">consistency</div>
     </div>
   </div>
 </section>
 
+<footer class="footer">
+  <p class="footer-text">"The best way to learn Biblical Hebrew"</p>
+</footer>
 
-<!-- Test code for Css end -->
 {% endblock %}

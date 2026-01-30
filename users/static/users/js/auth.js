@@ -18,6 +18,35 @@ const auth = getAuth(app);
 
 const messages = document.getElementById("error_messages");
 
+// Password visibility toggle
+const passwordInput = document.getElementById("password");
+const passwordToggle = document.getElementById("password-toggle");
+const nameField = document.getElementById("name-field");
+const signinBtn = document.getElementById("signin-btn");
+const signupBtn = document.getElementById("signup-btn");
+
+if (passwordToggle) {
+    passwordToggle.addEventListener("click", () => {
+        const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
+        passwordInput.setAttribute("type", type);
+    });
+}
+
+// Show/hide name field based on button clicked
+if (signinBtn && signupBtn && nameField) {
+    signinBtn.addEventListener("click", () => {
+        if (nameField) {
+            nameField.style.display = "none";
+        }
+    });
+    
+    signupBtn.addEventListener("click", () => {
+        if (nameField) {
+            nameField.style.display = "flex";
+        }
+    });
+}
+
 document.getElementById("user_form").addEventListener("submit", async event => {    
     event.preventDefault();
     const submitterValue = event.submitter.value;

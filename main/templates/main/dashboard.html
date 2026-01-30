@@ -1,36 +1,157 @@
 {% extends "main/base.html" %} 
+{% load static %}
 
-{% block title %}Hebrew For Everyone!{% endblock %}
+{% block title %}Dashboard{% endblock %}
 
 {% block content %}
 
 <div class="container">
-    <div class="stack">
-        <div class="card">
-            <h3>Welcome Back! 👋</h3>
-            <div class="stats-row">
-                <div class="stat">
-                    <span class="stat-label">Streak</span>
-                    <span class="stat-value">7 days</span>
-                </div>
-                <div class="stat">
-                    <span class="stat-label">Level</span>
-                    <span class="stat-value">5</span>
-                </div>
-                <div class="stat">
-                    <span class="stat-label">XP</span>
-                    <span class="stat-value">1,250</span>
-                </div>
+    <!-- Dashboard Header -->
+    <div class="dashboard-header">
+        <a class="brand-pill" href="{% url 'main:home' %}">
+            Biblical Hebrew
+        </a>
+        <span class="dashboard-title">Dashboard</span>
+        <div class="dashboard-header-actions">
+            <a href="#" class="dashboard-header-link">Profile</a>
+            <a href="#" class="dashboard-header-link">Settings</a>
+            <button class="notification-bell" aria-label="Notifications">🔔</button>
+        </div>
+    </div>
+
+    <!-- Welcome Card -->
+    <div class="welcome-card">
+        <h3>Welcome back! 👋</h3>
+        <div class="welcome-stats">
+            <span class="welcome-stat">🔥 Streak: 7 days</span>
+            <span class="welcome-stat">📊 Level 5</span>
+            <span class="welcome-stat xp">⭐ 1,250 XP</span>
+        </div>
+        <div class="welcome-card-actions">
+            <a href="#" class="btn-continue">Continue Learning →</a>
+        </div>
+    </div>
+
+    <!-- Today's Goal Card -->
+    <div class="goal-card">
+        <h3>Today's Goal</h3>
+        <div style="text-align: center; margin-bottom: 0.5rem;">
+            <span class="goal-progress-percent-above">60%</span>
+        </div>
+        <div class="goal-progress">
+            <div class="goal-progress-bar">
+                <div class="goal-progress-fill" style="width: 60%;"></div>
             </div>
         </div>
-        <div class="card">
-            <h3>Today's Goal</h3>
-            <div class="progress">
-                <div class="track">
-                    <div class="fill"></div>
-                </div>
+        <div class="goal-subtext">6 of 10 lessons completed</div>
+    </div>
+
+    <!-- Your Progress Section -->
+    <h2 class="section-title">Your Progress</h2>
+    <div class="lessons-grid">
+        <!-- Lesson 1 -->
+        <div class="lesson-card">
+            <h4 class="lesson-title">Lesson 1</h4>
+            <p class="lesson-subtitle">Aleph-Bet</p>
+            <div style="text-align: center; margin-bottom: 0.5rem;">
+                <span class="lesson-progress-percent-above">80%</span>
             </div>
-            <span class="stat-label">5 of 10 lessons completed</span>
+            <div class="lesson-progress-bar">
+                <div class="lesson-progress-fill" style="width: 80%;"></div>
+            </div>
+            <p class="lesson-status">80% Complete</p>
+            <button class="lesson-button primary">Continue</button>
+        </div>
+
+        <!-- Lesson 2 -->
+        <div class="lesson-card">
+            <h4 class="lesson-title">Lesson 2</h4>
+            <p class="lesson-subtitle">Basic Words</p>
+            <div style="text-align: center; margin-bottom: 0.5rem;">
+                <span class="lesson-progress-percent-above">100%</span>
+            </div>
+            <div class="lesson-progress-bar">
+                <div class="lesson-progress-fill" style="width: 100%;"></div>
+            </div>
+            <p class="lesson-status">✓ Complete</p>
+            <button class="lesson-button secondary">Review</button>
+        </div>
+
+        <!-- Lesson 3 -->
+        <div class="lesson-card">
+            <h4 class="lesson-title">Lesson 3</h4>
+            <p class="lesson-subtitle">Grammar</p>
+            <div style="text-align: center; margin-bottom: 0.5rem;">
+                <span class="lesson-progress-percent-above">50%</span>
+            </div>
+            <div class="lesson-progress-bar">
+                <div class="lesson-progress-fill" style="width: 50%;"></div>
+            </div>
+            <p class="lesson-status">50% Complete</p>
+            <button class="lesson-button primary">Continue</button>
+        </div>
+
+        <!-- Lesson 4 -->
+        <div class="lesson-card locked">
+            <h4 class="lesson-title">Lesson 4</h4>
+            <p class="lesson-subtitle">Vocabulary</p>
+            <div style="text-align: center; margin-bottom: 0.5rem;">
+                <span class="lesson-progress-percent-above">Locked</span>
+            </div>
+            <div class="lesson-progress-bar">
+                <div class="lesson-progress-fill" style="width: 0%;"></div>
+            </div>
+            <p class="lesson-status">Locked</p>
+            <button class="lesson-button locked">Locked 🔒</button>
+        </div>
+
+        <!-- Lesson 5 -->
+        <div class="lesson-card">
+            <h4 class="lesson-title">Lesson 5</h4>
+            <p class="lesson-subtitle">Reading</p>
+            <div style="text-align: center; margin-bottom: 0.5rem;">
+                <span class="lesson-progress-percent-above">40%</span>
+            </div>
+            <div class="lesson-progress-bar">
+                <div class="lesson-progress-fill" style="width: 40%;"></div>
+            </div>
+            <p class="lesson-status">40% Complete</p>
+            <button class="lesson-button primary">Continue</button>
+        </div>
+
+        <!-- Lesson 6 -->
+        <div class="lesson-card locked">
+            <h4 class="lesson-title">Lesson 6</h4>
+            <p class="lesson-subtitle">Advanced</p>
+            <div style="text-align: center; margin-bottom: 0.5rem;">
+                <span class="lesson-progress-percent-above">Locked</span>
+            </div>
+            <div class="lesson-progress-bar">
+                <div class="lesson-progress-fill" style="width: 0%;"></div>
+            </div>
+            <p class="lesson-status">Locked</p>
+            <button class="lesson-button locked">Locked 🔒</button>
+        </div>
+    </div>
+
+    <!-- Achievements Section -->
+    <h2 class="section-title">Achievements</h2>
+    <div class="achievements-grid">
+        <div class="achievement-badge">
+            <div class="achievement-emoji">🏆</div>
+            <p class="achievement-name">First Lesson</p>
+        </div>
+        <div class="achievement-badge">
+            <div class="achievement-emoji">🔥</div>
+            <p class="achievement-name">7-Day Streak</p>
+        </div>
+        <div class="achievement-badge">
+            <div class="achievement-emoji">⭐</div>
+            <p class="achievement-name">Perfect Score</p>
+        </div>
+        <div class="achievement-badge">
+            <div class="achievement-emoji">📚</div>
+            <p class="achievement-name">Scholar Badge</p>
         </div>
     </div>
 </div>

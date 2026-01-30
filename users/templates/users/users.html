@@ -10,30 +10,62 @@
 <!-- Custom content for the page -->
 {% block content %}
 <div class="auth-page">
+    <!-- Logo -->
+    <div class="auth-logo">
+        <a class="brand-pill" href="{% url 'main:home' %}">
+            Biblical Hebrew
+        </a>
+    </div>
+    
     <div class="card">
-        <h2>Sign Up/In</h2>
+        <h2>Sign In / Sign Up</h2>
         <div id="signed_in"></div>
         <!-- Create a form for submitting data, use method post to keep the url clean and action add later -->
-        <form method="post" id="user_form" class="stack auth-form">
-                <!-- Without this token django will reject the form submission -->
-                {% csrf_token %}
-                <div class="field">
-                    <label for="name" class="stat-label">Name</label>
-                    <input type="text" id="name" name="name" placeholder="ie: John Smith" autocomplete="name" required>
+        <form method="post" id="user_form" class="auth-form">
+            <!-- Without this token django will reject the form submission -->
+            {% csrf_token %}
+            
+            <!-- Name field (shown only for signup) -->
+            <div class="field" id="name-field" style="display: none;">
+                <label for="name" class="stat-label">Name</label>
+                <input type="text" id="name" name="name" placeholder="Name" autocomplete="name">
+            </div>
+            
+            <div class="field">
+                <label for="email" class="stat-label">Email</label>
+                <input type="email" id="email" name="email" placeholder="Email" autocomplete="email" required>
+            </div>
+            
+            <div class="field">
+                <label for="password" class="stat-label">Password</label>
+                <div class="password-input-wrapper">
+                    <input type="password" id="password" name="password" placeholder="Password" autocomplete="current-password" required>
+                    <button type="button" class="password-toggle" id="password-toggle" aria-label="Toggle password visibility">
+                        <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                        <svg class="eye-icon eye-icon-hidden" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                            <line x1="1" y1="1" x2="23" y2="23"></line>
+                        </svg>
+                    </button>
                 </div>
-                <div class="field">
-                    <label for="email" class="stat-label">Email</label>
-                    <input type="email" id="email" name="email" placeholder="ie: john@example.com" autocomplete="email" required>
+                <div class="forgot-password-link">
+                    <a href="#" id="forgot-password">Forgot Password?</a>
                 </div>
-                <div class="field">
-                    <label for="password" class="stat-label">Password</label>
-                    <input type="password" id="password" name="password" placeholder="Your Password" autocomplete="current-password" required>
+            </div>
+            
+            <div class="auth-actions">
+                <button type="submit" name="action" value="login" class="btn btn-signin" id="signin-btn">Sign In</button>
+                
+                <div class="auth-divider">
+                    <span>OR</span>
                 </div>
-                <div class="auth-actions">
-                    <button type="submit" name="action" value="signup" class="btn-secondary btn">Sign Up</button>
-                    <button type="submit" name="action" value="login" class="btn-secondary btn">Log In</button>
-                </div>
-            </form>
+                
+                <button type="submit" name="action" value="signup" class="btn btn-create-account" id="signup-btn">Create Account</button>
+            </div>
+        </form>
         <div id="error_messages"></div>
         <!-- Link the JavaScript file for user-related functionality -->
         <script type="module" src="{% static 'users/js/auth.js' %}"></script>
