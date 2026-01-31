@@ -74,27 +74,31 @@ function getCookie(name) {
 
 async function createSession(idToken, name='') {
     const csrfToken = getCookie("csrftoken");
+    if (!csrfToken) {
+        console.warn("No CSRF token found, session creation may fail");
+    }
+    
     const response = await fetch("/users/sessions/", {
-    method: "POST",
-    headers: {
-        "Authorization": `Bearer ${idToken}`,
-        "Content-Type": "application/json",
-        "X-CSRFToken": csrfToken
-    },
-    credentials: "same-origin",
-    body: JSON.stringify(
-        name ? { name: name } : {}
-    )
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${idToken}`,
+            "Content-Type": "application/json",
+            ...(csrfToken ? { "X-CSRFToken": csrfToken } : {})
+        },
+        credentials: "same-origin",
+        body: JSON.stringify(
+            name ? { name: name } : {}
+        )
     });
+    
     if (!response.ok) {
         const errorText = await response.text();
-        console.error("Error creating session on server:", errorText);
-        throw new Error("Failed to create session on server");
+        console.error("Error creating session on server:", response.status, errorText);
+        throw new Error(`Failed to create session on server: ${response.status}`);
     }
-    console.log("Session created on server.");
+    
     const data = await response.json();
-    console.log("Server response:", data);
-
+    console.log("Session created on server:", data);
     return data;
 }
 
@@ -103,10 +107,22 @@ async function signupUser(name, email, password) {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
         const userToken = await user.getIdToken(true);
-        await createSession(userToken, name);
+        
         console.log('User created:', userCredential.user);
+        
+        // Create session and wait for it to complete
+        try {
+            await createSession(userToken, name);
+            console.log('Session created successfully, redirecting...');
+        } catch (sessionError) {
+            console.error('Session creation error:', sessionError);
+            // Still try to redirect - session might be created by base.js
+        }
+        
         messages.textContent = "User created successfully.";
-        window.location.href = "/dashboard/"; 
+        
+        // Use window.location.replace for immediate redirect
+        window.location.replace("/dashboard/");
     } catch (error) {
         console.error('Error creating user:', error);
         displayError(error.code);
@@ -118,10 +134,28 @@ async function loginUser(name, email, password) {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
         const userToken = await user.getIdToken(true);
-        await createSession(userToken, name);
+        
         console.log('User logged in:', userCredential.user);
+        
+        // Create session and wait for it to complete
+        let sessionCreated = false;
+        try {
+            const sessionData = await createSession(userToken, name || '');
+            console.log('Session created successfully:', sessionData);
+            sessionCreated = true;
+        } catch (sessionError) {
+            console.error('Session creation error:', sessionError);
+            // Try redirect anyway - base.js might handle session creation
+        }
+        
         messages.textContent = "User logged in successfully.";
-        window.location.href = "/dashboard/"; 
+        
+        // Wait a bit longer to ensure session is fully set on server
+        await new Promise(resolve => setTimeout(resolve, 200));
+        
+        // Use window.location.replace for immediate redirect
+        console.log('Redirecting to dashboard...');
+        window.location.replace("/dashboard/");
     } catch (error) {
         console.error('Error logging in user:', error);
         displayError(error.code);
