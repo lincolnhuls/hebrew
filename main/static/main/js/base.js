@@ -91,11 +91,6 @@ onAuthStateChanged(auth, async (user) => {
 
         setNavSignedIn(true);
 
-        // if (userGreeting) {
-        //     userGreeting.textContent = name ? `Hello, ${name}!` : "Hello!";
-        //     userGreeting.classList.remove("hidden");
-        // }
-
         console.log("User is signed in:", user);
     } else {
         sessionStorage.removeItem("username");
@@ -122,6 +117,9 @@ if (signOutButton) {
 
             await fetch("/users/logout/", {
                 method: "POST",
+                headers: {
+                    "X-CSRFToken": getCookie("csrftoken"),
+                },
                 credentials: "include",
             });
 

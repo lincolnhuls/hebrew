@@ -424,6 +424,10 @@ h3 {
     color: var(--main-text);
 }
 
+.lesson-card.locked .lesson-progress-percent-above {
+    color: var(--muted-text);
+}
+
 .goal-subtext {
     font-size: 14px;
     color: var(--muted-text);
@@ -468,13 +472,13 @@ h3 {
 
 .lesson-card.locked {
     background-color: var(--background);
-    opacity: 0.6;
+    opacity: 0.8;
 }
 
 .lesson-card.locked .lesson-title,
 .lesson-card.locked .lesson-subtitle,
 .lesson-card.locked .lesson-status {
-    color: var(--placeholder-text);
+    color: var(--muted-text);
 }
 
 .lesson-title {
@@ -545,9 +549,10 @@ h3 {
 }
 
 .lesson-button.locked {
-    background-color: var(--input-border);
-    color: var(--placeholder-text);
+    background-color: var(--border);
+    color: var(--main-text);
     cursor: not-allowed;
+    opacity: 1;
 }
 
 .lesson-button:hover:not(.locked) {
@@ -596,13 +601,100 @@ h3 {
     height: 80px;
 }
 
+/* Option 1: Elevated with shadow */
+.topbar.topbar-option-1 {
+    background-color: var(--background);
+    border-bottom: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Option 2A: Surface background with standard border */
+.topbar.topbar-option-2a {
+    background-color: var(--surface);
+    border-bottom: 1px solid var(--border);
+}
+
+/* Option 2B: Surface background with thicker border */
+.topbar.topbar-option-2b {
+    background-color: var(--surface);
+    border-bottom: 2px solid var(--border);
+}
+
+/* Option 2C: Surface background with subtle shadow */
+.topbar.topbar-option-2c {
+    background-color: var(--surface);
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* Option 2D: Surface background with no border */
+.topbar.topbar-option-2d {
+    background-color: var(--surface);
+    border-bottom: none;
+}
+
+/* Option 2E: Surface background with shadow and border */
+.topbar.topbar-option-2e {
+    background-color: var(--surface);
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+}
+
+/* Alternative: Remove border, stronger shadow for separation */
+.topbar.topbar-option-2e-alt-1 {
+    background-color: var(--surface);
+    border-bottom: none;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Alternative: Thinner border with better color */
+.topbar.topbar-option-2e-alt-2 {
+    background-color: var(--surface);
+    border-bottom: 1px solid rgba(148, 163, 184, 0.3);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+}
+
+/* Option 2F: Surface background with lighter border */
+.topbar.topbar-option-2f {
+    background-color: var(--surface);
+    border-bottom: 1px solid var(--input-border);
+}
+
+/* Option 3: Subtle gradient background */
+.topbar-option-3 {
+    background: linear-gradient(to bottom, var(--surface) 0%, var(--background) 100%);
+    border-bottom: 1px solid var(--border);
+}
+
+/* Option 4: Glassmorphism effect */
+.topbar-option-4 {
+    background-color: rgba(45, 45, 45, 0.8);
+    backdrop-filter: blur(20px) saturate(180%);
+    border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+/* Option 5: Thicker, more prominent border */
+.topbar-option-5 {
+    background-color: var(--background);
+    border-bottom: 3px solid var(--border);
+}
+
+/* Option 6: Elevated with subtle border */
+.topbar-option-6 {
+    background-color: var(--background);
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
 .topbar-inner {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    padding: 0;
+    padding: 0 1rem;
     height: 100%;
+    max-width: 80vw;
+    margin: 0 auto;
 }
 
 .brand-pill {
@@ -611,12 +703,31 @@ h3 {
     padding: 8px 16px;
     border-radius: 8px;
     background: rgba(148, 163, 184, 0.2);
-    border: none;
-    color: var(--primary-accent);
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    color: #C8D5E4;
     font-weight: 700;
     text-decoration: none; 
     font-size: 16px;
     height: 36px;
+}
+
+/* Alternative: Brand-pill with darker background for better contrast */
+.brand-pill-alt-1 {
+    background: rgba(148, 163, 184, 0.5);
+    color: var(--main-text);
+}
+
+/* Alternative: Brand-pill with solid background */
+.brand-pill-alt-2 {
+    background: var(--border);
+    color: var(--primary-accent);
+}
+
+/* Alternative: Brand-pill with no background, just text */
+.brand-pill-alt-3 {
+    background: transparent;
+    color: var(--primary-accent);
+    padding: 8px 0;
 }
 
 .topbar-actions {
@@ -867,14 +978,17 @@ h3 {
 
 /* Footer */
 .footer {
-    background-color: var(--footer-bg);
-    padding: 0.5rem 0;
+    background-color: transparent;
     text-align: center;
     margin-top: 4rem;
+    padding: 3rem 0;
 }
 
 .footer-text {
-    font-size: 14px;
-    color: var(--muted-text);
+    font-size: 18px;
+    font-weight: 600;
+    font-style: italic;
+    color: var(--main-text);
+    opacity: 0.9;
     margin: 0;
 }
