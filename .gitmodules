@@ -1,0 +1,3 @@
+[submodule "bible_data/morphhb"]
+	path = bible_data/morphhb
+	url = https://github.com/openscriptures/morphhb.git
