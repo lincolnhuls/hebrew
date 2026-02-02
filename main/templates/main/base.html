@@ -19,6 +19,13 @@
   <!-- Base CSS -->
   <link rel="stylesheet" href="{% static 'main/css/base.css' %}">
   {% block extra_css %}{% endblock %}
+  <script>
+    (function() {
+      try {
+        if (localStorage.getItem('theme') === 'light') document.documentElement.classList.add('theme-light');
+      } catch (e) {}
+    })();
+  </script>
 </head>
 
 <body>

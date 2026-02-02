@@ -12,3 +12,10 @@ def dashboard(request):
     if not login:
         return render(request, "users/users.html")
     return render(request, "main/dashboard.html")
+
+
+def settings_page(request):
+    login = request.session.get('firebase_uid')
+    if not login:
+        return render(request, "users/users.html")
+    return render(request, "main/settings.html")

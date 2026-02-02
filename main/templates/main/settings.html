@@ -1,0 +1,48 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block title %}Settings{% endblock %}
+{% block meta_description %}Manage your Biblical Hebrew app settings including appearance and theme.{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+    <div class="auth-logo">
+        <a class="brand-pill" href="{% url 'main:home' %}">Biblical Hebrew</a>
+    </div>
+
+    <div class="card settings-card">
+        <h2>Settings</h2>
+
+        <div class="settings-row">
+            <label for="themeSwitch" class="settings-label">Light mode</label>
+            <div class="theme-switch-wrap">
+                <input type="checkbox" id="themeSwitch" class="theme-switch" aria-label="Use light theme">
+                <label for="themeSwitch" class="theme-switch-label"></label>
+            </div>
+        </div>
+        <p class="settings-hint">Switch between dark and light appearance. Your choice is saved.</p>
+    </div>
+</div>
+
+<script>
+(function() {
+    var switchEl = document.getElementById('themeSwitch');
+    var root = document.documentElement;
+    function applyTheme(isLight) {
+        if (isLight) root.classList.add('theme-light');
+        else root.classList.remove('theme-light');
+        try { localStorage.setItem('theme', isLight ? 'light' : 'dark'); } catch (e) {}
+    }
+    function init() {
+        var saved = localStorage.getItem('theme');
+        var isLight = saved === 'light';
+        switchEl.checked = isLight;
+        applyTheme(isLight);
+    }
+    if (switchEl) {
+        init();
+        switchEl.addEventListener('change', function() { applyTheme(switchEl.checked); });
+    }
+})();
+</script>
+{% endblock %}
