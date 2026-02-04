@@ -1,0 +1,26 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block title %}{{ book.name_en }} - Chapters{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'bible/css/scripture.css' %}">{% endblock %}
+
+{% block content %}
+<nav class="scripture-breadcrumb" aria-label="Breadcrumb">
+  <a href="{% url 'bible:book_list' %}">Books</a>
+  <span class="breadcrumb-sep">›</span>
+  <span class="breadcrumb-current">{{ book.name_en }}</span>
+</nav>
+
+<section class="scripture-content scripture-chapter-list">
+  <h1 class="scripture-title">{{ book.name_en }}</h1>
+  <ul class="chapter-list">
+    {% for ch in chapters %}
+    <li>
+      <a href="{% url 'bible:chapter_view' book.slug ch.number %}" class="chapter-link">Chapter {{ ch.number }}</a>
+    </li>
+    {% empty %}
+    <li class="muted">No chapters found.</li>
+    {% endfor %}
+  </ul>
+</section>
+{% endblock %}

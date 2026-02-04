@@ -2,7 +2,14 @@
 
 A **Duolingo-style web application** designed to teach **Biblical Hebrew** in a structured, accessible, and beginner-friendly way.
 
----
+
+## Hebrew Bible Text
+
+The Hebrew Old Testament text used in this application is the **Westminster Leningrad Codex (WLC)**.
+
+- The WLC text is public domain.
+- Source files were obtained from the [Open Scriptures Hebrew Bible project](https://github.com/openscriptures/morphhb).
+- This application uses only the public-domain WLC text and does **not** include morphology, lemmas, or annotations.
 
 ## Purpose
 

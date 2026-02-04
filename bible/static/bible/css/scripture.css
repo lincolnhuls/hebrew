@@ -1,0 +1,169 @@
+/* WLC Scripture Browser - Uses CSS variables from base.css for theme support */
+
+/* Breadcrumb */
+.scripture-breadcrumb {
+  font-family: "Nunito Sans", system-ui, sans-serif;
+  font-size: 14px;
+  color: var(--muted-text);
+  margin-bottom: 1rem;
+  padding-top: 0.5rem;
+}
+
+.scripture-breadcrumb a {
+  color: var(--primary-accent);
+  text-decoration: none;
+}
+
+.scripture-breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+.breadcrumb-sep {
+  margin: 0 0.35rem;
+}
+
+.breadcrumb-current {
+  color: var(--main-text);
+}
+
+/* Content area */
+.scripture-content {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.scripture-title {
+  font-family: "Nunito Sans", system-ui, sans-serif;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--main-text);
+  margin-bottom: 1.5rem;
+}
+
+/* Book list */
+.scripture-book-list {
+  padding-top: 2.5rem;
+}
+
+.book-list,
+.chapter-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.book-link,
+.chapter-link {
+  display: block;
+  padding: 0.75rem 1rem;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--main-text);
+  text-decoration: none;
+  font-family: "Nunito Sans", system-ui, sans-serif;
+  font-weight: 600;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.book-link:hover,
+.chapter-link:hover {
+  background-color: color-mix(in srgb, var(--primary-accent) 12%, var(--surface));
+  border-color: color-mix(in srgb, var(--primary-accent) 35%, var(--border));
+}
+
+/* Chapter view layout - arrows on sides */
+.scripture-chapter-view-wrap {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  min-height: 400px;
+}
+
+.scripture-chapter-content {
+  flex: 1;
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 0 0.5rem;
+}
+
+/* Prev/Next chapter arrows - only on chapter view, sticky when scrolling */
+.scripture-arrow {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: 300;
+  color: var(--primary-accent);
+  text-decoration: none;
+  border-radius: 50%;
+  transition: background-color 0.2s, color 0.2s;
+  position: sticky;
+  top: 88px; /* Below the 80px topbar */
+  align-self: flex-start;
+  background-color: var(--background);
+  z-index: 10;
+}
+
+.scripture-arrow:hover {
+  background-color: color-mix(in srgb, var(--primary-accent) 15%, transparent);
+}
+
+.scripture-arrow-disabled {
+  color: var(--muted-text);
+  opacity: 0.4;
+  cursor: default;
+  pointer-events: none;
+}
+
+/* Verse display - Hebrew RTL, comic-sans-style font */
+.verse-list {
+  font-family: "Rubik", "Heebo", "Nunito", "Quicksand", sans-serif;
+  font-size: 1.125rem;
+  line-height: 1.8;
+  color: var(--main-text);
+}
+
+.verse {
+  margin: 0 0 0.75rem 0;
+  padding: 0;
+  text-align: right;
+  direction: rtl;
+}
+
+.verse-num {
+  display: inline-block;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--primary-accent);
+  margin-left: 0.5rem;
+  min-width: 1.5em;
+}
+
+.verse-text {
+  font-weight: 400;
+}
+
+/* Footer attribution */
+.scripture-footer {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  text-align: center;
+}
+
+.scripture-footer p {
+  font-size: 12px;
+  color: var(--muted-text);
+  margin: 0;
+}
+
+/* Muted placeholder */
+.scripture-content .muted {
+  color: var(--muted-text);
+}

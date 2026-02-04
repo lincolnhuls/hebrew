@@ -1,0 +1,20 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block title %}Scriptures - Books{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'bible/css/scripture.css' %}">{% endblock %}
+
+{% block content %}
+<section class="scripture-content scripture-book-list">
+  <h1 class="scripture-title">Old Testament</h1>
+  <ul class="book-list">
+    {% for book in books %}
+    <li>
+      <a href="{% url 'bible:chapter_list' book.slug %}" class="book-link">{{ book.name_en }}</a>
+    </li>
+    {% empty %}
+    <li class="muted">No books found.</li>
+    {% endfor %}
+  </ul>
+</section>
+{% endblock %}

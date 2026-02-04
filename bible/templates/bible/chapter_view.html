@@ -1,0 +1,53 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block title %}{{ book.name_en }} {{ chapter.number }}{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'bible/css/scripture.css' %}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="scripture-chapter-view-wrap">
+  {% if prev_chapter %}
+  <a href="{% url 'bible:chapter_view' prev_chapter.book.slug prev_chapter.number %}" class="scripture-arrow scripture-arrow-left" aria-label="Previous chapter">
+    ‹
+  </a>
+  {% else %}
+  <span class="scripture-arrow scripture-arrow-left scripture-arrow-disabled" aria-hidden="true">‹</span>
+  {% endif %}
+
+  <div class="scripture-chapter-content">
+    <nav class="scripture-breadcrumb" aria-label="Breadcrumb">
+      <a href="{% url 'bible:book_list' %}">Books</a>
+      <span class="breadcrumb-sep">›</span>
+      <a href="{% url 'bible:chapter_list' book.slug %}">{{ book.name_en }}</a>
+      <span class="breadcrumb-sep">›</span>
+      <span class="breadcrumb-current">Chapter {{ chapter.number }}</span>
+    </nav>
+
+    <h1 class="scripture-title">{{ book.name_en }} {{ chapter.number }}</h1>
+
+    <div class="verse-list" dir="rtl">
+      {% for verse in verses %}
+      <p class="verse" dir="rtl">
+        <span class="verse-num">{{ verse.number }}</span>
+        <span class="verse-text">{{ verse.text }}</span>
+      </p>
+      {% empty %}
+      <p class="muted">No verses found.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  {% if next_chapter %}
+  <a href="{% url 'bible:chapter_view' next_chapter.book.slug next_chapter.number %}" class="scripture-arrow scripture-arrow-right" aria-label="Next chapter">
+    ›
+  </a>
+  {% else %}
+  <span class="scripture-arrow scripture-arrow-right scripture-arrow-disabled" aria-hidden="true">›</span>
+  {% endif %}
+</div>
+{% endblock %}
