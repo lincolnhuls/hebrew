@@ -1,0 +1,108 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block title %}{{ lesson_title }} – Lesson{% endblock %}
+{% block meta_description %}Practice Biblical Hebrew with interactive lessons. Answer questions, track progress, and master the Aleph-Bet.{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'main/css/lesson_runner.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="lesson-runner" id="lessonRunner">
+  <!-- Header -->
+  <header class="lesson-runner-header">
+    <a href="{% if lesson_slug == 'alphabet-1' or lesson_slug == 'alphabet-2' %}{% url 'main:lesson_1_hub' %}{% else %}{% url 'main:dashboard' %}{% endif %}" class="lesson-runner-back">← Back</a>
+    <h1 class="lesson-runner-title">{{ lesson_title }}</h1>
+    <button type="button" class="lesson-runner-start-over hidden" id="startOverBtn" title="Start a fresh lesson with mixed question types">Start Over</button>
+    <div class="lesson-runner-stats">
+      <span class="lesson-runner-stat">🔥 <span id="streakDisplay">0</span></span>
+      <span class="lesson-runner-stat xp">⭐ <span id="xpDisplay">0</span> XP</span>
+    </div>
+  </header>
+
+  <!-- Progress -->
+  <div class="lesson-runner-progress" id="progressSection">
+    <span class="lesson-runner-progress-label">Progress:</span>
+    <div class="lesson-runner-progress-track">
+      <div class="lesson-runner-progress-fill" id="progressFill" style="width: 0%;"></div>
+    </div>
+    <span class="lesson-runner-progress-pct" id="progressPct">0%</span>
+  </div>
+
+  <!-- Error state -->
+  <div class="lesson-runner-error hidden" id="errorSection">
+    <p class="lesson-runner-error-msg" id="errorMsg"></p>
+    <a href="{% url 'main:dashboard' %}" class="btn-primary btn">Back to Dashboard</a>
+  </div>
+
+  <!-- Loading state -->
+  <div class="lesson-runner-loading" id="loadingSection">
+    <p>Loading lesson…</p>
+  </div>
+
+  <!-- Question state -->
+  <div class="lesson-runner-content hidden" id="questionSection">
+    <div class="lesson-runner-question-label" id="questionLabel">Question <span id="currentIdx">1</span> of <span id="totalQuestions">15</span></div>
+
+    <div class="lesson-runner-card">
+      <p class="lesson-runner-prompt" id="questionPrompt"></p>
+
+      <!-- MC / Fill: Hebrew box (optional) -->
+      <div class="lesson-runner-hebrew-box hidden" id="hebrewBox">
+        <span class="lesson-runner-hebrew-text hebrew-rtl" id="hebrewText"></span>
+      </div>
+
+      <!-- MC choices -->
+      <div class="lesson-runner-choices hidden" id="mcChoices"></div>
+
+      <!-- Fill input -->
+      <div class="lesson-runner-fill hidden" id="fillSection">
+        <input type="text" class="lesson-runner-input" id="fillInput" placeholder="Type your answer…" autocomplete="off" />
+      </div>
+
+      <!-- Match pairs -->
+      <div class="lesson-runner-match hidden" id="matchSection">
+        <div class="lesson-runner-match-pairs" id="matchPairs"></div>
+      </div>
+    </div>
+
+    <!-- Tip card -->
+    <div class="lesson-runner-tip">
+      <span class="lesson-runner-tip-icon">💡 Tip:</span>
+      <span class="lesson-runner-tip-text" id="tipText">Complete each question to advance.</span>
+    </div>
+
+    <!-- Submit button -->
+    <button type="button" class="lesson-runner-submit" id="submitBtn" disabled>Check Answer</button>
+  </div>
+
+  <!-- Feedback overlay (brief correct/incorrect) -->
+  <div class="lesson-runner-feedback hidden" id="feedbackSection">
+    <p class="lesson-runner-feedback-msg" id="feedbackMsg"></p>
+  </div>
+
+  <!-- Completed state -->
+  <div class="lesson-runner-completed hidden" id="completedSection">
+    <div class="lesson-runner-completed-card">
+      <h2 class="lesson-runner-completed-title">Lesson Complete!</h2>
+      <p class="lesson-runner-completed-score" id="completedScore"></p>
+      <p class="lesson-runner-completed-result" id="completedResult"></p>
+      <button type="button" class="lesson-runner-restart" id="restartBtn">Restart Lesson</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  window.LESSON_RUNNER_CONFIG = {
+    lessonSlug: "{{ lesson_slug|escapejs }}",
+    lessonTitle: "{{ lesson_title|escapejs }}",
+    userId: "{{ user_id|escapejs }}",
+    lessonError: "{{ lesson_error|default:''|escapejs }}",
+    resumeUrl: "{% url 'lessons:resume_lesson' %}",
+    startUrl: "{% url 'lessons:start_lesson' %}",
+    submitUrlTemplate: "{% url 'lessons:submit_answer' session_id=99999 %}".replace("99999", "{session_id}"),
+  };
+</script>
+<script type="module" src="{% static 'main/js/lesson_runner.js' %}" defer></script>
+{% endblock %}

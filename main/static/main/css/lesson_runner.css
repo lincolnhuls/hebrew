@@ -1,0 +1,388 @@
+/* Lesson Runner – wireframe styling (lessons-light.svg / lessons-dark.svg) */
+
+.lesson-runner {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+/* Header */
+.lesson-runner-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+.lesson-runner-title {
+  flex: 1;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--main-text);
+  margin: 0;
+}
+
+.lesson-runner-start-over {
+  font-size: 14px;
+  color: var(--primary-accent-foreground);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0.25rem 0.5rem;
+}
+
+.lesson-runner-start-over:hover {
+  opacity: 0.8;
+}
+
+.lesson-runner-stats {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.lesson-runner-stat {
+  font-size: 16px;
+  color: var(--main-text);
+}
+
+.lesson-runner-stat.xp {
+  color: var(--secondary-accent-foreground);
+}
+
+/* Progress bar */
+.lesson-runner-progress {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.lesson-runner-progress-label {
+  font-size: 14px;
+  color: var(--muted-text);
+}
+
+.lesson-runner-progress-track {
+  flex: 1;
+  height: 20px;
+  background-color: var(--progress-bar);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.lesson-runner-progress-fill {
+  height: 100%;
+  background-color: var(--primary-accent-fill);
+  border-radius: 10px;
+  transition: width 0.3s ease;
+}
+
+.lesson-runner-progress-pct {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--main-text);
+  min-width: 3ch;
+}
+
+/* Error / Loading */
+.lesson-runner-error,
+.lesson-runner-loading {
+  text-align: center;
+  padding: 3rem;
+}
+
+.lesson-runner-error-msg {
+  color: var(--muted-text);
+  margin-bottom: 1rem;
+}
+
+/* Question content */
+.lesson-runner-content {
+  margin-top: 1rem;
+}
+
+.lesson-runner-question-label {
+  font-size: 14px;
+  color: var(--muted-text);
+  margin-bottom: 1rem;
+}
+
+.lesson-runner-card {
+  background-color: var(--surface);
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+}
+
+.lesson-runner-prompt {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--main-text);
+  text-align: center;
+  margin: 0 0 1.5rem 0;
+}
+
+/* Hebrew box (fill/mc with shown letter) */
+.lesson-runner-hebrew-box {
+  max-width: 400px;
+  margin: 0 auto 1.5rem;
+  padding: 1.5rem;
+  background-color: var(--background);
+  border: 2px solid var(--input-border);
+  border-radius: 8px;
+  text-align: center;
+}
+
+.lesson-runner-hebrew-text {
+  font-size: 36px;
+  font-weight: 600;
+  color: var(--main-text);
+}
+
+/* Hebrew RTL display */
+.hebrew-rtl {
+  direction: rtl;
+  unicode-bidi: plaintext;
+}
+
+/* MC choices */
+.lesson-runner-choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.lesson-runner-choice {
+  min-width: 140px;
+  width: 180px;
+  height: 60px;
+  padding: 0.75rem;
+  background-color: var(--background);
+  border: 2px solid var(--input-border);
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--main-text);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+.lesson-runner-choice:hover {
+  border-color: var(--primary-accent);
+}
+
+.lesson-runner-choice.selected {
+  border-width: 3px;
+  border-color: var(--primary-accent-fill);
+}
+
+.lesson-runner-choice.hebrew-rtl {
+  direction: rtl;
+  unicode-bidi: plaintext;
+}
+
+/* Fill input */
+.lesson-runner-fill {
+  max-width: 400px;
+  margin: 0 auto 1rem;
+}
+
+.lesson-runner-input {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  font-size: 18px;
+  border: 2px solid var(--input-border);
+  border-radius: 8px;
+  background-color: var(--background);
+  color: var(--main-text);
+  box-sizing: border-box;
+}
+
+.lesson-runner-input:focus {
+  outline: none;
+  border-color: var(--primary-accent);
+}
+
+.lesson-runner-input::placeholder {
+  color: var(--placeholder-text);
+}
+
+/* Match pairs */
+.lesson-runner-match-pairs {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.lesson-runner-match-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.lesson-runner-match-left {
+  min-width: 120px;
+  padding: 0.75rem 1rem;
+  background-color: var(--background);
+  border: 2px solid var(--input-border);
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--main-text);
+  text-align: center;
+}
+
+.lesson-runner-match-left.hebrew-rtl {
+  direction: rtl;
+  unicode-bidi: plaintext;
+}
+
+.lesson-runner-match-right {
+  flex: 1;
+  min-width: 140px;
+  padding: 0.75rem 1rem;
+  background-color: var(--background);
+  border: 2px solid var(--input-border);
+  border-radius: 8px;
+  font-size: 16px;
+  color: var(--main-text);
+  box-sizing: border-box;
+}
+
+.lesson-runner-match-right:focus {
+  outline: none;
+  border-color: var(--primary-accent);
+}
+
+/* Tip card */
+.lesson-runner-tip {
+  padding: 1rem 1.25rem;
+  background-color: var(--footer-bg);
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+}
+
+html.theme-light .lesson-runner-tip {
+  background-color: #FEF3C7;
+}
+
+.lesson-runner-tip-icon {
+  font-weight: 600;
+  margin-right: 0.5rem;
+}
+
+.lesson-runner-tip-text {
+  font-size: 16px;
+  color: var(--muted-text);
+}
+
+html.theme-light .lesson-runner-tip-text {
+  color: var(--main-text);
+}
+
+/* Submit button */
+.lesson-runner-submit {
+  display: block;
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+  height: 50px;
+  border-radius: 8px;
+  background-color: var(--primary-accent-fill);
+  color: var(--button-text-on-primary);
+  font-size: 18px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: filter 0.2s;
+}
+
+.lesson-runner-submit:hover:not(:disabled) {
+  filter: brightness(0.9);
+}
+
+.lesson-runner-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Feedback overlay */
+.lesson-runner-feedback {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 100;
+}
+
+.lesson-runner-feedback-msg {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--main-text);
+  background-color: var(--surface);
+  padding: 2rem 3rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Completed state */
+.lesson-runner-completed {
+  padding: 3rem 1rem;
+}
+
+.lesson-runner-completed-card {
+  max-width: 400px;
+  margin: 0 auto;
+  background-color: var(--surface);
+  border-radius: 12px;
+  padding: 2.5rem;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.lesson-runner-completed-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--main-text);
+  margin: 0 0 1rem 0;
+}
+
+.lesson-runner-completed-score {
+  font-size: 20px;
+  color: var(--main-text);
+  margin: 0 0 0.5rem 0;
+}
+
+.lesson-runner-completed-result {
+  font-size: 18px;
+  color: var(--secondary-accent-foreground);
+  margin: 0 0 1.5rem 0;
+}
+
+.lesson-runner-restart {
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  background-color: var(--primary-accent-fill);
+  color: var(--button-text-on-primary);
+  font-size: 16px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: filter 0.2s;
+}
+
+.lesson-runner-restart:hover {
+  filter: brightness(0.9);
+}

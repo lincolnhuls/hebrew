@@ -1,4 +1,4 @@
-{% extends "main/base.html" %} 
+{% extends "main/base.html" %}
 {% load static %}
 
 {% block title %}Dashboard{% endblock %}
@@ -53,27 +53,39 @@
             <h3 class="lesson-title">Lesson 1</h3>
             <p class="lesson-subtitle">Aleph-Bet</p>
             <div style="text-align: center; margin-bottom: 0.5rem;">
-                <span class="lesson-progress-percent-above">80%</span>
+                <span class="lesson-progress-percent-above">{{ lesson_1_combined.progress_pct }}%</span>
             </div>
             <div class="lesson-progress-bar">
-                <div class="lesson-progress-fill" style="width: 80%;"></div>
+                <div class="lesson-progress-fill lesson-1-progress-pct-{% if lesson_1_combined.progress_pct >= 100 %}100{% elif lesson_1_combined.progress_pct >= 75 %}75{% elif lesson_1_combined.progress_pct >= 50 %}50{% elif lesson_1_combined.progress_pct >= 25 %}25{% else %}0{% endif %}"></div>
             </div>
-            <p class="lesson-status">80% Complete</p>
-            <button class="lesson-button primary">Continue</button>
+            <p class="lesson-status">
+                {% if lesson_1_combined.is_complete %}
+                    ✓ Complete
+                {% endif %}
+            </p>
+            {% if lesson_1_combined.is_complete %}
+                <a href="{% url 'main:lesson_1_hub' %}" class="lesson-button secondary">Review</a>
+            {% else %}
+                <a href="{% url 'main:lesson_1_hub' %}" class="lesson-button primary">Continue</a>
+            {% endif %}
         </div>
 
         <!-- Lesson 2 -->
-        <div class="lesson-card">
+        <div class="lesson-card{% if not lesson_1_complete %} locked{% endif %}">
             <h3 class="lesson-title">Lesson 2</h3>
-            <p class="lesson-subtitle">Basic Words</p>
+            <p class="lesson-subtitle">Special Letters</p>
             <div style="text-align: center; margin-bottom: 0.5rem;">
-                <span class="lesson-progress-percent-above">100%</span>
+                <span class="lesson-progress-percent-above">{% if lesson_1_complete %}0%{% else %}Locked{% endif %}</span>
             </div>
             <div class="lesson-progress-bar">
-                <div class="lesson-progress-fill" style="width: 100%;"></div>
+                <div class="lesson-progress-fill" style="width: 0%;"></div>
             </div>
-            <p class="lesson-status">✓ Complete</p>
-            <button class="lesson-button secondary">Review</button>
+            <p class="lesson-status">{% if not lesson_1_complete %}Locked{% else %}Coming soon{% endif %}</p>
+            {% if not lesson_1_complete %}
+                <button class="lesson-button locked">Locked 🔒</button>
+            {% else %}
+                <button class="lesson-button primary" disabled>Coming soon</button>
+            {% endif %}
         </div>
 
         <!-- Lesson 3 -->

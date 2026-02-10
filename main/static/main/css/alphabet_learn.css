@@ -1,0 +1,301 @@
+/* Alphabet Learn page – wireframe structure (alphabet-learn-dark/light.svg) */
+
+.alphabet-learn {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+/* Header */
+.alphabet-learn-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+.alphabet-learn-title {
+  flex: 1;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--main-text);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.alphabet-learn-stats {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.alphabet-learn-stat {
+  font-size: 16px;
+  color: var(--main-text);
+}
+
+.alphabet-learn-stat.xp {
+  color: var(--secondary-accent-foreground);
+}
+
+/* Hero / Welcome section */
+.alphabet-learn-hero {
+  text-align: center;
+  padding: 3rem 1.5rem 3rem;
+  margin: 0 -1rem 2rem -1rem;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--primary-accent-fill) 12%, transparent) 0%,
+    transparent 100%
+  );
+  border-radius: 12px;
+}
+
+.alphabet-learn-hero-title {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: var(--main-text);
+  margin: 0 0 1rem 0;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+@media (min-width: 640px) {
+  .alphabet-learn-hero-title {
+    font-size: 2.75rem;
+  }
+}
+
+.alphabet-learn-hero-text {
+  font-size: 1.125rem;
+  color: var(--main-text);
+  margin: 0 auto;
+  max-width: 56ch;
+  line-height: 1.65;
+}
+
+/* Intro cards – solid blue matching hero top */
+.alphabet-learn-card {
+  text-align: center;
+  padding: 2.5rem 1.5rem;
+  margin-bottom: 2rem;
+  margin-left: -1rem;
+  margin-right: -1rem;
+  background-color: color-mix(in srgb, var(--primary-accent-fill) 12%, var(--background));
+  border-radius: 12px;
+}
+
+.alphabet-learn-card-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--main-text);
+  margin: 0 0 0.75rem 0;
+  letter-spacing: -0.02em;
+}
+
+.alphabet-learn-card-text {
+  font-size: 1.125rem;
+  color: var(--main-text);
+  margin: 0 auto;
+  max-width: 56ch;
+  line-height: 1.65;
+}
+
+/* Section titles – prominent, centered */
+.alphabet-learn-section-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--main-text);
+  margin: 3rem 0 0.25rem 0;
+  text-align: center;
+  letter-spacing: -0.02em;
+}
+
+@media (min-width: 640px) {
+  .alphabet-learn-section-title {
+    font-size: 2rem;
+  }
+}
+
+.alphabet-learn-section-subtitle {
+  font-size: 1.0625rem;
+  color: var(--muted-text);
+  margin: 0 0 1.5rem 0;
+  text-align: center;
+}
+
+/* All 22 Letters grid card */
+.alphabet-learn-letters-grid-card {
+  margin-top: 0;
+  margin-bottom: 2rem;
+  padding: 2rem 1.5rem;
+  background-color: color-mix(in srgb, var(--primary-accent-fill) 12%, var(--background));
+  border-radius: 12px;
+}
+
+.alphabet-learn-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 0;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (min-width: 640px) {
+  .alphabet-learn-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 900px) {
+  .alphabet-learn-grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
+
+.alphabet-learn-letter-tile {
+  background-color: color-mix(in srgb, var(--surface) 80%, var(--background));
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  position: relative;
+}
+
+.alphabet-learn-letter-glyph {
+  font-size: 2.25rem;
+  font-weight: 600;
+  color: var(--main-text);
+}
+
+.alphabet-learn-letter-name {
+  font-size: 0.9375rem;
+  color: var(--muted-text);
+}
+
+.alphabet-learn-speaker-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background-color: var(--primary-accent-fill);
+  color: var(--button-text-on-primary);
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.alphabet-learn-speaker-btn:hover {
+  filter: brightness(0.9);
+}
+
+/* Letter-by-letter cards */
+.alphabet-learn-letter-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.25rem;
+  padding: 1.75rem 1.5rem;
+  margin-bottom: 1.25rem;
+  background-color: color-mix(in srgb, var(--primary-accent-fill) 12%, var(--background));
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+.alphabet-learn-letter-box {
+  flex-shrink: 0;
+  width: 88px;
+  height: 88px;
+  border-radius: 10px;
+  background-color: color-mix(in srgb, var(--surface) 90%, var(--background));
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  font-weight: 600;
+  color: var(--main-text);
+}
+
+.alphabet-learn-speaker-btn-inline {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background-color: var(--primary-accent-fill);
+  color: var(--button-text-on-primary);
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.alphabet-learn-speaker-btn-inline:hover {
+  filter: brightness(0.9);
+}
+
+.alphabet-learn-letter-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.alphabet-learn-letter-heading {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--main-text);
+  margin: 0 0 0.5rem 0;
+  letter-spacing: -0.01em;
+}
+
+.alphabet-learn-letter-description {
+  font-size: 1rem;
+  color: var(--main-text);
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* Hebrew RTL */
+.hebrew-rtl {
+  direction: rtl;
+  unicode-bidi: plaintext;
+}
+
+/* Continue button */
+.alphabet-learn-continue {
+  display: block;
+  width: 100%;
+  max-width: 320px;
+  margin: 3rem auto;
+  padding: 1.125rem 1.5rem;
+  border-radius: 10px;
+  background-color: var(--primary-accent-fill);
+  color: var(--button-text-on-primary);
+  font-size: 1.125rem;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+}
+
+.alphabet-learn-continue:hover {
+  filter: brightness(0.9);
+}
+
+.alphabet-learn-empty {
+  color: var(--muted-text);
+  text-align: center;
+  padding: 2rem;
+}

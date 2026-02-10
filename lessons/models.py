@@ -96,15 +96,18 @@ class Lesson(models.Model):
     slug = models.SlugField(max_length=50, unique=True) 
     title = models.CharField(max_length=100)              
     order = models.PositiveSmallIntegerField()
+    passes_required = models.PositiveSmallIntegerField(default=4)  # Duolingo-style: pass N times to complete
 
 class LessonSession(models.Model):
     user_id = models.CharField(max_length=100) # firebase_uid
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, related_name='sessions')
-    question_set_json = models.JSONField() # JSON string of generated questions
+    question_set_json = models.JSONField(default=list) # JSON string of generated questions
     current_index = models.PositiveSmallIntegerField(default=0)
     completed = models.BooleanField(default=False)
     started_at = models.DateTimeField(auto_now_add=True)
     completed_at = models.DateTimeField(null=True, blank=True)
+    seed = models.PositiveSmallIntegerField(null=True, blank=True)
+    passed = models.BooleanField(default=False)  # True if this run met the pass threshold (e.g. >= 12/15)
     
 class LessonAnswer(models.Model):
     session = models.ForeignKey(LessonSession, on_delete=models.CASCADE, related_name='answers')
@@ -157,3 +160,13 @@ class HebrewLetter(models.Model):
     letter = models.CharField(max_length=5) 
     name_en = models.CharField(max_length=50)
     transliteration = models.CharField(max_length=100, blank=True, null=True)
+
+"""
+Alphabet 1 Question Generation (Deterministic)
+Input - Letters 1-11
+Counts - MC:7 MATCH:4 FILL:4
+MC: Prompt = "Which letter is {name_en}?" Choices = correct letter + 3 random letters
+FILL: Prompt = "What is the name of this letter?" Shown = letter, Answer = name_en
+Match: Prompt = "Match the letters to their names." Pairs = 4 letters and thier 4 names(shuffled)
+Determinism rule: "When a LessonSession is created, generate the full question set once using a stored seed, then save it to question_set_json."
+"""

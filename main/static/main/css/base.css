@@ -577,6 +577,57 @@ h3 {
     z-index: 1;
 }
 
+/* Lesson 1 dynamic progress (25%, 50%, 75%, 100%) */
+.lesson-1-progress-pct-0 { width: 0%; }
+.lesson-1-progress-pct-25 { width: 25%; }
+.lesson-1-progress-pct-50 { width: 50%; }
+.lesson-1-progress-pct-75 { width: 75%; }
+.lesson-1-progress-pct-100 { width: 100%; }
+
+/* Back button – used on alphabet learn, lesson runner, lesson 1 hub */
+.btn-back,
+.lesson-runner-back,
+.alphabet-learn-back {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 0.875rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--primary-accent-foreground);
+    background-color: color-mix(in srgb, var(--primary-accent-fill) 12%, var(--background));
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    text-decoration: none;
+}
+.btn-back:hover,
+.lesson-runner-back:hover,
+.alphabet-learn-back:hover {
+    filter: brightness(0.95);
+}
+
+.lesson-hub-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.lesson-hub-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--main-text);
+    margin: 0;
+}
+
+.lesson-hub-intro {
+    margin-bottom: 2rem;
+    color: var(--muted-text);
+}
+
+.lesson-hub-intro p {
+    margin: 0;
+}
+
 
 .lesson-status {
     font-size: 14px;
@@ -588,11 +639,35 @@ h3 {
     width: 100%;
     height: 40px;
     border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
     font-size: 14px;
     font-weight: 700;
     cursor: pointer;
     border: none;
     transition: filter 0.2s;
+}
+
+/* Anchor lesson buttons: match button appearance (no underline, correct alignment) */
+a.lesson-button,
+a.lesson-button:hover,
+a.lesson-button:focus,
+a.lesson-button:visited {
+    display: flex;
+    text-decoration: none;
+    box-sizing: border-box;
+    color: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: inherit;
+}
+a.lesson-button.primary {
+    color: var(--button-text-on-primary);
+}
+a.lesson-button.secondary {
+    color: var(--primary-accent-foreground);
 }
 
 .lesson-button.primary {

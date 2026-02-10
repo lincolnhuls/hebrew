@@ -22,4 +22,5 @@ urlpatterns = [
     path("users/", include(("users.urls", "users"), namespace="users")),
     path("scriptures/", include(("bible.urls", "bible"), namespace="bible")),
     path("", include(("main.urls", "main"), namespace="main")),
+    path("lessons/", include(("lessons.urls", "lessons"), namespace="lessons")),
 ]

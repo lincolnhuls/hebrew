@@ -1,0 +1,77 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block title %}Lesson 1: Aleph-Bet{% endblock %}
+{% block meta_description %}Learn the Biblical Hebrew alphabet. Study the letters, then practice with Letters 1-11 and Letters 12-22 quizzes.{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <header class="lesson-hub-header">
+        <a href="{% url 'main:dashboard' %}" class="lesson-runner-back">← Back</a>
+        <h1 class="lesson-hub-title">Lesson 1: Aleph-Bet</h1>
+    </header>
+
+    <div class="lesson-hub-intro">
+        <p>Learn the Hebrew alphabet and practice with the quizzes below. Complete each quiz 4 times to finish this lesson.</p>
+    </div>
+
+    <div class="lessons-grid lesson-hub-grid">
+        <!-- Learn the alphabet -->
+        <div class="lesson-card">
+            <h3 class="lesson-title">Learn the Alphabet</h3>
+            <p class="lesson-subtitle">Study guide</p>
+            <a href="{% url 'main:alphabet_learn' %}" class="lesson-button primary">Start</a>
+        </div>
+
+        <!-- Letters 1-11 -->
+        <div class="lesson-card">
+            <h3 class="lesson-title">Letters 1–11</h3>
+            <p class="lesson-subtitle">Aleph through Kaf</p>
+            <div style="text-align: center; margin-bottom: 0.5rem;">
+                <span class="lesson-progress-percent-above">{{ lesson_1_combined.alphabet_1.progress_pct }}%</span>
+            </div>
+            <div class="lesson-progress-bar">
+                <div class="lesson-progress-fill lesson-1-progress-pct-{% if lesson_1_combined.alphabet_1.progress_pct >= 100 %}100{% elif lesson_1_combined.alphabet_1.progress_pct >= 75 %}75{% elif lesson_1_combined.alphabet_1.progress_pct >= 50 %}50{% elif lesson_1_combined.alphabet_1.progress_pct >= 25 %}25{% else %}0{% endif %}"></div>
+            </div>
+            <p class="lesson-status">
+                {% if lesson_1_combined.alphabet_1.is_complete %}
+                    ✓ Complete
+                {% else %}
+                    {{ lesson_1_combined.alphabet_1.pass_count }}/{{ lesson_1_combined.alphabet_1.passes_required }} passes
+                {% endif %}
+            </p>
+            {% if lesson_1_combined.alphabet_1.is_complete %}
+                <a href="{% url 'main:lesson_runner' lesson_slug='alphabet-1' %}" class="lesson-button secondary">Review</a>
+            {% else %}
+                <a href="{% url 'main:lesson_runner' lesson_slug='alphabet-1' %}" class="lesson-button primary">Continue</a>
+            {% endif %}
+        </div>
+
+        <!-- Letters 12-22 -->
+        <div class="lesson-card">
+            <h3 class="lesson-title">Letters 12–22</h3>
+            <p class="lesson-subtitle">Lamed through Tav</p>
+            <div style="text-align: center; margin-bottom: 0.5rem;">
+                <span class="lesson-progress-percent-above">{{ lesson_1_combined.alphabet_2.progress_pct }}%</span>
+            </div>
+            <div class="lesson-progress-bar">
+                <div class="lesson-progress-fill lesson-1-progress-pct-{% if lesson_1_combined.alphabet_2.progress_pct >= 100 %}100{% elif lesson_1_combined.alphabet_2.progress_pct >= 75 %}75{% elif lesson_1_combined.alphabet_2.progress_pct >= 50 %}50{% elif lesson_1_combined.alphabet_2.progress_pct >= 25 %}25{% else %}0{% endif %}"></div>
+            </div>
+            <p class="lesson-status">
+                {% if lesson_1_combined.alphabet_2.is_complete %}
+                    ✓ Complete
+                {% else %}
+                    {{ lesson_1_combined.alphabet_2.pass_count }}/{{ lesson_1_combined.alphabet_2.passes_required }} passes
+                {% endif %}
+            </p>
+            {% if lesson_1_combined.alphabet_2.is_complete %}
+                <a href="{% url 'main:lesson_runner' lesson_slug='alphabet-2' %}" class="lesson-button secondary">Review</a>
+            {% else %}
+                <a href="{% url 'main:lesson_runner' lesson_slug='alphabet-2' %}" class="lesson-button primary">Continue</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}
