@@ -34,12 +34,12 @@
     <!-- Today's Goal Card -->
     <div class="goal-card">
         <h3>Today's Goal</h3>
-        <div style="text-align: center; margin-bottom: 0.5rem;">
+        <div class="goal-progress-header">
             <span class="goal-progress-percent-above">60%</span>
         </div>
         <div class="goal-progress">
             <div class="goal-progress-bar">
-                <div class="goal-progress-fill" style="width: 60%;"></div>
+                <div class="goal-progress-fill width-60"></div>
             </div>
         </div>
         <div class="goal-subtext">6 of 10 lessons completed</div>
@@ -52,7 +52,7 @@
         <div class="lesson-card">
             <h3 class="lesson-title">Lesson 1</h3>
             <p class="lesson-subtitle">Aleph-Bet</p>
-            <div style="text-align: center; margin-bottom: 0.5rem;">
+            <div class="lesson-progress-header">
                 <span class="lesson-progress-percent-above">{{ lesson_1_combined.progress_pct }}%</span>
             </div>
             <div class="lesson-progress-bar">
@@ -74,11 +74,11 @@
         <div class="lesson-card{% if not lesson_1_complete %} locked{% endif %}">
             <h3 class="lesson-title">Lesson 2</h3>
             <p class="lesson-subtitle">Special Letters</p>
-            <div style="text-align: center; margin-bottom: 0.5rem;">
+            <div class="lesson-progress-header">
                 <span class="lesson-progress-percent-above">{% if lesson_1_complete %}0%{% else %}Locked{% endif %}</span>
             </div>
             <div class="lesson-progress-bar">
-                <div class="lesson-progress-fill" style="width: 0%;"></div>
+                <div class="lesson-progress-fill-static width-0"></div>
             </div>
             <p class="lesson-status">{% if not lesson_1_complete %}Locked{% else %}Coming soon{% endif %}</p>
             {% if not lesson_1_complete %}
@@ -92,11 +92,11 @@
         <div class="lesson-card">
             <h3 class="lesson-title">Lesson 3</h3>
             <p class="lesson-subtitle">Grammar</p>
-            <div style="text-align: center; margin-bottom: 0.5rem;">
+            <div class="lesson-progress-header">
                 <span class="lesson-progress-percent-above">50%</span>
             </div>
             <div class="lesson-progress-bar">
-                <div class="lesson-progress-fill" style="width: 50%;"></div>
+                <div class="lesson-progress-fill-static width-50"></div>
             </div>
             <p class="lesson-status">50% Complete</p>
             <button class="lesson-button primary">Continue</button>
@@ -106,11 +106,11 @@
         <div class="lesson-card locked">
             <h3 class="lesson-title">Lesson 4</h3>
             <p class="lesson-subtitle">Vocabulary</p>
-            <div style="text-align: center; margin-bottom: 0.5rem;">
+            <div class="lesson-progress-header">
                 <span class="lesson-progress-percent-above">Locked</span>
             </div>
             <div class="lesson-progress-bar">
-                <div class="lesson-progress-fill" style="width: 0%;"></div>
+                <div class="lesson-progress-fill-static width-0"></div>
             </div>
             <p class="lesson-status">Locked</p>
             <button class="lesson-button locked">Locked 🔒</button>
@@ -120,11 +120,11 @@
         <div class="lesson-card">
             <h3 class="lesson-title">Lesson 5</h3>
             <p class="lesson-subtitle">Reading</p>
-            <div style="text-align: center; margin-bottom: 0.5rem;">
+            <div class="lesson-progress-header">
                 <span class="lesson-progress-percent-above">40%</span>
             </div>
             <div class="lesson-progress-bar">
-                <div class="lesson-progress-fill" style="width: 40%;"></div>
+                <div class="lesson-progress-fill-static width-40"></div>
             </div>
             <p class="lesson-status">40% Complete</p>
             <button class="lesson-button primary">Continue</button>
@@ -134,11 +134,11 @@
         <div class="lesson-card locked">
             <h3 class="lesson-title">Lesson 6</h3>
             <p class="lesson-subtitle">Advanced</p>
-            <div style="text-align: center; margin-bottom: 0.5rem;">
+            <div class="lesson-progress-header">
                 <span class="lesson-progress-percent-above">Locked</span>
             </div>
             <div class="lesson-progress-bar">
-                <div class="lesson-progress-fill" style="width: 0%;"></div>
+                <div class="lesson-progress-fill-static width-0"></div>
             </div>
             <p class="lesson-status">Locked</p>
             <button class="lesson-button locked">Locked 🔒</button>

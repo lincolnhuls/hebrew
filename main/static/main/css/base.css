@@ -469,6 +469,10 @@ h3 {
     z-index: 1;
 }
 
+.goal-progress-fill.width-60 {
+    width: 60%;
+}
+
 /* Percentage above the bar */
 .goal-progress-percent-above {
     font-size: 16px;
@@ -626,6 +630,37 @@ h3 {
 
 .lesson-hub-intro p {
     margin: 0;
+}
+
+.lesson-progress-header {
+    text-align: center;
+    margin-bottom: 0.5rem;
+}
+
+.goal-progress-header {
+    text-align: center;
+    margin-bottom: 0.5rem;
+}
+
+.lesson-progress-fill-static {
+    transition: width 0.3s;
+}
+
+.lesson-progress-fill-static.width-0 { width: 0%; }
+.lesson-progress-fill-static.width-40 { width: 40%; }
+.lesson-progress-fill-static.width-50 { width: 50%; }
+.lesson-progress-fill-static.width-60 { width: 60%; }
+
+.lesson-runner-progress-fill-initial {
+    width: 0%;
+}
+
+.name-field-hidden {
+    display: none;
+}
+
+.name-field-visible {
+    display: flex;
 }
 
 

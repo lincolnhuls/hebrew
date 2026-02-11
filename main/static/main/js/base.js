@@ -7,6 +7,9 @@ import { onAuthStateChanged, getAuth, signOut } from "https://www.gstatic.com/fi
 // Import the firebaseConfig from the separate configuration file
 import { firebaseConfig } from "./firebaseConfig.js";
 
+// Import shared utilities
+import { getCookie } from "./utils.js";
+
 console.log("Loaded File");
 
 // Initialize Firebase
@@ -19,15 +22,6 @@ const signInLink = document.getElementById("signInLink");
 const getStartedLink = document.getElementById("getStartedLink");
 const signOutButton = document.getElementById("signOutButton");
 const userGreeting = document.getElementById("userGreeting");
-
-function getCookie(name) {
-    const cookies = document.cookie.split(";");
-    for (let cookie of cookies) {
-        const [cookieName, cookieValue] = cookie.trim().split("=");
-        if (cookieName === name) return cookieValue;
-    }
-    return null;
-}
 
 function setNavSignedIn(isSignedIn) {
     if (isSignedIn) {

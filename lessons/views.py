@@ -1,12 +1,15 @@
 import json
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
-from lessons.models import LessonSession, LessonAnswer
+from django.core.exceptions import ValidationError
+from lessons.models import LessonSession, LessonAnswer, Lesson
 from lessons.services import start_lesson_session, submit_answer
+from lessons.constants import PASS_THRESHOLD
 
 # Create your views here.
 @require_POST
 def start_lesson(request):
+    """Start a new lesson session and return the first question."""
     try:
         payload = json.loads(request.body.decode("utf-8") or "{}")
     except json.JSONDecodeError:
@@ -18,9 +21,26 @@ def start_lesson(request):
     if not user_id or not lesson_slug:
         return JsonResponse({"error": "user_id and lesson_slug required"}, status=400)
 
-    session = start_lesson_session(user_id, lesson_slug)
+    try:
+        session = start_lesson_session(user_id, lesson_slug)
+    except Lesson.DoesNotExist:
+        return JsonResponse({"error": f"Lesson '{lesson_slug}' not found"}, status=404)
+    except ValidationError as e:
+        return JsonResponse({"error": str(e)}, status=400)
+    except Exception as e:
+        return JsonResponse({"error": f"Failed to start lesson: {str(e)}"}, status=500)
 
-    first_q = session.question_set_json[session.current_index]
+    # Validate question set exists and has questions
+    if not session.question_set_json or len(session.question_set_json) == 0:
+        return JsonResponse({"error": "Lesson has no questions"}, status=500)
+    
+    if session.current_index >= len(session.question_set_json):
+        return JsonResponse({"error": "Invalid session state"}, status=500)
+    
+    try:
+        first_q = session.question_set_json[session.current_index]
+    except (IndexError, TypeError) as e:
+        return JsonResponse({"error": "Invalid question index"}, status=500)
 
     return JsonResponse({
         "session_id": session.id,
@@ -31,6 +51,13 @@ def start_lesson(request):
     })
     
 def resume_lesson(request):
+    """Resume an existing lesson session or start a new one.
+    
+    Returns:
+        - Incomplete session: Current question data
+        - Completed session: Session results
+        - No session: New session with first question
+    """
     user_id = request.GET.get("user_id")
     lesson_slug = request.GET.get("lesson_slug")
 
@@ -40,6 +67,7 @@ def resume_lesson(request):
     # 1) Prefer an existing incomplete session
     session = (
         LessonSession.objects
+        .select_related('lesson')
         .filter(user_id=user_id, lesson__slug=lesson_slug, completed=False)
         .order_by("-started_at")
         .first()
@@ -47,7 +75,13 @@ def resume_lesson(request):
 
     if session:
         idx = session.current_index
-        q = session.question_set_json[idx]
+        questions = session.question_set_json or []
+        if idx >= len(questions):
+            return JsonResponse({"error": "Invalid session state"}, status=500)
+        try:
+            q = questions[idx]
+        except (IndexError, TypeError):
+            return JsonResponse({"error": "Invalid question index"}, status=500)
         return JsonResponse({
             "session_id": session.id,
             "completed": False,
@@ -60,6 +94,7 @@ def resume_lesson(request):
     # 2) If none incomplete, return latest completed session results (if any)
     completed_session = (
         LessonSession.objects
+        .select_related('lesson')
         .filter(user_id=user_id, lesson__slug=lesson_slug, completed=True)
         .order_by("-completed_at", "-started_at")
         .first()
@@ -71,8 +106,23 @@ def resume_lesson(request):
         return JsonResponse(data)
 
     # 3) If no sessions exist at all, start a new one
-    session = start_lesson_session(user_id, lesson_slug)
-    first_q = session.question_set_json[session.current_index]
+    try:
+        session = start_lesson_session(user_id, lesson_slug)
+    except Lesson.DoesNotExist:
+        return JsonResponse({"error": f"Lesson '{lesson_slug}' not found"}, status=404)
+    except ValidationError as e:
+        return JsonResponse({"error": str(e)}, status=400)
+    except Exception as e:
+        return JsonResponse({"error": f"Failed to start lesson: {str(e)}"}, status=500)
+    
+    questions = session.question_set_json or []
+    if session.current_index >= len(questions):
+        return JsonResponse({"error": "Invalid session state"}, status=500)
+    
+    try:
+        first_q = questions[session.current_index]
+    except (IndexError, TypeError):
+        return JsonResponse({"error": "Invalid question index"}, status=500)
 
     return JsonResponse({
         "session_id": session.id,
@@ -84,6 +134,14 @@ def resume_lesson(request):
     })
 
 def _strip_answer(question: dict) -> dict:
+    """Remove answer data from question dict for client display.
+    
+    Args:
+        question: Question dictionary with answer data
+    
+    Returns:
+        Question dictionary with answer data removed
+    """
     q = dict(question)
     
     if q["type"] in ("mc", "fill"):
@@ -110,7 +168,7 @@ def _session_results(session_id: int) -> dict:
         .first()
     )
     total_questions = len(total or [])
-    passed = correct_count >= 12
+    passed = correct_count >= PASS_THRESHOLD
 
     return {
         "score_correct": correct_count,
@@ -120,18 +178,43 @@ def _session_results(session_id: int) -> dict:
 
 
 def get_current_question(request, session_id):
+    """Get the current question for a lesson session.
+    
+    Args:
+        request: Django request object (contains session with firebase_uid for ownership validation)
+        session_id: ID of the lesson session
+    
+    Returns:
+        JSON response with current question or completion status
+    """
+    user_id = request.session.get('firebase_uid')
+    
     try:
-        session = LessonSession.objects.get(id=session_id)
+        session = LessonSession.objects.select_related('lesson').get(id=session_id)
     except LessonSession.DoesNotExist:
         return JsonResponse({"error": "session not found"}, status=404)
+    
+    # Security: Validate session ownership
+    if user_id and session.user_id != user_id:
+        return JsonResponse({"error": "Access denied"}, status=403)
     
     if session.completed:
         return JsonResponse({
             "completed": True,
         })
+    
+    questions = session.question_set_json or []
+    if not questions:
+        return JsonResponse({"error": "Session has no questions"}, status=500)
         
     idx = session.current_index
-    question = session.question_set_json[idx]
+    if idx >= len(questions):
+        return JsonResponse({"error": "Invalid session state"}, status=500)
+    
+    try:
+        question = questions[idx]
+    except (IndexError, TypeError):
+        return JsonResponse({"error": "Invalid question index"}, status=500)
     
     return JsonResponse({
         "completed": False,
@@ -141,6 +224,17 @@ def get_current_question(request, session_id):
     
 @require_POST
 def submit_answer_view(request, session_id):
+    """Submit an answer for a question in a lesson session.
+    
+    Args:
+        request: Django request object with JSON payload containing question_index and user_answer
+        session_id: ID of the lesson session
+    
+    Returns:
+        JSON response with correctness, completion status, and next question if applicable
+    """
+    user_id = request.session.get('firebase_uid')
+    
     try:
         payload = json.loads(request.body.decode("utf-8") or "{}")
     except json.JSONDecodeError:
@@ -153,20 +247,36 @@ def submit_answer_view(request, session_id):
         return JsonResponse({"error": "question_index and user_answer required"}, status=400)
 
     try:
-        result = submit_answer(session_id, int(question_index), user_answer)
+        result = submit_answer(session_id, int(question_index), user_answer, user_id=user_id)
+    except LessonSession.DoesNotExist:
+        return JsonResponse({"error": "session not found"}, status=404)
     except (ValueError, IndexError) as e:
         return JsonResponse({"error": str(e)}, status=400)
+    except Exception as e:
+        return JsonResponse({"error": f"Failed to submit answer: {str(e)}"}, status=500)
 
     # If completed, nothing else to return
     if result.get("completed"):
         result.update(_session_results(session_id))
         return JsonResponse(result)
 
-
     # Otherwise attach next question (answer stripped)
-    session = LessonSession.objects.get(id=session_id)
-    idx = session.current_index
-    next_q = session.question_set_json[idx]
+    # Reuse session data from submit_answer result if available, otherwise fetch
+    try:
+        session = LessonSession.objects.select_related('lesson').get(id=session_id)
+    except LessonSession.DoesNotExist:
+        return JsonResponse({"error": "session not found"}, status=404)
+    
+    idx = result.get("current_index", session.current_index)
+    questions = session.question_set_json or []
+    
+    if idx >= len(questions):
+        return JsonResponse({"error": "Invalid session state"}, status=500)
+    
+    try:
+        next_q = questions[idx]
+    except (IndexError, TypeError):
+        return JsonResponse({"error": "Invalid question index"}, status=500)
 
     result["next_question_index"] = idx
     result["next_question"] = _strip_answer(next_q)

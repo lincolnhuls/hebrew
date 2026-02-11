@@ -1,6 +1,16 @@
 from random import Random
+from lessons.constants import MC_QUESTION_COUNT, FILL_QUESTION_COUNT, MATCH_QUESTION_COUNT
 
 def make_mc_question(letters, rng):
+    """Create a multiple choice question asking which letter matches a given name.
+    
+    Args:
+        letters: List of letter dictionaries with 'letter' and 'name_en' keys
+        rng: Random number generator instance
+    
+    Returns:
+        Dictionary with 'type', 'prompt', 'choices', and 'answer' keys
+    """
     target = rng.choice(letters)
     correct = target["letter"]
     
@@ -18,6 +28,15 @@ def make_mc_question(letters, rng):
     }
     
 def make_fill_question(letters, rng):
+    """Create a fill-in question asking for the name of a given letter.
+    
+    Args:
+        letters: List of letter dictionaries with 'letter' and 'name_en' keys
+        rng: Random number generator instance
+    
+    Returns:
+        Dictionary with 'type', 'prompt', 'shown', and 'answer' keys
+    """
     target = rng.choice(letters)
     return {
         "type": "fill",
@@ -27,6 +46,15 @@ def make_fill_question(letters, rng):
     }
     
 def make_match_question(letters, rng):
+    """Create a matching question pairing letters with their names.
+    
+    Args:
+        letters: List of letter dictionaries with 'letter' and 'name_en' keys
+        rng: Random number generator instance
+    
+    Returns:
+        Dictionary with 'type', 'prompt', and 'pairs' keys
+    """
     selected = rng.sample(letters, 4)
     
     pairs = [{"left": x["letter"], "right": x["name_en"]} for x in selected]
@@ -38,31 +66,40 @@ def make_match_question(letters, rng):
         "pairs": pairs
     }
     
-def generate_alphabet_1_questions(letters, seed):
-    rng = Random(seed)
+def _generate_alphabet_questions(letters, seed, mc_count=MC_QUESTION_COUNT, fill_count=FILL_QUESTION_COUNT, match_count=MATCH_QUESTION_COUNT):
+    """Generate alphabet questions with specified counts for each question type.
     
+    Args:
+        letters: List of letter dictionaries with 'letter' and 'name_en' keys
+        seed: Random seed for deterministic question generation
+        mc_count: Number of multiple choice questions (default: 7)
+        fill_count: Number of fill-in questions (default: 4)
+        match_count: Number of matching questions (default: 4)
+    
+    Returns:
+        List of shuffled question dictionaries
+    """
+    rng = Random(seed)
     questions = []
-    for _ in range(7):
+    
+    for _ in range(mc_count):
         questions.append(make_mc_question(letters, rng))
-        
-    for _ in range(4):
+    
+    for _ in range(fill_count):
         questions.append(make_fill_question(letters, rng))
-        
-    for _ in range(4):
+    
+    for _ in range(match_count):
         questions.append(make_match_question(letters, rng))
     
     rng.shuffle(questions)
     return questions
+
+
+def generate_alphabet_1_questions(letters, seed):
+    """Generate questions for alphabet 1 (letters 1-11)."""
+    return _generate_alphabet_questions(letters, seed)
 
 
 def generate_alphabet_2_questions(letters, seed):
-    rng = Random(seed)
-    questions = []
-    for _ in range(7):
-        questions.append(make_mc_question(letters, rng))
-    for _ in range(4):
-        questions.append(make_fill_question(letters, rng))
-    for _ in range(4):
-        questions.append(make_match_question(letters, rng))
-    rng.shuffle(questions)
-    return questions
+    """Generate questions for alphabet 2 (letters 12-22)."""
+    return _generate_alphabet_questions(letters, seed)

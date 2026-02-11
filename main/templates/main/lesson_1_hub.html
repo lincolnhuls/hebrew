@@ -19,7 +19,7 @@
     <div class="lessons-grid lesson-hub-grid">
         <!-- Learn the alphabet -->
         <div class="lesson-card">
-            <h3 class="lesson-title">Learn the Alphabet</h3>
+            <h2 class="lesson-title">Learn the Alphabet</h2>
             <p class="lesson-subtitle">Study guide</p>
             <a href="{% url 'main:alphabet_learn' %}" class="lesson-button primary">Start</a>
         </div>
@@ -28,7 +28,7 @@
         <div class="lesson-card">
             <h3 class="lesson-title">Letters 1–11</h3>
             <p class="lesson-subtitle">Aleph through Kaf</p>
-            <div style="text-align: center; margin-bottom: 0.5rem;">
+            <div class="lesson-progress-header">
                 <span class="lesson-progress-percent-above">{{ lesson_1_combined.alphabet_1.progress_pct }}%</span>
             </div>
             <div class="lesson-progress-bar">
@@ -52,7 +52,7 @@
         <div class="lesson-card">
             <h3 class="lesson-title">Letters 12–22</h3>
             <p class="lesson-subtitle">Lamed through Tav</p>
-            <div style="text-align: center; margin-bottom: 0.5rem;">
+            <div class="lesson-progress-header">
                 <span class="lesson-progress-percent-above">{{ lesson_1_combined.alphabet_2.progress_pct }}%</span>
             </div>
             <div class="lesson-progress-bar">

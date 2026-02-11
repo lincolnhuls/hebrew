@@ -8,6 +8,8 @@ class BibleBook(models.Model):
     order = models.PositiveSmallIntegerField()
 
     class Meta:
+        verbose_name = "Bible Book"
+        verbose_name_plural = "Bible Books"
         ordering = ["order"]
 
     def __str__(self):
@@ -15,10 +17,12 @@ class BibleBook(models.Model):
 
 
 class BibleChapter(models.Model):
-    book = models.ForeignKey(BibleBook, on_delete=models.CASCADE, related_name="chapters")
+    book = models.ForeignKey(BibleBook, on_delete=models.CASCADE, related_name="chapters", db_index=True)
     number = models.PositiveSmallIntegerField()
 
     class Meta:
+        verbose_name = "Bible Chapter"
+        verbose_name_plural = "Bible Chapters"
         unique_together = [("book", "number")]
         ordering = ["book__order", "number"]
 
@@ -27,11 +31,13 @@ class BibleChapter(models.Model):
 
 
 class BibleVerse(models.Model):
-    chapter = models.ForeignKey(BibleChapter, on_delete=models.CASCADE, related_name="verses")
+    chapter = models.ForeignKey(BibleChapter, on_delete=models.CASCADE, related_name="verses", db_index=True)
     number = models.PositiveSmallIntegerField()
     text = models.TextField()
 
     class Meta:
+        verbose_name = "Bible Verse"
+        verbose_name_plural = "Bible Verses"
         unique_together = [("chapter", "number")]
         ordering = ["chapter__book__order", "chapter__number", "number"]
 

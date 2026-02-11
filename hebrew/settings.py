@@ -38,7 +38,6 @@ if not os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
     raise ValueError("GOOGLE_APPLICATION_CREDENTIALS environment variable is required")
 
 
-
 # Application definition
 
 INSTALLED_APPS = [

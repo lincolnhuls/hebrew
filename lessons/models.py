@@ -97,24 +97,56 @@ class Lesson(models.Model):
     title = models.CharField(max_length=100)              
     order = models.PositiveSmallIntegerField()
     passes_required = models.PositiveSmallIntegerField(default=4)  # Duolingo-style: pass N times to complete
+    
+    class Meta:
+        verbose_name = "Lesson"
+        verbose_name_plural = "Lessons"
+        ordering = ["order"]
+    
+    def __str__(self):
+        return self.title
 
 class LessonSession(models.Model):
-    user_id = models.CharField(max_length=100) # firebase_uid
-    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, related_name='sessions')
-    question_set_json = models.JSONField(default=list) # JSON string of generated questions
+    user_id = models.CharField(max_length=100, db_index=True)  # firebase_uid
+    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, related_name='sessions', db_index=True)
+    question_set_json = models.JSONField(default=list)  # JSON string of generated questions
     current_index = models.PositiveSmallIntegerField(default=0)
-    completed = models.BooleanField(default=False)
+    completed = models.BooleanField(default=False, db_index=True)
     started_at = models.DateTimeField(auto_now_add=True)
     completed_at = models.DateTimeField(null=True, blank=True)
     seed = models.PositiveSmallIntegerField(null=True, blank=True)
     passed = models.BooleanField(default=False)  # True if this run met the pass threshold (e.g. >= 12/15)
     
+    class Meta:
+        verbose_name = "Lesson Session"
+        verbose_name_plural = "Lesson Sessions"
+        ordering = ["-started_at"]
+        indexes = [
+            models.Index(fields=['user_id', 'lesson', 'completed']),
+            models.Index(fields=['user_id', 'completed', 'passed']),
+        ]
+    
+    def __str__(self):
+        return f"{self.lesson.title} - {self.user_id} ({'Completed' if self.completed else 'In Progress'})"
+    
 class LessonAnswer(models.Model):
-    session = models.ForeignKey(LessonSession, on_delete=models.CASCADE, related_name='answers')
+    session = models.ForeignKey(LessonSession, on_delete=models.CASCADE, related_name='answers', db_index=True)
     question_index = models.PositiveSmallIntegerField()
     user_answer_json = models.JSONField()
-    correct = models.BooleanField()
+    correct = models.BooleanField(db_index=True)
     answered_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        verbose_name = "Lesson Answer"
+        verbose_name_plural = "Lesson Answers"
+        ordering = ["session", "question_index", "-answered_at"]
+        indexes = [
+            models.Index(fields=['session', 'correct']),
+            models.Index(fields=['session', 'question_index', 'correct']),
+        ]
+    
+    def __str__(self):
+        return f"Answer {self.question_index} - {'Correct' if self.correct else 'Incorrect'}"
     
     """
 QUESTION SET JSON FORMAT (stored on LessonSession)
@@ -160,6 +192,14 @@ class HebrewLetter(models.Model):
     letter = models.CharField(max_length=5) 
     name_en = models.CharField(max_length=50)
     transliteration = models.CharField(max_length=100, blank=True, null=True)
+    
+    class Meta:
+        verbose_name = "Hebrew Letter"
+        verbose_name_plural = "Hebrew Letters"
+        ordering = ["order"]
+    
+    def __str__(self):
+        return f"{self.letter} ({self.name_en})"
 
 """
 Alphabet 1 Question Generation (Deterministic)

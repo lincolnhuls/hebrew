@@ -1,7 +1,3 @@
-// Test user 
-// name = asdf
-// email = asdf@example.com
-// password = test-Auth-9f3K!2
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
 
@@ -11,9 +7,12 @@ import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } f
 // Your web app's Firebase configuration
 import { firebaseConfig } from "./firebaseConfig.js";
 
+// Import shared utilities (Note: utils.js is in main app, so we'll keep getCookie local for now)
+// TODO: Create shared utils module accessible from users app
+
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-// Initalize the authorization from Firebase
+// Initialize the authorization from Firebase
 const auth = getAuth(app);
 
 const messages = document.getElementById("error_messages");
@@ -36,13 +35,15 @@ if (passwordToggle) {
 if (signinBtn && signupBtn && nameField) {
     signinBtn.addEventListener("click", () => {
         if (nameField) {
-            nameField.style.display = "none";
+            nameField.classList.remove("name-field-visible");
+            nameField.classList.add("name-field-hidden");
         }
     });
     
     signupBtn.addEventListener("click", () => {
         if (nameField) {
-            nameField.style.display = "flex";
+            nameField.classList.remove("name-field-hidden");
+            nameField.classList.add("name-field-visible");
         }
     });
 }

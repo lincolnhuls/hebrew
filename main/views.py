@@ -1,8 +1,27 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
 
 from lessons.models import Lesson, HebrewLetter
-from lessons.services import get_user_lesson_progress, get_lesson_1_combined_progress
+from lessons.services import get_lesson_1_combined_progress
+from lessons.constants import DEFAULT_PASSES_REQUIRED
+
+
+def _get_default_lesson_1_combined():
+    """Return default lesson 1 combined progress structure."""
+    default_alphabet = {"pass_count": 0, "passes_required": DEFAULT_PASSES_REQUIRED, "progress_pct": 0, "is_complete": False}
+    return {
+        "progress_pct": 0,
+        "is_complete": False,
+        "alphabet_1": default_alphabet.copy(),
+        "alphabet_2": default_alphabet.copy(),
+    }
+
+
+def _get_lesson_1_combined_progress_safe(user_id):
+    """Get lesson 1 combined progress with fallback to defaults."""
+    try:
+        return get_lesson_1_combined_progress(user_id)
+    except Exception:
+        return _get_default_lesson_1_combined()
 
 
 def home(request):
@@ -15,17 +34,7 @@ def dashboard(request):
     if not login:
         return render(request, "users/users.html")
 
-    default_alphabet = {"pass_count": 0, "passes_required": 4, "progress_pct": 0, "is_complete": False}
-    lesson_1_combined = {
-        "progress_pct": 0,
-        "is_complete": False,
-        "alphabet_1": default_alphabet.copy(),
-        "alphabet_2": default_alphabet.copy(),
-    }
-    try:
-        lesson_1_combined = get_lesson_1_combined_progress(login)
-    except Exception:
-        pass
+    lesson_1_combined = _get_lesson_1_combined_progress_safe(login)
 
     return render(request, "main/dashboard.html", {
         "lesson_1_combined": lesson_1_combined,
@@ -69,17 +78,7 @@ def lesson_1_hub(request):
     if not firebase_uid:
         return redirect('users:account')
 
-    default_alphabet = {"pass_count": 0, "passes_required": 4, "progress_pct": 0, "is_complete": False}
-    combined = {
-        "progress_pct": 0,
-        "is_complete": False,
-        "alphabet_1": default_alphabet.copy(),
-        "alphabet_2": default_alphabet.copy(),
-    }
-    try:
-        combined = get_lesson_1_combined_progress(firebase_uid)
-    except Exception:
-        pass
+    combined = _get_lesson_1_combined_progress_safe(firebase_uid)
 
     return render(request, "main/lesson_1_hub.html", {
         "lesson_1_combined": combined,
