@@ -24,20 +24,6 @@
   margin: 0;
 }
 
-.lesson-runner-start-over {
-  font-size: 14px;
-  color: var(--primary-accent-foreground);
-  background: none;
-  border: none;
-  cursor: pointer;
-  text-decoration: underline;
-  padding: 0.25rem 0.5rem;
-}
-
-.lesson-runner-start-over:hover {
-  opacity: 0.8;
-}
-
 .lesson-runner-stats {
   display: flex;
   gap: 1.5rem;
@@ -245,6 +231,19 @@
 .lesson-runner-match-left.hebrew-rtl {
   direction: rtl;
   unicode-bidi: plaintext;
+}
+
+/* Screen-reader-only label for match selects */
+.lesson-runner-match-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .lesson-runner-match-right {

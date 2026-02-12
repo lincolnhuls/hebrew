@@ -27,7 +27,7 @@
             <span class="welcome-stat xp">⭐ 1,250 XP</span>
         </div>
         <div class="welcome-card-actions">
-            <a href="#" class="btn-continue">Continue Learning →</a>
+            <a href="{% url 'main:lesson_1_hub' %}" class="btn-continue">Continue Learning →</a>
         </div>
     </div>
 
@@ -80,32 +80,32 @@
             <div class="lesson-progress-bar">
                 <div class="lesson-progress-fill-static width-0"></div>
             </div>
-            <p class="lesson-status">{% if not lesson_1_complete %}Locked{% else %}Coming soon{% endif %}</p>
+            <p class="lesson-status">{% if not lesson_1_complete %}Locked{% else %}Learn similar letters, begadkefat, final forms{% endif %}</p>
             {% if not lesson_1_complete %}
                 <button class="lesson-button locked">Locked 🔒</button>
             {% else %}
-                <button class="lesson-button primary" disabled>Coming soon</button>
+                <a href="{% url 'main:lesson_2_hub' %}" class="lesson-button primary">Start</a>
             {% endif %}
         </div>
 
         <!-- Lesson 3 -->
-        <div class="lesson-card">
+        <div class="lesson-card locked">
             <h3 class="lesson-title">Lesson 3</h3>
-            <p class="lesson-subtitle">Grammar</p>
+            <p class="lesson-subtitle">Vowels</p>
             <div class="lesson-progress-header">
-                <span class="lesson-progress-percent-above">50%</span>
+                <span class="lesson-progress-percent-above">Locked</span>
             </div>
             <div class="lesson-progress-bar">
-                <div class="lesson-progress-fill-static width-50"></div>
+                <div class="lesson-progress-fill-static width-0"></div>
             </div>
-            <p class="lesson-status">50% Complete</p>
-            <button class="lesson-button primary">Continue</button>
+            <p class="lesson-status">Locked</p>
+            <button class="lesson-button locked">Locked 🔒</button>
         </div>
 
         <!-- Lesson 4 -->
         <div class="lesson-card locked">
             <h3 class="lesson-title">Lesson 4</h3>
-            <p class="lesson-subtitle">Vocabulary</p>
+            <p class="lesson-subtitle">Aspect</p>
             <div class="lesson-progress-header">
                 <span class="lesson-progress-percent-above">Locked</span>
             </div>
@@ -117,23 +117,51 @@
         </div>
 
         <!-- Lesson 5 -->
-        <div class="lesson-card">
+        <div class="lesson-card locked">
             <h3 class="lesson-title">Lesson 5</h3>
-            <p class="lesson-subtitle">Reading</p>
+            <p class="lesson-subtitle">Prenominal Suffix</p>
             <div class="lesson-progress-header">
-                <span class="lesson-progress-percent-above">40%</span>
+                <span class="lesson-progress-percent-above">Locked</span>
             </div>
             <div class="lesson-progress-bar">
-                <div class="lesson-progress-fill-static width-40"></div>
+                <div class="lesson-progress-fill-static width-0"></div>
             </div>
-            <p class="lesson-status">40% Complete</p>
-            <button class="lesson-button primary">Continue</button>
+            <p class="lesson-status">Locked</p>
+            <button class="lesson-button locked">Locked 🔒</button>
         </div>
 
         <!-- Lesson 6 -->
         <div class="lesson-card locked">
             <h3 class="lesson-title">Lesson 6</h3>
-            <p class="lesson-subtitle">Advanced</p>
+            <p class="lesson-subtitle">Prepositions</p>
+            <div class="lesson-progress-header">
+                <span class="lesson-progress-percent-above">Locked</span>
+            </div>
+            <div class="lesson-progress-bar">
+                <div class="lesson-progress-fill-static width-0"></div>
+            </div>
+            <p class="lesson-status">Locked</p>
+            <button class="lesson-button locked">Locked 🔒</button>
+        </div>
+
+        <!-- Lesson 7 -->
+        <div class="lesson-card locked">
+            <h3 class="lesson-title">Lesson 7</h3>
+            <p class="lesson-subtitle">Root Restoration</p>
+            <div class="lesson-progress-header">
+                <span class="lesson-progress-percent-above">Locked</span>
+            </div>
+            <div class="lesson-progress-bar">
+                <div class="lesson-progress-fill-static width-0"></div>
+            </div>
+            <p class="lesson-status">Locked</p>
+            <button class="lesson-button locked">Locked 🔒</button>
+        </div>
+
+        <!-- Lesson 8 -->
+        <div class="lesson-card locked">
+            <h3 class="lesson-title">Lesson 8</h3>
+            <p class="lesson-subtitle">Translation Walkthrough</p>
             <div class="lesson-progress-header">
                 <span class="lesson-progress-percent-above">Locked</span>
             </div>

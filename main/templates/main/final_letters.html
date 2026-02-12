@@ -1,0 +1,120 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block title %}Lesson 2: Final Letters{% endblock %}
+{% block meta_description %}Learn the five Hebrew letters with special final forms.{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'main/css/lesson_2_learn.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="lesson-2-learn">
+    <header class="lesson-2-header">
+        <a href="{% url 'main:similar_letters' %}" class="lesson-runner-back">← Back</a>
+        <h1 class="lesson-2-title">Lesson 2: Final Letters</h1>
+        <nav class="lesson-2-header-nav">
+            <a href="{% url 'main:similar_letters' %}" class="lesson-2-nav-btn">Similar Letters</a>
+            <a href="{% url 'main:begadkefat' %}" class="lesson-2-nav-btn">Begadkefat</a>
+            <a href="{% url 'main:final_letters' %}" class="lesson-2-nav-btn current">Final Letters</a>
+        </nav>
+        <div class="lesson-2-stats">
+            <span class="lesson-2-stat">🔥 7</span>
+            <span class="lesson-2-stat xp">⭐ 1,250 XP</span>
+        </div>
+    </header>
+
+    <h2 class="lesson-2-section-title">Final Letters</h2>
+
+    <section class="lesson-2-card">
+        <p class="lesson-2-card-text">5 letters in Hebrew have special forms when they appear at the end of a word. Despite the change in form, the name of the letter and its pronunciation remian the same.</p>
+    </section>
+
+    <div class="lesson-2-comparisons">
+        <div class="lesson-2-compare-row">
+            <section class="lesson-2-compare-card">
+                <div class="lesson-2-letter-tile hebrew-rtl">
+                    <span class="lesson-2-letter-glyph">כ</span>
+                    <span class="lesson-2-letter-name">medial</span>
+                </div>
+            </section>
+            <span class="lesson-2-vs">vs</span>
+            <section class="lesson-2-compare-card">
+                <div class="lesson-2-letter-tile hebrew-rtl">
+                    <span class="lesson-2-letter-glyph">ך</span>
+                    <span class="lesson-2-letter-name">final</span>
+                </div>
+            </section>
+            <span class="lesson-2-compare-label">Kaf</span>
+        </div>
+        <div class="lesson-2-compare-row">
+            <section class="lesson-2-compare-card">
+                <div class="lesson-2-letter-tile hebrew-rtl">
+                    <span class="lesson-2-letter-glyph">מ</span>
+                    <span class="lesson-2-letter-name">medial</span>
+                </div>
+            </section>
+            <span class="lesson-2-vs">vs</span>
+            <section class="lesson-2-compare-card">
+                <div class="lesson-2-letter-tile hebrew-rtl">
+                    <span class="lesson-2-letter-glyph">ם</span>
+                    <span class="lesson-2-letter-name">final</span>
+                </div>
+            </section>
+            <span class="lesson-2-compare-label">Mem</span>
+        </div>
+        <div class="lesson-2-compare-row">
+            <section class="lesson-2-compare-card">
+                <div class="lesson-2-letter-tile hebrew-rtl">
+                    <span class="lesson-2-letter-glyph">נ</span>
+                    <span class="lesson-2-letter-name">medial</span>
+                </div>
+            </section>
+            <span class="lesson-2-vs">vs</span>
+            <section class="lesson-2-compare-card">
+                <div class="lesson-2-letter-tile hebrew-rtl">
+                    <span class="lesson-2-letter-glyph">ן</span>
+                    <span class="lesson-2-letter-name">final</span>
+                </div>
+            </section>
+            <span class="lesson-2-compare-label">Nun</span>
+        </div>
+        <div class="lesson-2-compare-row">
+            <section class="lesson-2-compare-card">
+                <div class="lesson-2-letter-tile hebrew-rtl">
+                    <span class="lesson-2-letter-glyph">פ</span>
+                    <span class="lesson-2-letter-name">medial</span>
+                </div>
+            </section>
+            <span class="lesson-2-vs">vs</span>
+            <section class="lesson-2-compare-card">
+                <div class="lesson-2-letter-tile hebrew-rtl">
+                    <span class="lesson-2-letter-glyph">ף</span>
+                    <span class="lesson-2-letter-name">final</span>
+                </div>
+            </section>
+            <span class="lesson-2-compare-label">Pe</span>
+        </div>
+        <div class="lesson-2-compare-row">
+            <section class="lesson-2-compare-card">
+                <div class="lesson-2-letter-tile hebrew-rtl">
+                    <span class="lesson-2-letter-glyph">צ</span>
+                    <span class="lesson-2-letter-name">medial</span>
+                </div>
+            </section>
+            <span class="lesson-2-vs">vs</span>
+            <section class="lesson-2-compare-card">
+                <div class="lesson-2-letter-tile hebrew-rtl">
+                    <span class="lesson-2-letter-glyph">ץ</span>
+                    <span class="lesson-2-letter-name">final</span>
+                </div>
+            </section>
+            <span class="lesson-2-compare-label">Tsadi</span>
+        </div>
+    </div>
+
+    <a href="{% url 'main:similar_letters' %}" class="lesson-2-continue">Continue →</a>
+</div>
+
+{% endblock %}

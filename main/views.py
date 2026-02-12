@@ -100,3 +100,39 @@ def alphabet_learn(request):
     return render(request, "main/alphabet_learn.html", {
         "letters": letters,
     })
+
+
+def lesson_2_hub(request):
+    """Lesson 2 hub: Learn Special Letters (similar, begadkefat, final) + quizzes (placeholders)."""
+    firebase_uid = request.session.get('firebase_uid')
+    if not firebase_uid:
+        return redirect('users:account')
+
+    return render(request, "main/lesson_2_hub.html", {})
+
+
+def similar_letters(request):
+    """Lesson 2: Similar Letters – main learning page with links to Begadkefat and Final Letters."""
+    firebase_uid = request.session.get('firebase_uid')
+    if not firebase_uid:
+        return redirect('users:account')
+
+    return render(request, "main/similar_letters.html", {})
+
+
+def begadkefat(request):
+    """Lesson 2: Begadkefat letters – soft vs hard pronunciations."""
+    firebase_uid = request.session.get('firebase_uid')
+    if not firebase_uid:
+        return redirect('users:account')
+
+    return render(request, "main/begadkefat.html", {})
+
+
+def final_letters(request):
+    """Lesson 2: Final letter forms – medial vs final."""
+    firebase_uid = request.session.get('firebase_uid')
+    if not firebase_uid:
+        return redirect('users:account')
+
+    return render(request, "main/final_letters.html", {})

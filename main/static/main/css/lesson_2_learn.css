@@ -1,0 +1,220 @@
+/* Lesson 2 learning pages: Similar Letters, Begadkefat, Final Letters */
+
+.lesson-2-learn {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.lesson-2-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+.lesson-2-title {
+  flex: 1;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--main-text);
+  margin: 0;
+}
+
+.lesson-2-header-nav {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.lesson-2-nav-btn {
+  padding: 0.5rem 0.875rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--primary-accent-foreground);
+  background-color: color-mix(in srgb, var(--primary-accent-fill) 12%, var(--background));
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  text-decoration: none;
+}
+
+.lesson-2-nav-btn:hover {
+  filter: brightness(0.95);
+}
+
+.lesson-2-nav-btn.current {
+  background-color: var(--primary-accent-fill);
+  color: var(--button-text-on-primary);
+  border-color: var(--primary-accent-fill);
+}
+
+.lesson-2-stats {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.lesson-2-stat {
+  font-size: 16px;
+  color: var(--main-text);
+}
+
+.lesson-2-stat.xp {
+  color: var(--secondary-accent-foreground);
+}
+
+.lesson-2-section-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--main-text);
+  margin: 2rem 0 1rem 0;
+  letter-spacing: -0.02em;
+}
+
+.lesson-2-subsection-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--main-text);
+  margin: 2rem 0 0.75rem 0;
+}
+
+.lesson-2-card {
+  background-color: color-mix(in srgb, var(--primary-accent-fill) 12%, var(--background));
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.lesson-2-card-text {
+  font-size: 1rem;
+  color: var(--muted-text);
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* Comparison cards */
+.lesson-2-comparisons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.lesson-2-compare-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.lesson-2-compare-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  background-color: color-mix(in srgb, var(--primary-accent-fill) 12%, var(--background));
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+.lesson-2-bg-letter-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.lesson-2-bg-letter-name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--main-text);
+}
+
+.lesson-2-bg-letter-sound {
+  font-size: 0.875rem;
+  color: var(--muted-text);
+}
+
+.lesson-2-letter-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  padding: 1rem 1.25rem;
+  width: 80px;
+  min-width: 80px;
+  background-color: color-mix(in srgb, var(--surface) 80%, var(--background));
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.lesson-2-letter-glyph {
+  font-size: 2.25rem;
+  font-weight: 600;
+  color: var(--main-text);
+}
+
+.lesson-2-letter-tile .lesson-2-letter-name {
+  font-size: 0.875rem;
+  color: var(--muted-text);
+}
+
+.lesson-2-vs {
+  font-size: 1.25rem;
+  color: var(--muted-text);
+  font-weight: 600;
+}
+
+.lesson-2-bg-name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--main-text);
+  flex-basis: 100%;
+  text-align: center;
+  margin-top: 0.25rem;
+}
+
+.lesson-2-compare-label {
+  font-size: 0.9375rem;
+  color: var(--muted-text);
+  flex-basis: 100%;
+  text-align: center;
+  margin-top: 0.25rem;
+}
+
+/* Begadkefat list uses same compare cards */
+.lesson-2-begadkefat-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.hebrew-rtl {
+  direction: rtl;
+  unicode-bidi: plaintext;
+}
+
+.lesson-2-continue {
+  display: block;
+  width: 100%;
+  max-width: 300px;
+  margin: 2rem auto;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  background-color: var(--primary-accent-fill);
+  color: var(--button-text-on-primary);
+  font-size: 1.125rem;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+}
+
+.lesson-2-continue:hover {
+  filter: brightness(0.9);
+}

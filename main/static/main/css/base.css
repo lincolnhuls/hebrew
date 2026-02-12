@@ -588,10 +588,11 @@ h3 {
 .lesson-1-progress-pct-75 { width: 75%; }
 .lesson-1-progress-pct-100 { width: 100%; }
 
-/* Back button – used on alphabet learn, lesson runner, lesson 1 hub */
+/* Back button & Start Over – used on alphabet learn, lesson runner, lesson 1 hub */
 .btn-back,
 .lesson-runner-back,
-.alphabet-learn-back {
+.alphabet-learn-back,
+.lesson-runner-start-over {
     display: inline-flex;
     align-items: center;
     padding: 0.5rem 0.875rem;
@@ -605,8 +606,18 @@ h3 {
 }
 .btn-back:hover,
 .lesson-runner-back:hover,
-.alphabet-learn-back:hover {
+.alphabet-learn-back:hover,
+.lesson-runner-start-over:hover {
     filter: brightness(0.95);
+}
+
+/* Reset button defaults so Start Over matches Back */
+.lesson-runner-start-over {
+    font-family: inherit;
+    margin: 0;
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
 }
 
 .lesson-hub-header {

@@ -142,7 +142,13 @@ function showQuestion(q, idx, total) {
       const left = document.createElement("div");
       left.className = "lesson-runner-match-left hebrew-rtl";
       left.textContent = p.left;
+      const selId = `match-select-${i}`;
+      const lbl = document.createElement("label");
+      lbl.htmlFor = selId;
+      lbl.className = "lesson-runner-match-label";
+      lbl.textContent = `Select name for letter ${p.left}`;
       const sel = document.createElement("select");
+      sel.id = selId;
       sel.className = "lesson-runner-match-right";
       sel.dataset.left = p.left;
       const optPlaceholder = document.createElement("option");
@@ -161,6 +167,7 @@ function showQuestion(q, idx, total) {
         submitBtn.disabled = !allSet;
       });
       row.appendChild(left);
+      row.appendChild(lbl);
       row.appendChild(sel);
       matchPairs.appendChild(row);
     });

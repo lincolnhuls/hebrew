@@ -65,6 +65,27 @@ def clean_hebrew_text(raw: str) -> str:
     return s
 
 
+def get_verse_text_excluding_notes(el: ET.Element) -> str:
+    """Extract text from verse element, excluding content of <note> elements."""
+    parts = []
+
+    def walk(e: ET.Element) -> None:
+        tag = (e.tag or "").split("}")[-1].lower()
+        if tag.endswith("note"):
+            if e.tail:
+                parts.append(e.tail)
+            return
+        if e.text:
+            parts.append(e.text)
+        for child in e:
+            walk(child)
+            if child.tail:
+                parts.append(child.tail)
+
+    walk(el)
+    return "".join(parts)
+
+
 def parse_osis_id(osis_id: str) -> tuple[str, int, int]:
     # Expect e.g. 'Gen.1.1' or '1Sam.3.2'
     parts = osis_id.split(".")
@@ -155,7 +176,7 @@ class Command(BaseCommand):
                     chap, _ = BibleChapter.objects.get_or_create(book=book, number=chap_num)
                     chapter_cache[ck] = chap
 
-                text = clean_hebrew_text("".join(el.itertext()))
+                text = clean_hebrew_text(get_verse_text_excluding_notes(el))
                 if not text:
                     continue
 

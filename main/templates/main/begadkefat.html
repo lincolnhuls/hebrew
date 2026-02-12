@@ -1,0 +1,172 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block title %}Lesson 2: Begadkefat{% endblock %}
+{% block meta_description %}Learn the six Hebrew letters with soft and hard pronunciations.{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'main/css/lesson_2_learn.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="lesson-2-learn">
+    <header class="lesson-2-header">
+        <a href="{% url 'main:similar_letters' %}" class="lesson-runner-back">← Back</a>
+        <h1 class="lesson-2-title">Lesson 2: Begadkefat</h1>
+        <nav class="lesson-2-header-nav">
+            <a href="{% url 'main:similar_letters' %}" class="lesson-2-nav-btn">Similar Letters</a>
+            <a href="{% url 'main:begadkefat' %}" class="lesson-2-nav-btn current">Begadkefat</a>
+            <a href="{% url 'main:final_letters' %}" class="lesson-2-nav-btn">Final Letters</a>
+        </nav>
+        <div class="lesson-2-stats">
+            <span class="lesson-2-stat">🔥 7</span>
+            <span class="lesson-2-stat xp">⭐ 1,250 XP</span>
+        </div>
+    </header>
+
+    <h2 class="lesson-2-section-title">Begadkefat Letters</h2>
+
+    <section class="lesson-2-card">
+        <p class="lesson-2-card-text">6 letters in Hebrew have two types of pronunciation. These letters are often called "begadkefat" letters, coming from thier name. The 6 letters are Bet, Gimel, Dalet, Kaf, Pe, and Tav. These changes in pronunciation are marked by what is known as a "dagesh", a small dot that is added to the letter. When you see a letter with the dagesh, it is the hard pronunciation. Without the dagesh, it is the soft pronunciation. These letters also have two names, depending on if they have their dagesh or not.</p>
+    </section>
+
+    <div class="lesson-2-begadkefat-list">
+        <div class="lesson-2-compare-row">
+            <section class="lesson-2-compare-card">
+                <div class="lesson-2-letter-tile hebrew-rtl">
+                    <span class="lesson-2-letter-glyph">ב</span>
+                </div>
+                <div class="lesson-2-bg-letter-info">
+                    <span class="lesson-2-bg-letter-name">Vet</span>
+                    <span class="lesson-2-bg-letter-sound">v or bh</span>
+                </div>
+            </section>
+            <span class="lesson-2-vs">vs</span>
+            <section class="lesson-2-compare-card">
+                <div class="lesson-2-letter-tile hebrew-rtl">
+                    <span class="lesson-2-letter-glyph">בּ</span>
+                </div>
+                <div class="lesson-2-bg-letter-info">
+                    <span class="lesson-2-bg-letter-name">Bet</span>
+                    <span class="lesson-2-bg-letter-sound">B in Boy</span>
+                </div>
+            </section>
+            <span class="lesson-2-bg-name">Bet (v / b)</span>
+        </div>
+        <div class="lesson-2-compare-row">
+            <section class="lesson-2-compare-card">
+                <div class="lesson-2-letter-tile hebrew-rtl">
+                    <span class="lesson-2-letter-glyph">ג</span>
+                </div>
+                <div class="lesson-2-bg-letter-info">
+                    <span class="lesson-2-bg-letter-name">Gimel</span>
+                    <span class="lesson-2-bg-letter-sound">G in Good</span>
+                </div>
+            </section>
+            <span class="lesson-2-vs">vs</span>
+            <section class="lesson-2-compare-card">
+                <div class="lesson-2-letter-tile hebrew-rtl">
+                    <span class="lesson-2-letter-glyph">גּ</span>
+                </div>
+                <div class="lesson-2-bg-letter-info">
+                    <span class="lesson-2-bg-letter-name">Gimel</span>
+                    <span class="lesson-2-bg-letter-sound">G in Good</span>
+                </div>
+            </section>
+            <span class="lesson-2-bg-name">Gimel (gh / g)</span>
+        </div>
+        <div class="lesson-2-compare-row">
+            <section class="lesson-2-compare-card">
+                <div class="lesson-2-letter-tile hebrew-rtl">
+                    <span class="lesson-2-letter-glyph">ד</span>
+                </div>
+                <div class="lesson-2-bg-letter-info">
+                    <span class="lesson-2-bg-letter-name">Dalet</span>
+                    <span class="lesson-2-bg-letter-sound">dh</span>
+                </div>
+            </section>
+            <span class="lesson-2-vs">vs</span>
+            <section class="lesson-2-compare-card">
+                <div class="lesson-2-letter-tile hebrew-rtl">
+                    <span class="lesson-2-letter-glyph">דּ</span>
+                </div>
+                <div class="lesson-2-bg-letter-info">
+                    <span class="lesson-2-bg-letter-name">Dalet</span>
+                    <span class="lesson-2-bg-letter-sound">D in Dog</span>
+                </div>
+            </section>
+            <span class="lesson-2-bg-name">Dalet (dh / d)</span>
+        </div>
+        <div class="lesson-2-compare-row">
+            <section class="lesson-2-compare-card">
+                <div class="lesson-2-letter-tile hebrew-rtl">
+                    <span class="lesson-2-letter-glyph">כ</span>
+                </div>
+                <div class="lesson-2-bg-letter-info">
+                    <span class="lesson-2-bg-letter-name">Kaf</span>
+                    <span class="lesson-2-bg-letter-sound">ch or kh</span>
+                </div>
+            </section>
+            <span class="lesson-2-vs">vs</span>
+            <section class="lesson-2-compare-card">
+                <div class="lesson-2-letter-tile hebrew-rtl">
+                    <span class="lesson-2-letter-glyph">כּ</span>
+                </div>
+                <div class="lesson-2-bg-letter-info">
+                    <span class="lesson-2-bg-letter-name">Kaf</span>
+                    <span class="lesson-2-bg-letter-sound">k</span>
+                </div>
+            </section>
+            <span class="lesson-2-bg-name">Kaf (kh / k)</span>
+        </div>
+        <div class="lesson-2-compare-row">
+            <section class="lesson-2-compare-card">
+                <div class="lesson-2-letter-tile hebrew-rtl">
+                    <span class="lesson-2-letter-glyph">פ</span>
+                </div>
+                <div class="lesson-2-bg-letter-info">
+                    <span class="lesson-2-bg-letter-name">Fe</span>
+                    <span class="lesson-2-bg-letter-sound">ph</span>
+                </div>
+            </section>
+            <span class="lesson-2-vs">vs</span>
+            <section class="lesson-2-compare-card">
+                <div class="lesson-2-letter-tile hebrew-rtl">
+                    <span class="lesson-2-letter-glyph">פּ</span>
+                </div>
+                <div class="lesson-2-bg-letter-info">
+                    <span class="lesson-2-bg-letter-name">Pe</span>
+                    <span class="lesson-2-bg-letter-sound">p</span>
+                </div>
+            </section>
+            <span class="lesson-2-bg-name">Pe (f / p)</span>
+        </div>
+        <div class="lesson-2-compare-row">
+            <section class="lesson-2-compare-card">
+                <div class="lesson-2-letter-tile hebrew-rtl">
+                    <span class="lesson-2-letter-glyph">ת</span>
+                </div>
+                <div class="lesson-2-bg-letter-info">
+                    <span class="lesson-2-bg-letter-name">Tav</span>
+                    <span class="lesson-2-bg-letter-sound">th</span>
+                </div>
+            </section>
+            <span class="lesson-2-vs">vs</span>
+            <section class="lesson-2-compare-card">
+                <div class="lesson-2-letter-tile hebrew-rtl">
+                    <span class="lesson-2-letter-glyph">תּ</span>
+                </div>
+                <div class="lesson-2-bg-letter-info">
+                    <span class="lesson-2-bg-letter-name">Tav</span>
+                    <span class="lesson-2-bg-letter-sound">T in Toy</span>
+                </div>
+            </section>
+            <span class="lesson-2-bg-name">Tav (th / t)</span>
+        </div>
+    </div>
+
+    <a href="{% url 'main:similar_letters' %}" class="lesson-2-continue">Continue →</a>
+</div>
+
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block title %}Lesson 2: Special Letters{% endblock %}
+{% block meta_description %}Learn similar-looking letters, begadkefat, and final letter forms in Biblical Hebrew.{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <header class="lesson-hub-header">
+        <a href="{% url 'main:dashboard' %}" class="lesson-runner-back">← Back</a>
+        <h1 class="lesson-hub-title">Lesson 2: Special Letters</h1>
+    </header>
+
+    <div class="lesson-hub-intro">
+        <p>Learn similar-looking letters, begadkefat (soft/hard forms), and final letter forms. Complete the learning sections and quizzes below.</p>
+    </div>
+
+    <div class="lessons-grid lesson-hub-grid">
+        <!-- Learn Special Letters (entry point) -->
+        <div class="lesson-card">
+            <h3 class="lesson-title">Learn Special Letters</h3>
+            <p class="lesson-subtitle">Similar letters, Begadkefat, Final forms</p>
+            <a href="{% url 'main:similar_letters' %}" class="lesson-button primary">Start</a>
+        </div>
+
+        <!-- Filler quiz cards -->
+        <div class="lesson-card">
+            <h3 class="lesson-title">Similar Letters Quiz</h3>
+            <p class="lesson-subtitle">Test your knowledge</p>
+            <p class="lesson-status">Coming soon</p>
+            <button class="lesson-button locked" disabled>Coming soon</button>
+        </div>
+
+        <div class="lesson-card">
+            <h3 class="lesson-title">Special Letters Quiz</h3>
+            <p class="lesson-subtitle">Begadkefat & Final forms</p>
+            <p class="lesson-status">Coming soon</p>
+            <button class="lesson-button locked" disabled>Coming soon</button>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
