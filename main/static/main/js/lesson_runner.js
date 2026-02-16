@@ -183,6 +183,8 @@ function showCompleted(data) {
   const score = data.score_correct ?? 0;
   const total = data.total_questions ?? 0;
   const passed = data.passed ?? false;
+  if (progressFill) progressFill.style.width = `100%`;
+  if (progressPct) progressPct.textContent = `100%`;
   if (completedScore) completedScore.textContent = `Score: ${score} / ${total}`;
   if (completedResult) completedResult.textContent = passed ? "You passed! Great job." : "Keep practicing! Complete the lesson again.";
 }
@@ -308,6 +310,11 @@ if (cfg.lessonError) {
 }
 
 if (submitBtn) submitBtn.addEventListener("click", submitAnswer);
+if (fillInput) fillInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    submitAnswer();
+  }
+});
 if (startOverBtn) {
   startOverBtn.classList.remove("hidden");
   startOverBtn.addEventListener("click", startFresh);

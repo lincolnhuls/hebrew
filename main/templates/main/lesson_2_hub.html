@@ -17,26 +17,83 @@
     </div>
 
     <div class="lessons-grid lesson-hub-grid">
-        <!-- Learn Special Letters (entry point) -->
+        <!-- Learn Special Letters -->
         <div class="lesson-card">
             <h3 class="lesson-title">Learn Special Letters</h3>
             <p class="lesson-subtitle">Similar letters, Begadkefat, Final forms</p>
             <a href="{% url 'main:similar_letters' %}" class="lesson-button primary">Start</a>
         </div>
 
-        <!-- Filler quiz cards -->
+        <!-- Similar letters quiz -->
         <div class="lesson-card">
             <h3 class="lesson-title">Similar Letters Quiz</h3>
             <p class="lesson-subtitle">Test your knowledge</p>
-            <p class="lesson-status">Coming soon</p>
-            <button class="lesson-button locked" disabled>Coming soon</button>
+            <div class="lesson-progress-header">
+                <span class="lesson-progress-percent-above">{{ lesson_2_combined.similar_letters.progress_pct }}%</span>
+            </div>
+            <div class="lesson-progress-bar">
+                <div class="lesson-progress-fill lesson-1-progress-pct-{% if lesson_2_combined.similar_letters.progress_pct >= 100 %}100{% elif lesson_2_combined.similar_letters.progress_pct >= 75 %}75{% elif lesson_2_combined.similar_letters.progress_pct >= 50 %}50{% elif lesson_2_combined.similar_letters.progress_pct >= 25 %}25{% else %}0{% endif %}"></div>
+            </div>
+            <p class="lesson-status">
+                {% if lesson_2_combined.similar_letters.is_complete %}
+                    ✓ Complete
+                {% else %}
+                    {{ lesson_2_combined.similar_letters.pass_count }}/{{ lesson_2_combined.similar_letters.passes_required }} passes
+                {% endif %}
+            </p>
+            {% if lesson_2_combined.similar_letters.is_complete %}
+                <a href="{% url 'main:lesson_runner' lesson_slug='similar-letters' %}" class="lesson-button secondary">Review</a>
+            {% else %}
+                <a href="{% url 'main:lesson_runner' lesson_slug='similar-letters' %}" class="lesson-button primary">Continue</a>
+            {% endif %}
         </div>
 
+        <!-- Begadkefat letters quiz -->
         <div class="lesson-card">
-            <h3 class="lesson-title">Special Letters Quiz</h3>
-            <p class="lesson-subtitle">Begadkefat & Final forms</p>
-            <p class="lesson-status">Coming soon</p>
-            <button class="lesson-button locked" disabled>Coming soon</button>
+            <h3 class="lesson-title">Begadkefat Letters Quiz</h3>
+            <p class="lesson-subtitle">Test your knowledge</p>
+            <div class="lesson-progress-header">
+                <span class="lesson-progress-percent-above">{{ lesson_2_combined.begadkefat_letters.progress_pct }}%</span>
+            </div>
+            <div class="lesson-progress-bar">
+                <div class="lesson-progress-fill lesson-1-progress-pct-{% if lesson_2_combined.begadkefat_letters.progress_pct >= 100 %}100{% elif lesson_2_combined.begadkefat_letters.progress_pct >= 75 %}75{% elif lesson_2_combined.begadkefat_letters.progress_pct >= 50 %}50{% elif lesson_2_combined.begadkefat_letters.progress_pct >= 25 %}25{% else %}0{% endif %}"></div>
+            </div>
+            <p class="lesson-status">
+                {% if lesson_2_combined.begadkefat_letters.is_complete %}
+                    ✓ Complete
+                {% else %}
+                    {{ lesson_2_combined.begadkefat_letters.pass_count }}/{{ lesson_2_combined.begadkefat_letters.passes_required }} passes
+                {% endif %}
+            </p>
+            {% if lesson_2_combined.begadkefat_letters.is_complete %}
+                <a href="{% url 'main:lesson_runner' lesson_slug='begadkefat-letters' %}" class="lesson-button secondary">Review</a>
+            {% else %}
+                <a href="{% url 'main:lesson_runner' lesson_slug='begadkefat-letters' %}" class="lesson-button primary">Continue</a>
+            {% endif %}
+        </div>
+
+        <!-- Final letters quiz -->
+        <div class="lesson-card">
+            <h3 class="lesson-title">Final Letters Quiz</h3>
+            <p class="lesson-subtitle">Test your knowledge</p>
+            <div class="lesson-progress-header">
+                <span class="lesson-progress-percent-above">{{ lesson_2_combined.final_letters.progress_pct }}%</span>
+            </div>
+            <div class="lesson-progress-bar">
+                <div class="lesson-progress-fill lesson-1-progress-pct-{% if lesson_2_combined.final_letters.progress_pct >= 100 %}100{% elif lesson_2_combined.final_letters.progress_pct >= 75 %}75{% elif lesson_2_combined.final_letters.progress_pct >= 50 %}50{% elif lesson_2_combined.final_letters.progress_pct >= 25 %}25{% else %}0{% endif %}"></div>
+            </div>
+            <p class="lesson-status">
+                {% if lesson_2_combined.final_letters.is_complete %}
+                    ✓ Complete
+                {% else %}
+                    {{ lesson_2_combined.final_letters.pass_count }}/{{ lesson_2_combined.final_letters.passes_required }} passes
+                {% endif %}
+            </p>
+            {% if lesson_2_combined.final_letters.is_complete %}
+                <a href="{% url 'main:lesson_runner' lesson_slug='final-letters' %}" class="lesson-button secondary">Review</a>
+            {% else %}
+                <a href="{% url 'main:lesson_runner' lesson_slug='final-letters' %}" class="lesson-button primary">Continue</a>
+            {% endif %}
         </div>
     </div>
 </div>

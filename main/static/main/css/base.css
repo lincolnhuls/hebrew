@@ -681,6 +681,10 @@ h3 {
     text-align: center;
 }
 
+.lesson-card .lesson-button {
+    margin-top: auto;
+}
+
 .lesson-button {
     width: 100%;
     height: 40px;

@@ -75,16 +75,30 @@
             <h3 class="lesson-title">Lesson 2</h3>
             <p class="lesson-subtitle">Special Letters</p>
             <div class="lesson-progress-header">
-                <span class="lesson-progress-percent-above">{% if lesson_1_complete %}0%{% else %}Locked{% endif %}</span>
+                <span class="lesson-progress-percent-above">{% if lesson_1_complete %}{{ lesson_2_combined.progress_pct }}%{% else %}Locked{% endif %}</span>
             </div>
             <div class="lesson-progress-bar">
-                <div class="lesson-progress-fill-static width-0"></div>
+                {% if lesson_1_complete %}
+                    <div class="lesson-progress-fill" style="width: {{ lesson_2_combined.progress_pct }}%;"></div>
+                {% else %}
+                    <div class="lesson-progress-fill-static width-0"></div>
+                {% endif %}
             </div>
-            <p class="lesson-status">{% if not lesson_1_complete %}Locked{% else %}Learn similar letters, begadkefat, final forms{% endif %}</p>
+            <p class="lesson-status">
+                {% if not lesson_1_complete %}
+                    Locked
+                {% elif lesson_2_combined.is_complete %}
+                    ✓ Complete
+                {% else %}
+                    {{ lesson_2_combined.pass_count }}/{{ lesson_2_combined.passes_required }} passes
+                {% endif %}
+            </p>
             {% if not lesson_1_complete %}
                 <button class="lesson-button locked">Locked 🔒</button>
+            {% elif lesson_2_combined.is_complete %}
+                <a href="{% url 'main:lesson_2_hub' %}" class="lesson-button secondary">Review</a>
             {% else %}
-                <a href="{% url 'main:lesson_2_hub' %}" class="lesson-button primary">Start</a>
+                <a href="{% url 'main:lesson_2_hub' %}" class="lesson-button primary">Continue</a>
             {% endif %}
         </div>
 

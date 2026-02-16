@@ -24,8 +24,32 @@ ALPHABET_1_END = 11
 ALPHABET_2_START = 12
 ALPHABET_2_END = 22
 
+# Letter range for special charaters 
+BET = 2
+GIMEL = 3
+DALET = 4
+HE = 5
+VAV = 6
+ZAYIN = 7
+HET = 8
+KAF = 11
+MEM = 13
+NUN = 14
+PE = 17
+TSADI = 18
+RESH = 20
+TAV = 22
+
+# Pairs - (Bet, Kaf), (Dalet, Resh), (He, Het), (Vav, Zayin), (Gimel, Nun)
+SIMILAR_LETTERS = {(BET, KAF), (DALET, RESH), (HE, HET), (VAV, ZAYIN), (GIMEL, NUN)}
+
+BEGADKEFAT_LETTERS = {BET, GIMEL, DALET, KAF, PE, TAV}
+
+FINAL_LETTERS = {KAF, MEM, PE, TSADI, NUN}
+
 # Progress calculation constants
 LESSON_1_COMBINED_WEIGHT = 0.5  # Each alphabet contributes 50% to lesson 1 progress
+LESSON_2_COMBINED_WEIGHT = 0.33  # Each sub-lesson contributes 33% to lesson 2 progress
 DEFAULT_PASSES_REQUIRED = 4  # Default number of passes required to complete a lesson
 
 # Pagination

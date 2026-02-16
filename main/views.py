@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 
 from lessons.models import Lesson, HebrewLetter
-from lessons.services import get_lesson_1_combined_progress
+from lessons.services import get_lesson_1_combined_progress, get_lesson_2_combined_progress
 from lessons.constants import DEFAULT_PASSES_REQUIRED
 
 
@@ -14,6 +14,18 @@ def _get_default_lesson_1_combined():
         "alphabet_1": default_alphabet.copy(),
         "alphabet_2": default_alphabet.copy(),
     }
+    
+    
+def _get_default_lesson_2_combined():
+    """Return default lesson 2 combined progress structure."""
+    default_sublesson = {"pass_count": 0, "passes_required": DEFAULT_PASSES_REQUIRED, "progress_pct": 0, "is_complete": False}
+    return {
+        "progress_pct": 0,
+        "is_complete": False,
+        "similar_letters": default_sublesson.copy(),
+        "begadkefat_letters": default_sublesson.copy(),
+        "final_letters": default_sublesson.copy()
+    }
 
 
 def _get_lesson_1_combined_progress_safe(user_id):
@@ -24,10 +36,18 @@ def _get_lesson_1_combined_progress_safe(user_id):
         return _get_default_lesson_1_combined()
 
 
+def _get_lesson_2_combined_progress_safe(user_id):
+    """Get lesson 2 combined progress with fallback to defaults."""
+    try:
+        return get_lesson_2_combined_progress(user_id)
+    except Exception:
+        return _get_default_lesson_2_combined()
+
 def home(request):
     if request.session.get('firebase_uid'):
         return redirect('main:dashboard')
     return render(request, "main/home.html")
+
 
 def dashboard(request): 
     login = request.session.get('firebase_uid')
@@ -35,10 +55,13 @@ def dashboard(request):
         return render(request, "users/users.html")
 
     lesson_1_combined = _get_lesson_1_combined_progress_safe(login)
+    lesson_2_combined = _get_lesson_2_combined_progress_safe(login)
 
     return render(request, "main/dashboard.html", {
         "lesson_1_combined": lesson_1_combined,
         "lesson_1_complete": lesson_1_combined["is_complete"],
+        "lesson_2_combined": lesson_2_combined,
+        "lesson_2_complete": lesson_2_combined["is_complete"],
     })
 
 
@@ -83,6 +106,19 @@ def lesson_1_hub(request):
     return render(request, "main/lesson_1_hub.html", {
         "lesson_1_combined": combined,
     })
+    
+
+def lesson_2_hub(request):
+    """Lesson 2 hub: Learn Special Letters (similar, begadkefat, final) + quizzes (placeholders)."""
+    firebase_uid = request.session.get('firebase_uid')
+    if not firebase_uid:
+        return redirect('users:account')
+    
+    combined = _get_lesson_2_combined_progress_safe(firebase_uid)
+
+    return render(request, "main/lesson_2_hub.html", {
+        "lesson_2_combined": combined,
+    })
 
 
 def alphabet_learn(request):
@@ -100,15 +136,6 @@ def alphabet_learn(request):
     return render(request, "main/alphabet_learn.html", {
         "letters": letters,
     })
-
-
-def lesson_2_hub(request):
-    """Lesson 2 hub: Learn Special Letters (similar, begadkefat, final) + quizzes (placeholders)."""
-    firebase_uid = request.session.get('firebase_uid')
-    if not firebase_uid:
-        return redirect('users:account')
-
-    return render(request, "main/lesson_2_hub.html", {})
 
 
 def similar_letters(request):

@@ -1,10 +1,11 @@
 from lessons.models import Lesson, LessonSession, HebrewLetter, LessonAnswer
-from lessons.generators import generate_alphabet_1_questions, generate_alphabet_2_questions
+from lessons.generators import generate_alphabet_1_questions, generate_alphabet_2_questions, generate_similar_letters_questions, generate_begadkefat_questions, generate_final_letters_questions
 from lessons.constants import (
     RANDOM_SEED_MIN, RANDOM_SEED_MAX,
     ALPHABET_1_START, ALPHABET_1_END,
     ALPHABET_2_START, ALPHABET_2_END,
-    PASS_THRESHOLD
+    PASS_THRESHOLD, SIMILAR_LETTERS,
+    BEGADKEFAT_LETTERS, FINAL_LETTERS
 )
 from django.utils import timezone
 from django.core.exceptions import ValidationError
@@ -52,6 +53,46 @@ def start_lesson_session(user_id: str, lesson_slug: str) -> LessonSession:
             .values("letter", "name_en")
         )
         questions = generate_alphabet_2_questions(letters, session.seed)
+    elif lesson_slug == "similar-letters":
+        similar_orders = set()
+        for pair in SIMILAR_LETTERS:
+            for order_num in pair:
+                similar_orders.add(order_num)
+
+        letters = list(
+            HebrewLetter.objects
+            .filter(order__in=similar_orders)
+            .order_by("order")
+            .values("order", "letter", "name_en")
+        )
+        
+        letters_by_order = {}
+        for letter in letters:
+            letters_by_order[letter["order"]] = {"letter": letter["letter"], "name_en": letter["name_en"]}
+
+        tuple_list = []
+        for (a, b) in SIMILAR_LETTERS:
+            if a in letters_by_order and b in letters_by_order:
+                tuple_list.append([letters_by_order[a], letters_by_order[b]])
+
+        questions = generate_similar_letters_questions(tuple_list, session.seed)
+    elif lesson_slug == "begadkefat-letters":
+        letters = list(
+            HebrewLetter.objects
+            .filter(order__in=BEGADKEFAT_LETTERS)
+            .order_by("order")
+            .values("letter", "name_en")
+        )
+        questions = generate_begadkefat_questions(letters, session.seed)
+        
+    elif lesson_slug == "final-letters":
+        letters = list(
+            HebrewLetter.objects
+            .filter(order__in=FINAL_LETTERS)
+            .order_by("order")
+            .values("letter", "name_en")
+        )
+        questions = generate_final_letters_questions(letters, session.seed)
     else:
         letters = list(
             HebrewLetter.objects
@@ -234,4 +275,42 @@ def get_lesson_1_combined_progress(user_id: str) -> dict:
         "is_complete": is_complete,
         "alphabet_1": alphabet_1,
         "alphabet_2": alphabet_2,
+    }
+    
+def get_lesson_2_combined_progress(user_id: str) -> dict:
+    """ Get combined progress for Lesson 2 (similar-letters, begadkefat-letters, final-letters). 
+    
+    Lesson 2 is complete when all 3 sub-lessons have DEFAULT_PASSES_REQUIRED passes each. 
+    Lesson 2 progress is the average of the 3 sub-lessons.
+    
+    Args:
+        user_id: Firebase UID of the user
+    
+    Returns:
+        Dictionary with progress_pct (0-100), is_complete (bool), similar_letters, begadkefat_letters, final_letters
+    """
+    from lessons.constants import LESSON_2_COMBINED_WEIGHT, DEFAULT_PASSES_REQUIRED
+    
+    p1 = get_user_lesson_progress(user_id, "similar-letters")
+    p2 = get_user_lesson_progress(user_id, "begadkefat-letters")
+    p3 = get_user_lesson_progress(user_id, "final-letters")
+    similar_letters = p1 if p1 else {"pass_count": 0, "passes_required": DEFAULT_PASSES_REQUIRED, "progress_pct": 0, "is_complete": False}
+    begadkefat_letters = p2 if p2 else {"pass_count": 0, "passes_required": DEFAULT_PASSES_REQUIRED, "progress_pct": 0, "is_complete": False}
+    final_letters = p3 if p3 else {"pass_count": 0, "passes_required": DEFAULT_PASSES_REQUIRED, "progress_pct": 0, "is_complete": False}
+    # Each contributes 33%
+    combined_pct = (similar_letters["progress_pct"] *  LESSON_2_COMBINED_WEIGHT) + (begadkefat_letters["progress_pct"] * LESSON_2_COMBINED_WEIGHT) + (final_letters["progress_pct"] * LESSON_2_COMBINED_WEIGHT)
+    is_complete = similar_letters["is_complete"] and begadkefat_letters["is_complete"] and final_letters["is_complete"]
+    # For dashboard: total passes across all 3 quizzes, total required (3 × 4)
+    total_pass_count = similar_letters["pass_count"] + begadkefat_letters["pass_count"] + final_letters["pass_count"]
+    total_passes_required = similar_letters["passes_required"] + begadkefat_letters["passes_required"] + final_letters["passes_required"]
+    # If complete, show 100%; otherwise use calculated percentage
+    progress_pct = 100 if is_complete else min(100, int(combined_pct))
+    return {
+        "progress_pct": progress_pct,
+        "is_complete": is_complete,
+        "pass_count": total_pass_count,
+        "passes_required": total_passes_required,
+        "similar_letters": similar_letters,
+        "begadkefat_letters": begadkefat_letters,
+        "final_letters": final_letters,
     }
