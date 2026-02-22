@@ -45,7 +45,31 @@ def make_similar_letters_mc_question(tuple_list, rng):
         "choices": choices,
         "answer": correct
     }
-    
+
+def make_begadkefat_letters_mc_question(tuple_list, rng):
+    """Create a multiple choice question asking which letter matches a given name, but only comparing begadkefat pairs"""
+    letter_tuple = rng.choice(tuple_list)
+    letter1, letter2 = letter_tuple
+    target = rng.choice([letter1, letter2])
+    correct = target["letter"]
+
+    distractor = letter2 if target == letter1 else letter1
+
+    choices = [correct, distractor["letter"]]
+    rng.shuffle(choices)
+
+    if target["order"] in (2, 17):
+        name = target["dagesh_name"]
+        name += ""
+    else:
+        name = target["name_en"]
+
+    return {
+        "type": "mc",
+        "prompt": f"Which letter is {name}?",
+        "choices": choices,
+        "answer": correct
+    }
     
 def make_fill_question(letters, rng):
     """Create a fill-in question asking for the name of a given letter.
@@ -77,6 +101,26 @@ def make_similar_letters_fill_question(tuple_list, rng):
         "prompt": "What is the name of this letter?",
         "shown": target["letter"],
         "answer": target["name_en"]
+    }
+
+def make_begadkefat_letters_fill_question(tuple_list, rng):
+    """Create a fill in question asking for the name of a given letter, but only begadkefat pairs"""
+    letters = []
+    for letter_tuple in tuple_list:
+        letters.extend(letter_tuple)
+
+    target = rng.choice(letters)
+
+    if target["order"] in (2, 17):
+        name = target["dagesh_name"]
+    else:
+        name = target["name_en"]
+
+    return {
+        "type": "fill",
+        "prompt": "What is the name of this letter?",
+        "shown": target["letter"],
+        "answer": name
     }
     
 def make_match_question(letters, rng):
@@ -116,6 +160,36 @@ def make_similar_letters_match_question(tuple_list, rng):
         "prompt": "Match the letters to their names.",
         "pairs": pairs
     }
+
+def make_begadkefat_letters_match_question(tuple_list, rng):
+    """Create a matching question pairing letters with their names, but only begadkefat pairs. 
+    Uses two distrinct pairs so the four choices have no doubles
+    """
+    if not tuple_list:
+        raise ValueError("No begadkefat pairs available to generate a question")
+
+    if len(tuple_list) < 2:
+        pair1 = pair2 = tuple_list[0]
+    else:
+        pair1, pair2 = rng.sample(tuple_list, 2)
+    selected = [pair1[0], pair1[1], pair2[0], pair2[1]]
+    pairs =  [
+        {
+            "left": x["letter"],
+            "right": x["dagesh_name"] if x["order"] in (2, 17) else x["name_en"],
+            "order": x["order"],
+            "dagesh_name": x["dagesh_name"],
+            "name_en": x["name_en"]
+        }
+        for x in selected
+    ]
+    rng.shuffle(pairs)
+
+    return {
+        "type": "match",
+        "prompt": "Match the letters to their names.",
+        "pairs": pairs
+    }
     
 def _generate_similar_letters_questions(letters, seed, mc_count=MC_QUESTION_COUNT, fill_count=FILL_QUESTION_COUNT, match_count=MATCH_QUESTION_COUNT):
     """
@@ -136,6 +210,25 @@ def _generate_similar_letters_questions(letters, seed, mc_count=MC_QUESTION_COUN
     rng.shuffle(questions)
     return questions
     
+def _generate_begadkefat_letters_questions(letters, seed, mc_count=MC_QUESTION_COUNT, fill_count=FILL_QUESTION_COUNT, match_count=MATCH_QUESTION_COUNT):
+    """
+    Generate question for begadkefat letters, but only compare dagesh versions
+    """
+    rng = Random(seed)
+    questions = []
+
+    # for _ in range(mc_count):
+    #     questions.append(make_begadkefat_letters_mc_question(letters, rng))
+
+    # for _ in range(fill_count):
+    #     questions.append(make_begadkefat_letters_fill_question(letters, rng))
+
+    for _ in range(15):
+        questions.append(make_begadkefat_letters_match_question(letters, rng))
+
+    rng.shuffle(questions)
+    return questions
+
 def _generate_alphabet_questions(letters, seed, mc_count=MC_QUESTION_COUNT, fill_count=FILL_QUESTION_COUNT, match_count=MATCH_QUESTION_COUNT):
     """Generate alphabet questions with specified counts for each question type.
     
@@ -182,7 +275,7 @@ def generate_similar_letters_questions(letters, seed):
 
 def generate_begadkefat_questions(letters, seed):
     """Generate questions for begadkefat letters."""
-    return _generate_alphabet_questions(letters, seed)
+    return _generate_begadkefat_letters_questions(letters, seed)
 
 
 def generate_final_letters_questions(letters, seed):

@@ -76,20 +76,27 @@ def resume_lesson(request):
     if session:
         idx = session.current_index
         questions = session.question_set_json or []
-        if idx >= len(questions):
-            return JsonResponse({"error": "Invalid session state"}, status=500)
-        try:
-            q = questions[idx]
-        except (IndexError, TypeError):
-            return JsonResponse({"error": "Invalid question index"}, status=500)
-        return JsonResponse({
-            "session_id": session.id,
-            "completed": False,
-            "current_index": idx,
-            "total_questions": len(session.question_set_json),
-            "question_index": idx,
-            "question": _strip_answer(q),
-        })
+
+        # Detect a bad state
+        if idx is None or idx < 0 or idx >= len(questions):
+            session.delete()
+            session = None
+        else:
+            try:
+                q = questions[idx]
+            except (IndexError, TypeError):
+                session.delete()
+                session = None
+            else:
+                # If valid session, return
+                return JsonResponse({
+                    "session_id": session.id,
+                    "completed": False,
+                    "current_index": idx,
+                    "total_questions": len(session.question_set_json),
+                    "question_index": idx,
+                    "question": _strip_answer(q),
+                })
 
     # 2) If none incomplete, return latest completed session results (if any)
     completed_session = (

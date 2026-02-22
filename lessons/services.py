@@ -53,6 +53,7 @@ def start_lesson_session(user_id: str, lesson_slug: str) -> LessonSession:
             .values("letter", "name_en")
         )
         questions = generate_alphabet_2_questions(letters, session.seed)
+
     elif lesson_slug == "similar-letters":
         similar_orders = set()
         for pair in SIMILAR_LETTERS:
@@ -76,14 +77,30 @@ def start_lesson_session(user_id: str, lesson_slug: str) -> LessonSession:
                 tuple_list.append([letters_by_order[a], letters_by_order[b]])
 
         questions = generate_similar_letters_questions(tuple_list, session.seed)
+
     elif lesson_slug == "begadkefat-letters":
+        similar_orders = set()
+        for pair in BEGADKEFAT_LETTERS:
+            for order_num in pair:
+                similar_orders.add(order_num)
+
         letters = list(
             HebrewLetter.objects
-            .filter(order__in=BEGADKEFAT_LETTERS)
+            .filter(order__in=similar_orders)
             .order_by("order")
-            .values("letter", "name_en")
+            .values("order", "letter", "dagesh_name", "name_en")
         )
-        questions = generate_begadkefat_questions(letters, session.seed)
+        
+        letters_by_order = {}
+        for letter in letters:
+            letters_by_order[letter["order"]] = {"letter": letter["letter"], "dagesh_name": letter["dagesh_name"], "name_en": letter["name_en"], "order": letter["order"]}
+
+        tuple_list = []
+        for (a, b) in BEGADKEFAT_LETTERS:
+            if a in letters_by_order and b in letters_by_order:
+                tuple_list.append([letters_by_order[a], letters_by_order[b]])
+
+        questions = generate_begadkefat_questions(tuple_list, session.seed)
         
     elif lesson_slug == "final-letters":
         letters = list(
@@ -201,17 +218,14 @@ def check_correctness(question: dict, user_answer: dict) -> bool:
     if qtype == "match":
         user_pairs = user_answer.get("pairs") or []
         correct_pairs = question.get("pairs") or []
-        
+
         if len(user_pairs) != len(correct_pairs):
             return False
-        
-        def canon(pairs):
-            return sorted(
-                [(p.get("left"), _norm(p.get("right"))) for p in pairs],
-                key=lambda t: t[0] or ""
-            )
-        
-        return canon(user_pairs) == canon(correct_pairs)
+
+        def names_only(pairs):
+            return sorted(_norm(p.get("right")) for p in pairs)
+
+        return names_only(user_pairs) == names_only(correct_pairs)
     
     raise ValueError(f"Unknown question type: {qtype}")
 
@@ -237,7 +251,12 @@ def get_user_lesson_progress(user_id: str, lesson_slug: str) -> dict | None:
         .filter(user_id=user_id, lesson=lesson, completed=True, passed=True)
         .count()
     )
+
     required = lesson.passes_required
+    
+    # Prevent the pass count from contributing to progress after set quizes are completed
+    pass_count = min(pass_count, required)
+    
     progress_pct = min(100, int((pass_count / required) * 100)) if required else 0
     is_complete = pass_count >= required
 

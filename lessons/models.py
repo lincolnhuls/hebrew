@@ -1,3 +1,4 @@
+from contextlib import nullcontext
 from django.db import models
 
 # Create your models here.
@@ -190,6 +191,7 @@ Each letter must store:
 class HebrewLetter(models.Model):
     order = models.PositiveSmallIntegerField(unique=True)
     letter = models.CharField(max_length=5) 
+    dagesh_name = models.CharField(max_length=50, null=True, blank=True)
     name_en = models.CharField(max_length=50)
     transliteration = models.CharField(max_length=100, blank=True, null=True)
     
