@@ -106,13 +106,28 @@ def start_lesson_session(user_id: str, lesson_slug: str) -> LessonSession:
         questions = generate_begadkefat_questions(tuple_list, session.seed)
         
     elif lesson_slug == "final-letters":
+        similar_orders = set()
+        for pair in FINAL_LETTERS:
+            for order_num in pair:
+                similar_orders.add(order_num)
+
         letters = list(
             HebrewLetter.objects
-            .filter(order__in=FINAL_LETTERS)
+            .filter(order__in=similar_orders)
             .order_by("order")
-            .values("letter", "name_en")
+            .values("order", "letter", "name_en")
         )
-        questions = generate_final_letters_questions(letters, session.seed)
+        
+        letters_by_order = {}
+        for letter in letters:
+            letters_by_order[letter["order"]] = {"letter": letter["letter"], "name_en": letter["name_en"], "order": letter["order"]}
+
+        tuple_list = []
+        for (a, b) in FINAL_LETTERS:
+            if a in letters_by_order and b in letters_by_order:
+                tuple_list.append([letters_by_order[a], letters_by_order[b]])
+
+        questions = generate_final_letters_questions(tuple_list, session.seed)
     else:
         letters = list(
             HebrewLetter.objects
