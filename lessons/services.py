@@ -10,6 +10,9 @@ from lessons.constants import (
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 from random import Random
+import logging
+
+logger = logging.getLogger(__name__)
 
 def start_lesson_session(user_id: str, lesson_slug: str) -> LessonSession:
     """Start a new lesson session for a user.
@@ -167,8 +170,8 @@ def submit_answer(session_id: int, question_index: int, user_answer_json: dict, 
         question = questions[question_index]
     except (IndexError, TypeError) as e:
         raise IndexError(f"Invalid question index: {question_index}") from e
-    correct = check_correctness(question, user_answer_json)
-    
+    correct, match_debug = check_correctness(question, user_answer_json)
+
     LessonAnswer.objects.create(
         session=session,
         question_index=question_index,
@@ -196,37 +199,94 @@ def submit_answer(session_id: int, question_index: int, user_answer_json: dict, 
     if session.completed:
         update_fields.append("passed")
     session.save(update_fields=update_fields)
-    
-    return {
+
+    result = {
         "correct": correct,
         "completed": session.completed,
         "current_index": session.current_index
     }
+    if match_debug is not None:
+        result["match_debug"] = match_debug
+    return result
     
 def _norm(s: str) -> str:
     return (s or "").strip().lower()
 
-def check_correctness(question: dict, user_answer: dict) -> bool:
+
+def _norm_key(s) -> str:
+    """Normalize string key (e.g. Hebrew letter) for consistent comparison."""
+    if s is None:
+        return ""
+    s = (s or "").strip()
+    try:
+        import unicodedata
+        return unicodedata.normalize("NFC", s)
+    except Exception:
+        return s
+
+
+def _log_match_mismatch(question, user_answer, user_by_name, correct_by_name, reason):
+    """Log why a match answer was marked wrong (for debugging)."""
+    qp = question.get("pairs") or []
+    up = user_answer.get("pairs") or []
+    logger.warning(
+        "Match marked incorrect: %s. correct_by_name=%s user_by_name=%s "
+        "question_left_repr=%s user_left_repr=%s",
+        reason,
+        correct_by_name,
+        user_by_name,
+        [repr(p.get("left")) for p in qp],
+        [repr(p.get("left")) for p in up],
+    )
+
+
+def check_correctness(question: dict, user_answer: dict) -> tuple[bool, dict | None]:
+    """Returns (is_correct, match_debug_dict or None). match_debug_dict is set only for match type when wrong."""
     qtype = question.get("type")
-    
+
     if qtype == "mc":
-        return user_answer.get("choice") == question.get("answer")
-    
+        return (user_answer.get("choice") == question.get("answer"), None)
+
     if qtype == "fill":
-        return _norm(user_answer.get("answer")) == _norm(question.get("answer"))
-    
+        return (_norm(user_answer.get("answer")) == _norm(question.get("answer")), None)
+
     if qtype == "match":
         user_pairs = user_answer.get("pairs") or []
         correct_pairs = question.get("pairs") or []
 
         if len(user_pairs) != len(correct_pairs):
-            return False
+            return (False, None)
 
-        def names_only(pairs):
-            return sorted(_norm(p.get("right")) for p in pairs)
+        def letters_by_name(pairs):
+            out = {}
+            for p in pairs:
+                name = _norm(p.get("right"))
+                letter = _norm_key(p.get("left"))
+                out.setdefault(name, []).append(letter)
+            for k in out:
+                out[k] = sorted(out[k])
+            return out
 
-        return names_only(user_pairs) == names_only(correct_pairs)
-    
+        user_by_name = letters_by_name(user_pairs)
+        correct_by_name = letters_by_name(correct_pairs)
+
+        def make_match_debug(reason):
+            _log_match_mismatch(question, user_answer, user_by_name, correct_by_name, reason)
+            return {
+                "reason": reason,
+                "correct_by_name": correct_by_name,
+                "user_by_name": user_by_name,
+                "question_left_repr": [repr(p.get("left")) for p in (question.get("pairs") or [])],
+                "user_left_repr": [repr(p.get("left")) for p in user_pairs],
+            }
+
+        if set(user_by_name.keys()) != set(correct_by_name.keys()):
+            return (False, make_match_debug("name set"))
+        for name in correct_by_name:
+            if user_by_name.get(name) != correct_by_name[name]:
+                return (False, make_match_debug(name))
+        return (True, None)
+
     raise ValueError(f"Unknown question type: {qtype}")
 
 

@@ -79,7 +79,7 @@
             </div>
             <div class="lesson-progress-bar">
                 {% if lesson_1_complete %}
-                    <div class="lesson-progress-fill" style="width: {{ lesson_2_combined.progress_pct }}%;"></div>
+                    <div class="lesson-progress-fill lesson-2-progress-pct-{% if lesson_2_combined.progress_pct >= 100 %}100{% elif lesson_2_combined.progress_pct >= 75 %}75{% elif lesson_2_combined.progress_pct >= 50 %}50{% elif lesson_2_combined.progress_pct >= 25 %}25{% else %}0{% endif %}"></div>
                 {% else %}
                     <div class="lesson-progress-fill-static width-0"></div>
                 {% endif %}

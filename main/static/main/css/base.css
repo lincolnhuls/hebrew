@@ -588,6 +588,12 @@ h3 {
 .lesson-1-progress-pct-75 { width: 75%; }
 .lesson-1-progress-pct-100 { width: 100%; }
 
+.lesson-2-progress-pct-0 { width: 0%; }
+.lesson-2-progress-pct-25 { width: 25%; }
+.lesson-2-progress-pct-50 { width: 50%; }
+.lesson-2-progress-pct-75 { width: 75%; }
+.lesson-2-progress-pct-100 { width: 100%; }
+
 /* Back button & Start Over – used on alphabet learn, lesson runner, lesson 1 hub */
 .btn-back,
 .lesson-runner-back,

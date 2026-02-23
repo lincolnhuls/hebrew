@@ -135,8 +135,13 @@ function showQuestion(q, idx, total) {
     matchSection?.classList.remove("hidden");
     matchPairs.innerHTML = "";
     const pairs = q.pairs || [];
-    const names = shuffle(pairs.map((p) => p.right));
+    const normLetter = (l) => (typeof l === "string" ? l.normalize("NFC") : l);
+    const names = shuffle(
+      pairs.map((p) => p.right).filter((r) => r != null && String(r).trim() !== "")
+    );
     pairs.forEach((p, i) => {
+      const letterKey = normLetter(p.left);
+      const hasDagesh = /\u05bc/.test((p.left || "").normalize("NFC"));
       const row = document.createElement("div");
       row.className = "lesson-runner-match-row";
       const left = document.createElement("div");
@@ -146,11 +151,13 @@ function showQuestion(q, idx, total) {
       const lbl = document.createElement("label");
       lbl.htmlFor = selId;
       lbl.className = "lesson-runner-match-label";
-      lbl.textContent = `Select name for letter ${p.left}`;
+      lbl.textContent = hasDagesh
+        ? `Select name for letter ${p.left} (with dagesh)`
+        : `Select name for letter ${p.left}`;
       const sel = document.createElement("select");
       sel.id = selId;
       sel.className = "lesson-runner-match-right";
-      sel.dataset.left = p.left;
+      sel.dataset.left = letterKey;
       const optPlaceholder = document.createElement("option");
       optPlaceholder.value = "";
       optPlaceholder.textContent = "Choose…";
@@ -162,8 +169,8 @@ function showQuestion(q, idx, total) {
         sel.appendChild(opt);
       });
       sel.addEventListener("change", () => {
-        state.matchSelections[p.left] = sel.value;
-        const allSet = pairs.every((x) => state.matchSelections[x.left]);
+        state.matchSelections[letterKey] = sel.value;
+        const allSet = pairs.every((x) => state.matchSelections[normLetter(x.left)]);
         submitBtn.disabled = !allSet;
       });
       row.appendChild(left);
@@ -205,7 +212,11 @@ function buildUserAnswer() {
   if (q.type === "mc") return { choice: state.selectedChoice };
   if (q.type === "fill") return { answer: fillInput?.value?.trim() ?? "" };
   if (q.type === "match") {
-    const pairs = (q.pairs || []).map((p) => ({ left: p.left, right: state.matchSelections[p.left] ?? "" }));
+    const normLetter = (l) => (typeof l === "string" ? l.normalize("NFC") : l);
+    const pairs = (q.pairs || []).map((p) => {
+      const letterKey = normLetter(p.left);
+      return { left: letterKey, right: state.matchSelections[letterKey] ?? "" };
+    });
     return { pairs };
   }
   return null;
@@ -287,6 +298,9 @@ async function submitAnswer() {
     if (!res.ok) {
       showError(data.error || "Failed to submit.");
       return;
+    }
+    if (!data.correct && data.match_debug) {
+      console.warn("Match marked incorrect. Debug:", data.match_debug);
     }
     showFeedback(data.correct);
     setTimeout(() => {

@@ -173,16 +173,22 @@ def make_begadkefat_letters_match_question(tuple_list, rng):
     else:
         pair1, pair2 = rng.sample(tuple_list, 2)
     selected = [pair1[0], pair1[1], pair2[0], pair2[1]]
-    pairs =  [
-        {
+    # Plosive name (Bet, Pe, etc.) for dagesh form; fricative (Vet, Fe) for base.
+    # DB stores: dagesh form has plosive in name_en, base has fricative in dagesh_name (or vice versa).
+    # Use name_en for dagesh orders (plosive) and dagesh_name for base (fricative).
+    DAGESH_ORDERS = (23, 24, 25, 26, 27, 28)
+    pairs = []
+    for x in selected:
+        right = (
+            x["name_en"] if x["order"] in DAGESH_ORDERS else (x.get("dagesh_name") or x["name_en"])
+        ) or x.get("name_en") or x.get("dagesh_name") or ""
+        pairs.append({
             "left": x["letter"],
-            "right": x["dagesh_name"] if x["order"] in (2, 17) else x["name_en"],
+            "right": right,
             "order": x["order"],
-            "dagesh_name": x["dagesh_name"],
-            "name_en": x["name_en"]
-        }
-        for x in selected
-    ]
+            "dagesh_name": x.get("dagesh_name"),
+            "name_en": x.get("name_en")
+        })
     rng.shuffle(pairs)
 
     return {
