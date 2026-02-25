@@ -6,7 +6,11 @@
 
 {% block content %}
 <nav class="scripture-breadcrumb" aria-label="Breadcrumb">
-  <a href="{% url 'bible:book_list' %}">Books</a>
+  <form action="{% url 'bible:book_list' %}" method="get" class="breadcrumb-form">
+    <button type="submit" class="breadcrumb-button">
+      Books
+    </button>
+  </form>
   <span class="breadcrumb-sep">›</span>
   <span class="breadcrumb-current">{{ book.name_en }}</span>
 </nav>

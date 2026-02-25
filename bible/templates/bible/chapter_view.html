@@ -21,9 +21,17 @@
 
   <div class="scripture-chapter-content">
     <nav class="scripture-breadcrumb" aria-label="Breadcrumb">
-      <a href="{% url 'bible:book_list' %}">Books</a>
+      <form action="{% url 'bible:book_list' %}" method="get" class="breadcrumb-form">
+        <button type="submit" class="breadcrumb-button">
+          Books
+        </button>
+      </form>
       <span class="breadcrumb-sep">›</span>
-      <a href="{% url 'bible:chapter_list' book.slug %}">{{ book.name_en }}</a>
+      <form action="{% url 'bible:chapter_list' book.slug %}" method="get" class="breadcrumb-form">
+        <button type="submit" class="breadcrumb-button">
+          {{ book.name_en }}
+        </button>
+      </form>
       <span class="breadcrumb-sep">›</span>
       <span class="breadcrumb-current">Chapter {{ chapter.number }}</span>
     </nav>

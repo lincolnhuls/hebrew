@@ -45,24 +45,24 @@ def user_sessions(request):
         except json.JSONDecodeError:
             return error_response("Invalid JSON", status=400)
     
-    # Prevent base.js "refresh session" calls from creating blank users
-    if not name_from_body:
-        existing = UserInformation.objects.filter(firebase_uid=user_uid).exists()
-        if not existing:
-            return error_response("Name is required for new users", status=400)
+    # Look up existing user (if any)
+    existing_user = UserInformation.objects.filter(firebase_uid=user_uid).first()
+
+    # Decide on a fallback name for brand‑new users
+    effective_name = name_from_body or user_name or (user_email.split("@")[0] if user_email else "")
+
+    # For brand‑new users, we still require some kind of name signal
+    if not existing_user and not effective_name:
+        return error_response("Name is required for new users", status=400)
     
     # Get or create user
     user, created = UserInformation.objects.get_or_create(
         firebase_uid=user_uid,
         defaults={
-            'name': name_from_body,
+            'name': effective_name,
             'email': user_email
         }
     )
-    
-    # If created via auth.js, name must be present (should already be enforced above)
-    if created and not name_from_body:
-        return error_response("Name is required for new users", status=400)
     
     # Update missing fields on existing users
     changed = False

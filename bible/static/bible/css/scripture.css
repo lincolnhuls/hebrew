@@ -9,13 +9,23 @@
   padding-top: 0.5rem;
 }
 
-.scripture-breadcrumb a {
+.scripture-breadcrumb .breadcrumb-button {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
   color: var(--primary-accent);
   text-decoration: none;
+  cursor: pointer;
 }
 
-.scripture-breadcrumb a:hover {
+.scripture-breadcrumb .breadcrumb-button:hover {
   text-decoration: underline;
+}
+
+.scripture-breadcrumb .breadcrumb-form {
+  display: inline;
 }
 
 .breadcrumb-sep {
