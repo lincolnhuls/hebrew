@@ -1,6 +1,7 @@
 from django.http import JsonResponse
-import firebase_admin 
+import firebase_admin
 from firebase_admin import credentials, auth
+import json
 import os
 import time
 
@@ -8,17 +9,18 @@ if not firebase_admin._apps:
     cred_path = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
     json_str = os.environ.get("FIREBASE_CREDENTIALS_JSON")
     if json_str:
-        import tempfile
-        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
-            f.write(json_str)
-            cred_path = f.name
-        os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = cred_path
-    if not cred_path:
-        raise RuntimeError("GOOGLE_APPLICATION_CREDENTIALS or FIREBASE_CREDENTIALS_JSON is not set")
-    if not os.path.exists(cred_path):
-        raise RuntimeError(f"Firebase credentials file not found: {cred_path}")
-    cred = credentials.Certificate(cred_path)
-    firebase_admin.initialize_app(cred)  
+        # Parse JSON and pass dict to Firebase (avoids file encoding issues on Render)
+        try:
+            cred_dict = json.loads(json_str)
+        except json.JSONDecodeError as e:
+            raise RuntimeError(f"FIREBASE_CREDENTIALS_JSON is not valid JSON: {e}") from e
+        cred = credentials.Certificate(cred_dict)
+        firebase_admin.initialize_app(cred)
+    elif cred_path and os.path.exists(cred_path):
+        cred = credentials.Certificate(cred_path)
+        firebase_admin.initialize_app(cred)
+    else:
+        raise RuntimeError("GOOGLE_APPLICATION_CREDENTIALS or FIREBASE_CREDENTIALS_JSON is not set")  
 
 def error_response(message, status=400, details=None):
     data = { 'ok': False, 'error': message }
