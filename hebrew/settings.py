@@ -34,10 +34,6 @@ ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split("
 if not SECRET_KEY:
     raise ValueError("DJANGO_SECRET_KEY environment variable is required")
 
-if not os.getenv("GOOGLE_APPLICATION_CREDENTIALS") and not os.getenv("FIREBASE_CREDENTIALS_JSON"):
-    raise ValueError("Set GOOGLE_APPLICATION_CREDENTIALS (file path) or FIREBASE_CREDENTIALS_JSON (JSON string) for Firebase auth")
-
-
 # Application definition
 
 INSTALLED_APPS = [
