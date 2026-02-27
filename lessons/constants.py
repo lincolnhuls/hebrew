@@ -15,8 +15,10 @@ TOTAL_QUESTIONS_PER_SESSION = MC_QUESTION_COUNT + FILL_QUESTION_COUNT + MATCH_QU
 PASS_THRESHOLD = 12  # Minimum correct answers out of 15 to pass a lesson session
 
 # Random seed range
+# On PostgreSQL, PositiveSmallIntegerField maps to SMALLINT (0–32767),
+# so keep the max comfortably below that to avoid \"smallint out of range\".
 RANDOM_SEED_MIN = 1
-RANDOM_SEED_MAX = 500_000
+RANDOM_SEED_MAX = 32000
 
 # Letter range constants
 ALPHABET_1_START = 1
