@@ -42,7 +42,10 @@
                 {% endif %}
             </p>
             {% if lesson_1_combined.alphabet_1.is_complete %}
-                <a href="{% url 'main:lesson_runner' lesson_slug='alphabet-1' %}" class="lesson-button secondary">Review</a>
+                <div class="lesson-buttons-row">
+                    <a href="{% url 'main:lesson_runner' lesson_slug='alphabet-1' %}" class="lesson-button secondary">Retake quiz</a>
+                    <a href="{% url 'main:review_lesson' lesson_slug='alphabet-1' %}" class="lesson-button primary">Review</a>
+                </div>
             {% else %}
                 <a href="{% url 'main:lesson_runner' lesson_slug='alphabet-1' %}" class="lesson-button primary">Continue</a>
             {% endif %}
@@ -66,7 +69,10 @@
                 {% endif %}
             </p>
             {% if lesson_1_combined.alphabet_2.is_complete %}
-                <a href="{% url 'main:lesson_runner' lesson_slug='alphabet-2' %}" class="lesson-button secondary">Review</a>
+                <div class="lesson-buttons-row">
+                    <a href="{% url 'main:lesson_runner' lesson_slug='alphabet-2' %}" class="lesson-button secondary">Retake quiz</a>
+                    <a href="{% url 'main:review_lesson' lesson_slug='alphabet-2' %}" class="lesson-button primary">Review</a>
+                </div>
             {% else %}
                 <a href="{% url 'main:lesson_runner' lesson_slug='alphabet-2' %}" class="lesson-button primary">Continue</a>
             {% endif %}

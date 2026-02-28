@@ -42,7 +42,10 @@
                 {% endif %}
             </p>
             {% if lesson_2_combined.similar_letters.is_complete %}
-                <a href="{% url 'main:lesson_runner' lesson_slug='similar-letters' %}" class="lesson-button secondary">Review</a>
+                <div class="lesson-buttons-row">
+                    <a href="{% url 'main:lesson_runner' lesson_slug='similar-letters' %}" class="lesson-button secondary">Retake quiz</a>
+                    <a href="{% url 'main:review_lesson' lesson_slug='similar-letters' %}" class="lesson-button primary">Review</a>
+                </div>
             {% else %}
                 <a href="{% url 'main:lesson_runner' lesson_slug='similar-letters' %}" class="lesson-button primary">Continue</a>
             {% endif %}
@@ -66,7 +69,10 @@
                 {% endif %}
             </p>
             {% if lesson_2_combined.begadkefat_letters.is_complete %}
-                <a href="{% url 'main:lesson_runner' lesson_slug='begadkefat-letters' %}" class="lesson-button secondary">Review</a>
+                <div class="lesson-buttons-row">
+                    <a href="{% url 'main:lesson_runner' lesson_slug='begadkefat-letters' %}" class="lesson-button secondary">Retake quiz</a>
+                    <a href="{% url 'main:review_lesson' lesson_slug='begadkefat-letters' %}" class="lesson-button primary">Review</a>
+                </div>
             {% else %}
                 <a href="{% url 'main:lesson_runner' lesson_slug='begadkefat-letters' %}" class="lesson-button primary">Continue</a>
             {% endif %}
@@ -90,7 +96,10 @@
                 {% endif %}
             </p>
             {% if lesson_2_combined.final_letters.is_complete %}
-                <a href="{% url 'main:lesson_runner' lesson_slug='final-letters' %}" class="lesson-button secondary">Review</a>
+                <div class="lesson-buttons-row">
+                    <a href="{% url 'main:lesson_runner' lesson_slug='final-letters' %}" class="lesson-button secondary">Retake quiz</a>
+                    <a href="{% url 'main:review_lesson' lesson_slug='final-letters' %}" class="lesson-button primary">Review</a>
+                </div>
             {% else %}
                 <a href="{% url 'main:lesson_runner' lesson_slug='final-letters' %}" class="lesson-button primary">Continue</a>
             {% endif %}

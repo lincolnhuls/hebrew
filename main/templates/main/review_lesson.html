@@ -1,0 +1,131 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block title %}Review: {{ lesson_title }}{% endblock %}
+{% block meta_description %}Review questions you got wrong in {{ lesson_title }}. Retake a quiz with just those questions.{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'main/css/review_lesson.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <header class="lesson-hub-header">
+        <a href="{% if lesson_slug == 'alphabet-1' or lesson_slug == 'alphabet-2' %}{% url 'main:lesson_1_hub' %}{% elif lesson_slug == 'similar-letters' or lesson_slug == 'begadkefat-letters' or lesson_slug == 'final-letters' %}{% url 'main:lesson_2_hub' %}{% else %}{% url 'main:dashboard' %}{% endif %}" class="lesson-runner-back">← Back</a>
+        <h1 class="lesson-hub-title">Review: {{ lesson_title }}</h1>
+    </header>
+
+    <div class="lesson-hub-intro">
+        <p>Here are the questions you got wrong in your passing attempts. Study the correct answers, then retake a quiz with only these questions when you’re ready.</p>
+    </div>
+
+    {% if not review_items %}
+        <div class="review-empty">
+            <p class="review-empty-msg">No wrong answers to review for this lesson.</p>
+            <a href="{% if lesson_slug == 'alphabet-1' or lesson_slug == 'alphabet-2' %}{% url 'main:lesson_1_hub' %}{% elif lesson_slug == 'similar-letters' or lesson_slug == 'begadkefat-letters' or lesson_slug == 'final-letters' %}{% url 'main:lesson_2_hub' %}{% else %}{% url 'main:dashboard' %}{% endif %}" class="lesson-button primary">Back to lesson</a>
+        </div>
+    {% else %}
+        <ul class="review-list">
+            {% for item in review_items %}
+            <li class="review-item">
+                <p class="review-prompt">{{ item.prompt }}</p>
+                <span class="review-type-badge review-type-{{ item.type|default:'mc' }}">{{ item.type|default:"mc"|upper }}</span>
+
+                {% if item.type == "match" %}
+                    <div class="review-answers review-answers-match">
+                        <div class="review-answer-block review-correct">
+                            <span class="review-answer-label">Correct:</span>
+                            <ul class="review-pairs">
+                                {% for pair in item.correct_answer %}
+                                <li class="review-pair"><span class="hebrew-rtl">{{ pair.left }}</span> → {{ pair.right }}</li>
+                                {% empty %}
+                                <li>—</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="review-answer-block review-yours">
+                            <span class="review-answer-label">Your answer:</span>
+                            {% if item.user_answer.pairs %}
+                            <ul class="review-pairs">
+                                {% for pair in item.user_answer.pairs %}
+                                <li class="review-pair"><span class="hebrew-rtl">{{ pair.left }}</span> → {{ pair.right }}</li>
+                                {% endfor %}
+                            </ul>
+                            {% else %}
+                            <p class="review-answer-text">—</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="review-answers">
+                        <div class="review-answer-block review-correct">
+                            <span class="review-answer-label">Correct:</span>
+                            <p class="review-answer-text hebrew-rtl">{{ item.correct_answer|default:"—" }}</p>
+                        </div>
+                        <div class="review-answer-block review-yours">
+                            <span class="review-answer-label">Your answer:</span>
+                            {% if item.type == "fill" and item.user_answer.answer != None %}
+                            <p class="review-answer-text hebrew-rtl">{{ item.user_answer.answer }}</p>
+                            {% elif item.type == "mc" and item.user_answer.choice != None %}
+                            <p class="review-answer-text hebrew-rtl">{{ item.user_answer.choice }}</p>
+                            {% else %}
+                            <p class="review-answer-text">—</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+
+        <div class="review-retake-wrap">
+            <button type="button" class="lesson-button primary review-retake-btn" id="reviewRetakeBtn"
+                data-lesson-slug="{{ lesson_slug|escapejs }}"
+                data-user-id="{{ user_id|escapejs }}"
+                data-start-review-url="{% url 'lessons:start_review_quiz' %}"
+                data-lesson-runner-url="{% url 'main:lesson_runner' lesson_slug=lesson_slug %}">
+                Retake quiz with these questions
+            </button>
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function() {
+  var btn = document.getElementById('reviewRetakeBtn');
+  if (!btn) return;
+  function getCookie(name) {
+    var m = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+    return m ? m[2] : null;
+  }
+  btn.addEventListener('click', function() {
+    var el = this;
+    el.disabled = true;
+    var url = el.getAttribute('data-start-review-url');
+    var userId = el.getAttribute('data-user-id');
+    var lessonSlug = el.getAttribute('data-lesson-slug');
+    var runnerUrl = el.getAttribute('data-lesson-runner-url');
+    fetch(url, {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') || '' },
+      body: JSON.stringify({ user_id: userId, lesson_slug: lessonSlug })
+    }).then(function(r) { return r.json(); }).then(function(data) {
+      if (data.session_id) {
+        window.location.href = runnerUrl + (runnerUrl.indexOf('?') !== -1 ? '&' : '?') + 'session_id=' + data.session_id;
+      } else {
+        alert(data.error || 'Could not start review quiz.');
+        el.disabled = false;
+      }
+    }).catch(function() {
+      alert('Network error. Please try again.');
+      el.disabled = false;
+    });
+  });
+})();
+</script>
+{% endblock %}

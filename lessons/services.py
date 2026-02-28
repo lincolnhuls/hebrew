@@ -228,6 +228,18 @@ def _norm(s: str) -> str:
     return (s or "").strip().lower()
 
 
+def _norm_final_letter_name(s: str) -> str:
+    """Normalize final-letter name so 'final nun', 'nun final', and 'nun (final)' compare equal."""
+    s = _norm(s or "")
+    if not s:
+        return s
+    if s.startswith("final "):
+        return s[6:].strip() + " (final)"
+    if s.endswith(" final"):
+        return s[:-6].strip() + " (final)"
+    return s
+
+
 def _norm_key(s) -> str:
     """Normalize string key (e.g. Hebrew letter) for consistent comparison."""
     if s is None:
@@ -263,7 +275,15 @@ def check_correctness(question: dict, user_answer: dict) -> tuple[bool, dict | N
         return (user_answer.get("choice") == question.get("answer"), None)
 
     if qtype == "fill":
-        return (_norm(user_answer.get("answer")) == _norm(question.get("answer")), None)
+        correct_raw = question.get("answer") or ""
+        user_raw = user_answer.get("answer") or ""
+        if _norm(user_raw) == _norm(correct_raw):
+            return (True, None)
+        # Accept "final nun" / "nun final" as equivalent to "Nun (final)" for final-letter questions
+        if "(final)" in _norm(correct_raw):
+            if _norm_final_letter_name(user_raw) == _norm_final_letter_name(correct_raw):
+                return (True, None)
+        return (False, None)
 
     if qtype == "match":
         user_pairs = user_answer.get("pairs") or []
@@ -303,6 +323,78 @@ def check_correctness(question: dict, user_answer: dict) -> tuple[bool, dict | N
         return (True, None)
 
     raise ValueError(f"Unknown question type: {qtype}")
+
+def review_items(user_id: str, lesson_slug:str):
+    try:
+        lesson = Lesson.objects.get(slug=lesson_slug)
+    except:
+        raise ValidationError("Unknown lesson")
+    lesson_sessions = LessonSession.objects.filter(user_id=user_id, lesson=lesson, completed=True, passed=True).order_by("completed_at")
+    items = []
+    for session in lesson_sessions:
+        questions = session.question_set_json or []
+        wrong_answers = LessonAnswer.objects.filter(session=session, correct=False)
+        for answer in wrong_answers:
+            if answer.question_index < 0 or answer.question_index >= len(questions):
+                continue
+            q = questions[answer.question_index]
+            if q.get("type") == "mc" or q.get("type") == "fill":
+                correct_answer = q.get("answer")
+            elif q.get("type") == "match":
+                correct_answer = q.get("pairs", [])
+            else:
+                correct_answer = q.get("answer")
+                
+            question_info = {
+                "prompt": q.get("prompt"),
+                "type": q.get("type"),
+                "correct_answer": correct_answer,
+                "user_answer": answer.user_answer_json
+            }
+            items.append(question_info)
+    
+    return items
+
+
+def get_review_question_set(user_id: str, lesson_slug: str) -> list:
+    """Return a list of full question dicts (for a review retake session) from wrong answers in passed runs."""
+    try:
+        lesson = Lesson.objects.get(slug=lesson_slug)
+    except Lesson.DoesNotExist:
+        raise ValidationError("Unknown lesson")
+    sessions = LessonSession.objects.filter(user_id=user_id, lesson=lesson, completed=True, passed=True).order_by("completed_at")
+    questions_list = []
+    seen = set()
+    for session in sessions:
+        questions = session.question_set_json or []
+        wrong_answers = LessonAnswer.objects.filter(session=session, correct=False)
+        for answer in wrong_answers:
+            if answer.question_index < 0 or answer.question_index >= len(questions):
+                continue
+            q = questions[answer.question_index]
+            key = (q.get("prompt"), q.get("type"), str(q.get("answer") if q.get("type") != "match" else q.get("pairs")))
+            if key in seen:
+                continue
+            seen.add(key)
+            questions_list.append(dict(q))
+    return questions_list
+
+
+def start_review_lesson_session(user_id: str, lesson_slug: str) -> LessonSession:
+    """Create a lesson session whose question set is the user's wrong questions from passed runs."""
+    question_set = get_review_question_set(user_id, lesson_slug)
+    if not question_set:
+        raise ValidationError("No questions to review for this lesson")
+    lesson = Lesson.objects.get(slug=lesson_slug)
+    session = LessonSession.objects.create(
+        user_id=user_id,
+        lesson=lesson,
+        question_set_json=question_set,
+        current_index=0,
+        completed=False,
+        seed=None,
+    )
+    return session
 
 
 def get_user_lesson_progress(user_id: str, lesson_slug: str) -> dict | None:

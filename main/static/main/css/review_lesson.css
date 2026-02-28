@@ -1,0 +1,158 @@
+/* Review lesson page – wrong-answer list and retake CTA */
+
+.review-empty {
+    text-align: center;
+    padding: 2rem;
+    background-color: var(--surface);
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.review-empty-msg {
+    margin: 0 0 1rem 0;
+    color: var(--muted-text);
+}
+
+.review-empty .lesson-button {
+    max-width: 200px;
+    margin: 0 auto;
+}
+
+.review-list {
+    list-style: none;
+    margin: 0 0 2rem 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.review-item {
+    background-color: var(--surface);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--border);
+}
+
+.review-prompt {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--main-text);
+    margin: 0 0 0.75rem 0;
+    line-height: 1.4;
+}
+
+.review-type-badge {
+    display: inline-block;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+}
+
+.review-type-mc {
+    background-color: color-mix(in srgb, var(--primary-accent) 20%, var(--surface));
+    color: var(--primary-accent-foreground);
+}
+
+.review-type-fill {
+    background-color: color-mix(in srgb, var(--secondary-accent) 20%, var(--surface));
+    color: var(--secondary-accent-foreground);
+}
+
+.review-type-match {
+    background-color: color-mix(in srgb, var(--primary-accent) 15%, var(--surface));
+    color: var(--primary-accent-foreground);
+}
+
+.review-answers {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+@media (max-width: 560px) {
+    .review-answers {
+        grid-template-columns: 1fr;
+    }
+}
+
+.review-answers-match {
+    grid-template-columns: 1fr 1fr;
+}
+
+.review-answer-block {
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+}
+
+.review-correct {
+    background-color: color-mix(in srgb, #22c55e 12%, var(--surface));
+    border: 1px solid color-mix(in srgb, #22c55e 35%, var(--border));
+}
+
+.review-yours {
+    background-color: color-mix(in srgb, #dc2626 10%, var(--surface));
+    border: 1px solid color-mix(in srgb, #dc2626 30%, var(--border));
+}
+
+.review-answer-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--muted-text);
+    margin-bottom: 0.35rem;
+}
+
+.review-correct .review-answer-label {
+    color: #22c55e;
+}
+
+.review-yours .review-answer-label {
+    color: #dc2626;
+}
+
+.review-answer-text {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--main-text);
+}
+
+.review-pairs {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.review-pair {
+    padding: 0.25rem 0;
+    font-size: 0.9375rem;
+    color: var(--main-text);
+}
+
+.review-pair .hebrew-rtl {
+    display: inline-block;
+    margin-left: 0.25rem;
+}
+
+.review-retake-wrap {
+    text-align: center;
+    padding: 1.5rem 0 0;
+}
+
+.review-retake-btn {
+    min-width: 260px;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.review-retake-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}

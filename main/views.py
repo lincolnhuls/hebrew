@@ -1,7 +1,7 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 
 from lessons.models import Lesson, HebrewLetter
-from lessons.services import get_lesson_1_combined_progress, get_lesson_2_combined_progress
+from lessons.services import review_items, get_lesson_1_combined_progress, get_lesson_2_combined_progress
 from lessons.constants import DEFAULT_PASSES_REQUIRED
 
 
@@ -88,11 +88,15 @@ def lesson_runner(request, lesson_slug):
             "lesson_error": "Lesson not found.",
         })
 
-    return render(request, "main/lesson_runner.html", {
+    context = {
         "lesson_slug": lesson_slug,
         "lesson_title": lesson.title,
         "user_id": firebase_uid,
-    })
+    }
+    session_id = request.GET.get("session_id")
+    if session_id:
+        context["session_id"] = session_id
+    return render(request, "main/lesson_runner.html", context)
 
 
 def lesson_1_hub(request):
@@ -163,3 +167,18 @@ def final_letters(request):
         return redirect('users:account')
 
     return render(request, "main/final_letters.html", {})
+
+def review_lesson(request, lesson_slug):
+    firebase_uid = request.session.get('firebase_uid')
+    if not firebase_uid:
+        return redirect('users:account')
+    lesson = get_object_or_404(Lesson, slug=lesson_slug)    
+    items = review_items(firebase_uid, lesson_slug)
+    lesson_title = lesson.title
+    return render(request, 'main/review_lesson.html', {
+        'review_items': items,
+        'lesson_slug': lesson_slug,
+        'lesson_title': lesson_title,
+        'user_id': firebase_uid,
+    })
+    
