@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
+import secrets
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -24,19 +25,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY') or secrets.token_urlsafe(50)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DJANGO_DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
-
-if not SECRET_KEY:
-    raise ValueError("DJANGO_SECRET_KEY environment variable is required")
-
-if not os.getenv("GOOGLE_APPLICATION_CREDENTIALS") and not os.getenv("FIREBASE_CREDENTIALS_JSON"):
-    raise ValueError("Set GOOGLE_APPLICATION_CREDENTIALS (file path) or FIREBASE_CREDENTIALS_JSON (JSON string) for Firebase auth")
-
 
 # Application definition
 
