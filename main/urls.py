@@ -14,4 +14,5 @@ urlpatterns = [
     path("lesson-2/begadkefat/", views.begadkefat, name="begadkefat"),
     path("lesson-2/final-letters/", views.final_letters, name="final_letters"),
     path("lesson/<slug:lesson_slug>/", views.lesson_runner, name="lesson_runner"),
+    path("lesson/<slug:lesson_slug>/review/", views.review_lesson, name="review_lesson"),
 ]

@@ -3,10 +3,30 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.core.exceptions import ValidationError
 from lessons.models import LessonSession, LessonAnswer, Lesson
-from lessons.services import start_lesson_session, submit_answer
+from lessons.services import start_lesson_session, start_review_lesson_session, submit_answer
 from lessons.constants import PASS_THRESHOLD
 
 # Create your views here.
+@require_POST
+def start_review_quiz(request):
+    """Start a review session (quiz made from wrong answers) and return session_id."""
+    try:
+        payload = json.loads(request.body.decode("utf-8") or "{}")
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON body"}, status=400)
+    user_id = payload.get("user_id")
+    lesson_slug = payload.get("lesson_slug")
+    if not user_id or not lesson_slug:
+        return JsonResponse({"error": "user_id and lesson_slug required"}, status=400)
+    try:
+        session = start_review_lesson_session(user_id, lesson_slug)
+    except Lesson.DoesNotExist:
+        return JsonResponse({"error": f"Lesson '{lesson_slug}' not found"}, status=404)
+    except ValidationError as e:
+        return JsonResponse({"error": str(e)}, status=400)
+    return JsonResponse({"session_id": session.id})
+
+
 @require_POST
 def start_lesson(request):
     """Start a new lesson session and return the first question."""
@@ -53,6 +73,8 @@ def start_lesson(request):
 def resume_lesson(request):
     """Resume an existing lesson session or start a new one.
     
+    Optional GET param session_id: if provided, load that session (must belong to user_id).
+    
     Returns:
         - Incomplete session: Current question data
         - Completed session: Session results
@@ -60,9 +82,39 @@ def resume_lesson(request):
     """
     user_id = request.GET.get("user_id")
     lesson_slug = request.GET.get("lesson_slug")
+    session_id_param = request.GET.get("session_id")
 
     if not user_id or not lesson_slug:
         return JsonResponse({"error": "user_id and lesson_slug required"}, status=400)
+
+    # 0) If session_id given, load that session (for review retake)
+    if session_id_param:
+        try:
+            sid = int(session_id_param)
+            session = LessonSession.objects.select_related("lesson").filter(id=sid, user_id=user_id).first()
+        except (ValueError, TypeError):
+            session = None
+        if session:
+            if session.lesson.slug != lesson_slug:
+                return JsonResponse({"error": "Session does not match lesson"}, status=400)
+            idx = session.current_index
+            questions = session.question_set_json or []
+            if idx is None or idx < 0 or idx >= len(questions):
+                if session.completed:
+                    data = {"session_id": session.id, "completed": True}
+                    data.update(_session_results(session.id))
+                    return JsonResponse(data)
+                return JsonResponse({"error": "Invalid session state"}, status=500)
+            q = questions[idx]
+            return JsonResponse({
+                "session_id": session.id,
+                "completed": False,
+                "current_index": idx,
+                "total_questions": len(session.question_set_json),
+                "question_index": idx,
+                "question": _strip_answer(q),
+            })
+        # session_id invalid or not found — fall through to normal resume
 
     # 1) Prefer an existing incomplete session
     session = (

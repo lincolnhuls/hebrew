@@ -225,7 +225,8 @@ function buildUserAnswer() {
 async function resume() {
   showLoading();
   try {
-    const url = `${cfg.resumeUrl}?user_id=${encodeURIComponent(cfg.userId)}&lesson_slug=${encodeURIComponent(cfg.lessonSlug)}`;
+    let url = `${cfg.resumeUrl}?user_id=${encodeURIComponent(cfg.userId)}&lesson_slug=${encodeURIComponent(cfg.lessonSlug)}`;
+    if (cfg.sessionId) url += `&session_id=${encodeURIComponent(cfg.sessionId)}`;
     const res = await fetch(url, { credentials: "same-origin" });
     const data = await res.json();
     if (!res.ok) {

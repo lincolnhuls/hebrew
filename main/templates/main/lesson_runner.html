@@ -99,6 +99,7 @@
     lessonTitle: "{{ lesson_title|escapejs }}",
     userId: "{{ user_id|escapejs }}",
     lessonError: "{{ lesson_error|default:''|escapejs }}",
+    sessionId: "{{ session_id|default:''|escapejs }}",
     resumeUrl: "{% url 'lessons:resume_lesson' %}",
     startUrl: "{% url 'lessons:start_lesson' %}",
     submitUrlTemplate: "{% url 'lessons:submit_answer' session_id=99999 %}".replace("99999", "{session_id}"),

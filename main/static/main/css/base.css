@@ -691,6 +691,17 @@ h3 {
     margin-top: auto;
 }
 
+.lesson-buttons-row {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: auto;
+}
+
+.lesson-buttons-row .lesson-button {
+    flex: 1;
+    margin-top: 0;
+}
+
 .lesson-button {
     width: 100%;
     height: 40px;
