@@ -50,3 +50,15 @@ def verify_with_retry(token, max_retries=7, base_delay=.25):
                 time.sleep(base_delay * (2 ** attempt))
                 continue
             raise
+
+def verify_with_retry(token, max_retries=3, base_delay=.25):
+    _ensure_firebase_initialized()
+    for attempt in range(max_retries):
+        try:
+            return auth.verify_id_token(token)
+        except Exception as e:
+            msg = str(e)
+            if "Token used too early" in msg and attempt < max_retries -1:
+                time.sleep(base_delay)
+                continue
+            raise

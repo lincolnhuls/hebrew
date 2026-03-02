@@ -1,9 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
-
+from django.http import HttpResponse
 from lessons.models import Lesson, HebrewLetter
 from lessons.services import review_items, get_lesson_1_combined_progress, get_lesson_2_combined_progress
 from lessons.constants import DEFAULT_PASSES_REQUIRED
 
+
+def ping(request):
+    return HttpResponse("ok")
 
 def _get_default_lesson_1_combined():
     """Return default lesson 1 combined progress structure."""
