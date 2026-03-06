@@ -201,6 +201,13 @@
   filter: brightness(0.9);
 }
 
+.alphabet-learn-speaker-btn.is-playing,
+.alphabet-learn-speaker-btn-inline.is-playing {
+  filter: brightness(0.9);
+  outline: 2px solid color-mix(in srgb, var(--primary-accent-fill) 65%, white);
+  outline-offset: 2px;
+}
+
 /* Letter-by-letter cards */
 .alphabet-learn-letter-card {
   display: flex;

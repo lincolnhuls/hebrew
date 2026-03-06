@@ -48,12 +48,11 @@ def user_sessions(request):
     # Look up existing user (if any)
     existing_user = UserInformation.objects.filter(firebase_uid=user_uid).first()
 
-    # Decide on a fallback name for brand‑new users
-    effective_name = name_from_body or user_name or (user_email.split("@")[0] if user_email else "")
-
-    # For brand‑new users, we still require some kind of name signal
-    if not existing_user and not effective_name:
-        return error_response("Name is required for new users", status=400)
+    # Decide on display name:
+    # - Prefer explicit name from body (signup form)
+    # - Otherwise use Firebase displayName
+    # - Do NOT derive a name from the email; allow name to be empty
+    effective_name = name_from_body or user_name or ""
     
     # Get or create user
     user, created = UserInformation.objects.get_or_create(

@@ -83,6 +83,16 @@ onAuthStateChanged(auth, async (user) => {
         const name = sessionStorage.getItem("username");
         console.log("User name from sessionStorage:", name);
 
+        if (userGreeting) {
+            if (name) {
+                userGreeting.textContent = `Welcome, ${name}`;
+                userGreeting.classList.remove("hidden");
+            } else {
+                userGreeting.textContent = "";
+                userGreeting.classList.add("hidden");
+            }
+        }
+
         setNavSignedIn(true);
 
         console.log("User is signed in:", user);

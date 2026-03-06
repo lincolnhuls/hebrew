@@ -2,7 +2,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
 
 // Import other Firebase services as needed
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
 
 // Your web app's Firebase configuration
 import { firebaseConfig } from "./firebaseConfig.js";
@@ -23,11 +23,41 @@ const passwordToggle = document.getElementById("password-toggle");
 const nameField = document.getElementById("name-field");
 const signinBtn = document.getElementById("signin-btn");
 const signupBtn = document.getElementById("signup-btn");
+const forgotPasswordLink = document.getElementById("forgot-password");
+const forgotPasswordMessage = document.getElementById("forgot-password-message");
 
 if (passwordToggle) {
     passwordToggle.addEventListener("click", () => {
         const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
         passwordInput.setAttribute("type", type);
+    });
+}
+
+// Forgot password: send reset email via Firebase
+if (forgotPasswordLink) {
+    forgotPasswordLink.addEventListener("click", async (event) => {
+        event.preventDefault();
+        const emailInput = document.getElementById("email");
+        const email = emailInput ? emailInput.value.trim() : "";
+        const target = forgotPasswordMessage || messages;
+
+        if (!target) {
+            return;
+        }
+
+        if (!email) {
+            target.textContent = "Enter your email to reset your password.";
+            return;
+        }
+
+        try {
+            await sendPasswordResetEmail(auth, email);
+            target.textContent = "If an account exists for this email, a reset link has been sent. Check your inbox and spam folder.";
+        } catch (error) {
+            console.error("Error sending password reset email:", error);
+            // For security, don't reveal whether the email exists
+            target.textContent = "If an account exists for this email, a reset link has been sent. Check your inbox and spam folder.";
+        }
     });
 }
 
@@ -54,7 +84,16 @@ document.getElementById("user_form").addEventListener("submit", async event => {
     const name = document.getElementById("name").value.trim();
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value.trim();
-    if (submitterValue == "signup") {
+
+    // Require a name only when signing up
+    if (submitterValue === "signup" && !name) {
+        if (messages) {
+            messages.textContent = "Please enter your name to sign up.";
+        }
+        return;
+    }
+
+    if (submitterValue === "signup") {
         await signupUser(name, email, password);
     } else {
         await loginUser(name, email, password);

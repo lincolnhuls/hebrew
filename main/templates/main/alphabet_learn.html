@@ -38,11 +38,21 @@
     <p class="alphabet-learn-section-subtitle">Tap any letter to hear its name and sound</p>
     <div class="alphabet-learn-grid">
       {% for letter in letters %}
+      {% with n=letter.order|stringformat:"02d" %}
+      {% with name_path='main/audio/letters/letter-'|add:n|add:'-name.mp3' sound_path='main/audio/letters/letter-'|add:n|add:'-sound.mp3' %}
       <div class="alphabet-learn-letter-tile">
         <span class="alphabet-learn-letter-glyph hebrew-rtl">{{ letter.letter }}</span>
         <span class="alphabet-learn-letter-name">{{ letter.name_en }}</span>
-        <button type="button" class="alphabet-learn-speaker-btn" aria-label="Play {{ letter.name_en }}">🔊</button>
+        <button
+          type="button"
+          class="alphabet-learn-speaker-btn"
+          aria-label="Play {{ letter.name_en }}"
+          data-audio-name="{% static name_path %}"
+          data-audio-sound="{% static sound_path %}"
+        >🔊</button>
       </div>
+      {% endwith %}
+      {% endwith %}
       {% empty %}
       <p class="alphabet-learn-empty">No letters loaded. Add Hebrew letters in the admin.</p>
       {% endfor %}
@@ -54,14 +64,24 @@
   <p class="alphabet-learn-section-subtitle">Click the speaker to hear each letter. Read about its shape and sound below.</p>
 
   {% for letter in letters %}
+  {% with n=letter.order|stringformat:"02d" %}
+  {% with name_path='main/audio/letters/letter-'|add:n|add:'-name.mp3' sound_path='main/audio/letters/letter-'|add:n|add:'-sound.mp3' %}
   <section class="alphabet-learn-letter-card">
     <div class="alphabet-learn-letter-box hebrew-rtl">{{ letter.letter }}</div>
-    <button type="button" class="alphabet-learn-speaker-btn-inline" aria-label="Play {{ letter.name_en }}">🔊</button>
+    <button
+      type="button"
+      class="alphabet-learn-speaker-btn-inline"
+      aria-label="Play {{ letter.name_en }}"
+      data-audio-name="{% static name_path %}"
+      data-audio-sound="{% static sound_path %}"
+    >🔊</button>
     <div class="alphabet-learn-letter-content">
       <h3 class="alphabet-learn-letter-heading">{{ letter.name_en }} ({{ letter.letter }})</h3>
       <p class="alphabet-learn-letter-description">{% if letter.name_en == "Aleph" %}Aleph is quite a unique letter in the Aleph-Bet as it does not have a direct comparison to a letter in English. The letter Aleph acts as what is known as a glottal stop. An example of this can be found when someone says "uh-oh." Notice as you say "uh-oh," when you switch from "uh" to "oh", how your throat closes and all the sound stops before resuming with "oh"? That is a glottal stop! It essentially acts as a hard stop in a word. When you see it in Hebrew, it means to put that kind of stop at that point in the word!{% elif letter.name_en == "Bet" %}Bet makes the same sound as B in English. The same as the B in boy!{% elif letter.name_en == "Gimel" %}Gimel makes the same sound as G in English. The same as the G in get!{% elif letter.name_en == "Dalet" %}Dalet makes the same sound as D in English. The same as the D in dog!{% elif letter.name_en == "He" %}He makes the same sound as H in English. The same as the H in hay!{% elif letter.name_en == "Vav" %}Vav makes the same sound as V in English. The same as the V in van!{% elif letter.name_en == "Zayin" %}Zayin makes the same sound as Z in English. The same as the Z in zone!{% elif letter.name_en == "Het" %}Het has a slightly more guttural "ch" sound that is created in the back of the throat. This can be heard in the German pronunciation of Bach.{% elif letter.name_en == "Tet" %}Tet makes the same sound as T in English. The same as the T in tie!{% elif letter.name_en == "Yod" %}Yod makes the same sound as Y in English. The same as the Y in yes!{% elif letter.name_en == "Kaf" %}Kaf has a very similar sound to Het. It again has a guttural "ch" sound, very similar to the German pronunciation of Bach.{% elif letter.name_en == "Lamed" %}Lamed makes the same sound as L in English. The same as the L in lie!{% elif letter.name_en == "Mem" %}Mem makes the same sound as M in English. The same as the M in main!{% elif letter.name_en == "Nun" %}Nun makes the same sound as N in English. The same as the N in noon!{% elif letter.name_en == "Samek" %}Samek makes the same sound as S in English. The same as the S in say!{% elif letter.name_en == "Ayin" %}Ayin is very similar to Aleph in how it is pronounced. Due to the slight differences, it can be considered the same as Aleph for now.{% elif letter.name_en == "Pey" %}Pey makes the same sound as P in English. The same as the P in pay!{% elif letter.name_en == "Tsade" %}Tsade makes the same sound as "ts" in English. The same as the "ts" in rats!{% elif letter.name_en == "Qof" %}Qof is very similar to a K in English, and for now can be treated the same.{% elif letter.name_en == "Resh" %}Resh is very similar to an R in English, with a slight nasal accent on it. It is made in the top of the mouth. For simple pronunciation, it can be said just like the R in rats!{% elif letter.name_en == "Shin" %}Shin makes the same sound as "sh" in English. The same as the "sh" in show!{% elif letter.name_en == "Tav" %}Tav makes the same sound as T in English. The same as the T in tie!{% else %}[Description for {{ letter.name_en }} – to be added]{% endif %}</p>
     </div>
   </section>
+  {% endwith %}
+  {% endwith %}
   {% empty %}
   <p class="alphabet-learn-empty">No letters loaded.</p>
   {% endfor %}
@@ -69,4 +89,8 @@
   <a href="{% url 'main:lesson_1_hub' %}" class="alphabet-learn-continue">Continue →</a>
 </div>
 
+{% endblock %}
+
+{% block extra_js %}
+<script type="module" src="{% static 'main/js/alphabet_learn_audio.js' %}" defer></script>
 {% endblock %}

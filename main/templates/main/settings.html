@@ -22,6 +22,49 @@
         </div>
         <p class="settings-hint">Switch between dark and light appearance. Your choice is saved.</p>
     </div>
+    <div class="card settings-card">
+        <h2>Learning Goals</h2>
+
+        <form id="learningGoalsForm">
+            <div class="settings-row">
+                <label for="dailyLessonsTarget" class="settings-label">Lessons per day</label>
+                <input type="number" min="1" id="dailyLessonsTarget" value="1" required>
+            </div>
+
+            <div class="settings-row">
+                <label for="reminderEnabled" class="settings-label">Send Reminder Emails</label>
+                <input type="checkbox" id="reminderEnabled" checked>
+            </div>
+
+            <div class="settings-row">
+                <label for="reminderFrequency" class="settings-label">How Often</label>
+                <select id="reminderFrequency">
+                    <option value="daily">Every Day</option>
+                    <option value="weekdays">Weekdays</option>
+                    <option value="weekly">Once a Week</option>
+                </select>
+            </div>
+
+            <div class="settings-row">
+                <label for="reminderTime" class="settings-label">Reminder Time (Optional)</label>
+                <input type="time" id="reminderTime">
+            </div>
+
+            <div class="settings-row">
+                <label for="timezone" class="settings-label">Timezone</label>
+                <select id="timezone">
+                    <option value="UTC">UTC</option>
+                    <option value="America/New_York">Eastern</option>
+                    <option value="America/Chicago">Central</option>
+                    <option value="America/Denver">Mountain</option>
+                    <option value="America/Los_Angeles">Pacific</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn-primary btn">Save Goals</button>
+            <p id="goalsMessage" class="settings-hint"></p>
+        </form>
+    </div>
 </div>
 
 <script>
@@ -44,5 +87,88 @@
         switchEl.addEventListener('change', function() { applyTheme(switchEl.checked); });
     }
 })();
+</script>
+
+<script>
+    function getCookie(name) {
+        var match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+        return match ? match[2] : null;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var form = document.getElementById('learningGoalsForm');
+        if (!form) return;
+
+        fetch('/users/preferences/', { credentials: 'same-origin' })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (!data.ok || !data.has_preferences || !data.preferences) return;
+                var p = data.preferences;
+
+                var target = document.getElementById('dailyLessonsTarget');
+                if (target) target.value = p.daily_lessons_target;
+
+                var enabled = document.getElementById('reminderEnabled');
+                if (enabled) enabled.checked = p.reminder_enabled;
+
+                var freq = document.getElementById('reminderFrequency');
+                if (freq) freq.value = p.reminder_frequency;
+
+                var time = document.getElementById('reminderTime');
+                if (time && p.reminder_time) {
+                    time.value = p.reminder_time.substring(0, 5);
+                }
+
+                var tz = document.getElementById('timezone');
+                if (tz) tz.value = p.timezone || 'UTC';
+            })
+            .catch(function() {});
+
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                var msgEl = document.getElementById('goalsMessage');
+                if (!msgEl) return;
+
+                var target = document.getElementById('dailyLessonsTarget');
+                var enabled = document.getElementById('reminderEnabled');
+                var freq = document.getElementById('reminderFrequency');
+                var time = document.getElementById('reminderTime');
+                var tz = document.getElementById('timezone');
+
+                var payload = {
+                    daily_lessons_target: parseInt(target && target.value ? target.value : 1, 10),
+                    reminder_enabled: enabled ? enabled.checked : true,
+                    reminder_frequency: freq ? freq.value : 'weekly',
+                    timezone: tz ? tz.value : 'UTC'
+                };
+                if (time && time.value) {
+                    payload.reminder_time = time.value;
+                }
+
+                fetch('/users/preferences/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    credentials: 'same-origin',
+                    body: JSON.stringify(payload)
+                })
+                    .then(function(r) { return r.json(); })
+                    .then(function(data) {
+                        if (data.ok) {
+                            msgEl.textContent = 'Goals Saved';
+                            msgEl.style.color = '';
+                        } else {
+                            msgEl.textContent = data.error || 'Something Went Wrong';
+                            msgEl.style.color = 'var(--secondary-accent-foreground, #B45309)';
+                        }
+                    })
+                    .catch(function() {
+                        msgEl.textContent = 'Something went wrong.';
+                        msgEl.style.color = 'var(--secondary-accent-foreground, #B45309)';
+                    });
+            });
+    });
 </script>
 {% endblock %}
