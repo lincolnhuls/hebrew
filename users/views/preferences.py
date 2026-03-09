@@ -2,6 +2,7 @@ from django.http import JsonResponse
 import json
 from datetime import datetime
 from users.models import UserInformation, LearningPreferences
+from users.utils import send_learning_goals_confirmation
 
 def learning_preferences(request):
     firebase_uid = request.session.get('firebase_uid')
@@ -97,6 +98,7 @@ def learning_preferences(request):
                 "timezone": timezone,
             },
         )
+        send_learning_goals_confirmation(user, prefs)
         prefs_data = {
             "daily_lessons_target": prefs.daily_lessons_target,
             "reminder_enabled": prefs.reminder_enabled,

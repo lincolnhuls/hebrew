@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
-from lessons.models import Lesson, HebrewLetter
+from lessons.models import Lesson, HebrewLetter, LessonSession
 from lessons.services import review_items, get_lesson_1_combined_progress, get_lesson_2_combined_progress
 from lessons.constants import DEFAULT_PASSES_REQUIRED
-
+from django.utils import timezone
+from users.models import UserInformation
 
 def ping(request):
     return HttpResponse("ok")
@@ -52,21 +53,47 @@ def home(request):
     return render(request, "main/home.html")
 
 
-def dashboard(request): 
-    login = request.session.get('firebase_uid')
-    if not login:
+def dashboard(request):
+    firebase_uid = request.session.get('firebase_uid')
+    if not firebase_uid:
         return render(request, "users/users.html")
 
-    lesson_1_combined = _get_lesson_1_combined_progress_safe(login)
-    lesson_2_combined = _get_lesson_2_combined_progress_safe(login)
+    lesson_1_combined = _get_lesson_1_combined_progress_safe(firebase_uid)
+    lesson_2_combined = _get_lesson_2_combined_progress_safe(firebase_uid)
+
+    daily_target = 1
+    today_completed = 0
+
+    try:
+        user = UserInformation.objects.get(firebase_uid=firebase_uid)
+        prefs = getattr(user, "learning_preferences", None)
+        if prefs is not None and prefs.daily_lessons_target > 0:
+            daily_target = prefs.daily_lessons_target
+    except UserInformation.DoesNotExist:
+        prefs = None
+
+    today = timezone.now().date()
+    today_completed = LessonSession.objects.filter(
+        user_id=firebase_uid,
+        completed = True,
+        passed = True,
+        completed_at__date=today,
+    ).count()
+
+    if daily_target > 0:
+        today_goal_percent = int(min(100, round(100 * today_completed / daily_target)))
+    else:
+        today_goal_percent = 0
 
     return render(request, "main/dashboard.html", {
         "lesson_1_combined": lesson_1_combined,
         "lesson_1_complete": lesson_1_combined["is_complete"],
         "lesson_2_combined": lesson_2_combined,
         "lesson_2_complete": lesson_2_combined["is_complete"],
+        "today_lessons_completed": today_completed,
+        "today_lessons_target": daily_target,
+        "today_goal_percent": today_goal_percent,
     })
-
 
 def settings_page(request):
     login = request.session.get('firebase_uid')

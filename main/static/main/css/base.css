@@ -474,6 +474,7 @@ h3 {
     left: 0;
     top: 0;
     height: 100%;
+    width: var(--goal-width, 0%);
     background-color: var(--primary-accent);
     border-radius: 15px;
     transition: width 0.3s;

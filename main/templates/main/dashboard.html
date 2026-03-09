@@ -38,14 +38,18 @@
     <div class="goal-card">
         <h3>Today's Goal</h3>
         <div class="goal-progress-header">
-            <span class="goal-progress-percent-above">60%</span>
+            <span class="goal-progress-percent-above">
+                {{ today_goal_percent }}%
+            </span>
         </div>
         <div class="goal-progress">
             <div class="goal-progress-bar">
-                <div class="goal-progress-fill width-60"></div>
+                <div class="goal-progress-fill" style="--goal-width: {{ today_goal_percent }}%;"></div>
             </div>
         </div>
-        <div class="goal-subtext">6 of 10 lessons completed</div>
+        <div class="goal-subtext">
+            {{ today_lessons_completed }} of {{ today_lessons_target }} lessons completed
+        </div>
     </div>
 
     <!-- Your Progress Section -->
