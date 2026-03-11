@@ -13,6 +13,7 @@ TOTAL_QUESTIONS_PER_SESSION = MC_QUESTION_COUNT + FILL_QUESTION_COUNT + MATCH_QU
 
 # Pass threshold
 PASS_THRESHOLD = 12  # Minimum correct answers out of 15 to pass a lesson session
+PASS_PERCENT = 0.8
 
 # Random seed range
 # On PostgreSQL, PositiveSmallIntegerField maps to SMALLINT (0–32767),

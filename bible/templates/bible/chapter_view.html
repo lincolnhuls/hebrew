@@ -27,6 +27,8 @@
         </button>
       </form>
       <span class="breadcrumb-sep">›</span>
+      <a href="{% url 'bible:search' %}" class="breadcrumb-button">Search</a>
+      <span class="breadcrumb-sep">›</span>
       <form action="{% url 'bible:chapter_list' book.slug %}" method="get" class="breadcrumb-form">
         <button type="submit" class="breadcrumb-button">
           {{ book.name_en }}

@@ -5,12 +5,14 @@ from lessons.constants import (
     ALPHABET_1_START, ALPHABET_1_END,
     ALPHABET_2_START, ALPHABET_2_END,
     PASS_THRESHOLD, SIMILAR_LETTERS,
-    BEGADKEFAT_LETTERS, FINAL_LETTERS
+    BEGADKEFAT_LETTERS, FINAL_LETTERS,
+    PASS_PERCENT
 )
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 from random import Random
 import logging
+from math import ceil
 
 logger = logging.getLogger(__name__)
 
@@ -200,7 +202,7 @@ def submit_answer(session_id: int, question_index: int, user_answer_json: dict, 
     if session.current_index >= len(questions):
         session.completed = True
         session.completed_at = timezone.now()
-        # Compute pass: >= PASS_THRESHOLD correct (distinct questions)
+
         correct_count = (
             LessonAnswer.objects
             .filter(session=session, correct=True)
@@ -208,7 +210,9 @@ def submit_answer(session_id: int, question_index: int, user_answer_json: dict, 
             .distinct()
             .count()
         )
-        session.passed = correct_count >= PASS_THRESHOLD
+        total_questions = len(questions)
+        required_correct = ceil(total_questions * PASS_PERCENT) if total_questions else 0
+        session.passed = total_questions > 0 and correct_count >= required_correct
     
     update_fields = ["current_index", "completed", "completed_at"]
     if session.completed:
@@ -329,7 +333,14 @@ def review_items(user_id: str, lesson_slug:str):
         lesson = Lesson.objects.get(slug=lesson_slug)
     except:
         raise ValidationError("Unknown lesson")
-    lesson_sessions = LessonSession.objects.filter(user_id=user_id, lesson=lesson, completed=True, passed=True).order_by("completed_at")
+    # Review should reflect what the user actually missed in any run of this lesson.
+    # Do not require completed/passed here; include all sessions so the page always
+    # matches what the quiz can pull from.
+    lesson_sessions = (
+        LessonSession.objects
+        .filter(user_id=user_id, lesson=lesson)
+        .order_by("started_at")
+    )
     items = []
     for session in lesson_sessions:
         questions = session.question_set_json or []
@@ -357,31 +368,52 @@ def review_items(user_id: str, lesson_slug:str):
 
 
 def get_review_question_set(user_id: str, lesson_slug: str) -> list:
-    """Return a list of full question dicts (for a review retake session) from wrong answers in passed runs."""
+    """Return a list of full question dicts (for a review retake session) from wrong answers in the user's runs."""
     try:
         lesson = Lesson.objects.get(slug=lesson_slug)
     except Lesson.DoesNotExist:
-        raise ValidationError("Unknown lesson")
-    sessions = LessonSession.objects.filter(user_id=user_id, lesson=lesson, completed=True, passed=True).order_by("completed_at")
+        # Mirror start_lesson_session behavior
+        raise ValidationError(f"Unknown lesson slug '{lesson_slug}'")
+
+    sessions = (
+        LessonSession.objects
+        .filter(user_id=user_id, lesson=lesson)
+        .order_by("started_at")
+    )
     questions_list = []
     seen = set()
+    session_ids = []
+    total_wrong = 0
     for session in sessions:
+        session_ids.append(session.id)
         questions = session.question_set_json or []
         wrong_answers = LessonAnswer.objects.filter(session=session, correct=False)
+        total_wrong += wrong_answers.count()
         for answer in wrong_answers:
             if answer.question_index < 0 or answer.question_index >= len(questions):
                 continue
             q = questions[answer.question_index]
-            key = (q.get("prompt"), q.get("type"), str(q.get("answer") if q.get("type") != "match" else q.get("pairs")))
+            key = (
+                q.get("prompt"),
+                q.get("type"),
+                str(q.get("answer") if q.get("type") != "match" else q.get("pairs"))
+            )   
             if key in seen:
                 continue
             seen.add(key)
             questions_list.append(dict(q))
+    logger.warning(
+        "Review question set built: lesson_slug=%s user_id=%s sessions=%s total_wrong_answers=%s unique_questions=%s",
+        lesson_slug,
+        user_id,
+        session_ids,
+        total_wrong,
+        len(questions_list),
+    )
     return questions_list
 
-
 def start_review_lesson_session(user_id: str, lesson_slug: str) -> LessonSession:
-    """Create a lesson session whose question set is the user's wrong questions from passed runs."""
+    """Create a lesson session whose question set is the user's wrong questions from their runs."""
     question_set = get_review_question_set(user_id, lesson_slug)
     if not question_set:
         raise ValidationError("No questions to review for this lesson")

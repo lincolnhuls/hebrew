@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from .models import BibleBook, BibleChapter, BibleVerse
+from django.db.models import Q
 
 
 def book_list(request):
@@ -55,4 +56,23 @@ def chapter_view(request, book_slug, chapter_number):
             "prev_chapter": prev_chapter,
             "next_chapter": next_chapter,
         },
+    )
+
+def search(request):
+    """Search for words or phrases."""
+    query = request.GET.get("q", "").strip()
+    results = []
+    total_count = 0
+    if query:
+        results = (
+            BibleVerse.objects
+            .filter(Q(text__icontains=query))
+            .select_related("chapter__book")
+            .order_by("chapter__book__order", "chapter__number", "number")[:100]
+        )
+        total_count = BibleVerse.objects.filter(text__icontains=query).count()
+    return render(
+        request,
+        "bible/search.html",
+        {"query": query, "results": results, "total_count": total_count},
     )

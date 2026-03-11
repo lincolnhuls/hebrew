@@ -81,8 +81,8 @@
 
         <div class="review-retake-wrap">
             <button type="button" class="lesson-button primary review-retake-btn" id="reviewRetakeBtn"
-                data-lesson-slug="{{ lesson_slug|escapejs }}"
-                data-user-id="{{ user_id|escapejs }}"
+                data-lesson-slug="{{ lesson_slug }}"
+                data-user-id="{{ user_id }}"
                 data-start-review-url="{% url 'lessons:start_review_quiz' %}"
                 data-lesson-runner-url="{% url 'main:lesson_runner' lesson_slug=lesson_slug %}">
                 Retake quiz with these questions

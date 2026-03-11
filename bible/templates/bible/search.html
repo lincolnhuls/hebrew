@@ -1,0 +1,86 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block title %}Search Scriptures{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'bible/css/scripture.css' %}">{% endblock %}
+{% block extra_js %}
+<script>
+(function() {
+  var form = document.querySelector('.search-form');
+  var input = form && form.querySelector('input[name="q"]');
+  var container = document.getElementById('search-results-outer');
+  if (!form || !input || !container) return;
+
+  var debounceMs = 320;
+  var debounceTimer = null;
+
+  function updateResults() {
+    var q = input.value.trim();
+    var url = form.action + (form.action.indexOf('?') !== -1 ? '&' : '?') + 'q=' + encodeURIComponent(q);
+    fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+      .then(function(r) { return r.text(); })
+      .then(function(html) {
+        var parser = new DOMParser();
+        var doc = parser.parseFromString(html, 'text/html');
+        var outer = doc.getElementById('search-results-outer');
+        container.innerHTML = outer ? outer.innerHTML : '';
+      })
+      .catch(function() { container.innerHTML = '<p class="search-note">Search unavailable.</p>'; });
+  }
+
+  input.addEventListener('input', function() {
+    if (debounceTimer) clearTimeout(debounceTimer);
+    if (input.value.trim() === '') {
+      container.innerHTML = '';
+      return;
+    }
+    debounceTimer = setTimeout(updateResults, debounceMs);
+  });
+
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (input.value.trim()) updateResults();
+    }
+  });
+})();
+</script>
+{% endblock %}
+
+{% block content %}
+<section class="scripture-content">
+    <h1 class="scripture-title">Search Scriptures</h1>
+
+    <form method="get" action="{% url 'bible:search' %}" class="search-form">
+        <input type="text" name="q" value="{{ query }}" placeholder="Search for a word or phrase..." required />
+        <button type="submit">Search</button>
+    </form>
+    <p class="search-note">Search matches the text exactly; include vowel points (niqqud) as in the text to find verses.</p>
+
+    <div id="search-results-outer">
+    {% if query %}
+    <p class="search-summary">
+        Found {{ total_count }} verse{% if total_count != 1 %}s{% endif %} matching "{{ query }}".
+        {% if total_count > results|length %}
+            Showing first {{ results|length }}.
+        {% endif %}
+    </p>
+
+    <ul class="search-results">
+        {% for verse in results %}
+        <li class="search-result-item">
+            <div class="search-result-ref">
+                <a href="{% url 'bible:chapter_view' verse.chapter.book.slug verse.chapter.number %}#v{{ verse.number }}">
+                    {{ verse.chapter.book.name_en }} {{ verse.chapter.number }}:{{ verse.number }}
+                </a>
+            </div>
+            <div class="search-result-text" dir="rtl">{{ verse.text }}</div>
+        </li>
+        {% empty %}
+            <li class="no-results">No verses found matching "{{ query }}".</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    </div>
+</section>
+{% endblock %}

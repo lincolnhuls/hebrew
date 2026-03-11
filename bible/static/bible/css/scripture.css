@@ -177,3 +177,130 @@
 .scripture-content .muted {
   color: var(--muted-text);
 }
+
+/* ========== Search page (theme-aware) ========== */
+.search-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 0.25rem;
+}
+
+.search-form input[type="text"] {
+  flex: 1;
+  min-width: 12rem;
+  padding: 0.625rem 0.875rem;
+  font-size: 1rem;
+  font-family: "Nunito Sans", system-ui, sans-serif;
+  color: var(--main-text);
+  background-color: var(--surface);
+  border: 1px solid var(--input-border);
+  border-radius: 8px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.search-form input[type="text"]::placeholder {
+  color: var(--placeholder-text);
+}
+
+.search-form input[type="text"]:focus {
+  outline: none;
+  border-color: var(--primary-accent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary-accent) 25%, transparent);
+}
+
+.search-form button[type="submit"] {
+  padding: 0.625rem 1.25rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  font-family: "Nunito Sans", system-ui, sans-serif;
+  color: var(--button-text-on-primary);
+  background-color: var(--primary-accent-fill);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: filter 0.2s;
+}
+
+.search-form button[type="submit"]:hover {
+  filter: brightness(0.9);
+}
+
+.search-form button[type="submit"]:focus {
+  outline: 2px solid var(--primary-accent);
+  outline-offset: 2px;
+}
+
+.search-note {
+  font-size: 0.875rem;
+  color: var(--muted-text);
+  margin: 0.5rem 0 1.25rem 0;
+}
+
+#search-results-outer {
+  margin-top: 0.5rem;
+}
+
+.search-summary {
+  font-size: 0.9375rem;
+  color: var(--main-text);
+  margin: 0 0 1rem 0;
+}
+
+/* Search results list - ref left, Hebrew text right, no overlap */
+.search-results {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 2rem 0;
+}
+
+.search-result-item {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.search-result-item:last-child {
+  border-bottom: none;
+}
+
+.search-result-ref {
+  flex-shrink: 0;
+  min-width: 8em;
+}
+
+.search-result-ref a {
+  color: var(--primary-accent);
+  text-decoration: none;
+  font-family: "Nunito Sans", system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.search-result-ref a:hover {
+  text-decoration: underline;
+}
+
+.search-result-text {
+  flex: 1;
+  min-width: 0;
+  direction: rtl;
+  text-align: right;
+  font-family: "Rubik", "Heebo", "Nunito", sans-serif;
+  font-size: 1.125rem;
+  line-height: 1.7;
+  color: var(--main-text);
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.search-results .no-results {
+  color: var(--muted-text);
+  font-style: italic;
+  padding: 1rem 0;
+}

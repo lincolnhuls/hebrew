@@ -4,7 +4,8 @@ from django.views.decorators.http import require_POST
 from django.core.exceptions import ValidationError
 from lessons.models import LessonSession, LessonAnswer, Lesson
 from lessons.services import start_lesson_session, start_review_lesson_session, submit_answer
-from lessons.constants import PASS_THRESHOLD
+from lessons.constants import PASS_THRESHOLD, PASS_PERCENT
+from math import ceil
 
 # Create your views here.
 @require_POST
@@ -227,7 +228,8 @@ def _session_results(session_id: int) -> dict:
         .first()
     )
     total_questions = len(total or [])
-    passed = correct_count >= PASS_THRESHOLD
+    required_correct = ceil(total_questions * PASS_PERCENT) if total_questions else 0
+    passed = total_questions > 0 and correct_count >= required_correct
 
     return {
         "score_correct": correct_count,
