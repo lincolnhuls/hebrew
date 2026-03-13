@@ -101,6 +101,20 @@ def settings_page(request):
         return render(request, "users/users.html")
     return render(request, "main/settings.html")
 
+def profile_page(request):
+    firebase_uid = request.session.get('firebase_uid')
+    if not firebase_uid:
+        return render(request, "users/users.html")
+    
+    try:
+        user = UserInformation.objects.get(firebase_uid=firebase_uid)
+    except UserInformation.DoesNotExist:
+        return render(request, "users/users.html")
+
+    return render(request, "main/profile.html", {
+        "user_info": user,
+        "firebase_uid": firebase_uid,
+    })
 
 def lesson_runner(request, lesson_slug):
     """Render the single-page lesson runner UI."""

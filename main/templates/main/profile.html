@@ -1,0 +1,50 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block title %}Profile{% endblock %}
+{% block meta_description %}View your Biblical Hebrew profile, including your account information and learning settings.{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+  <div class="auth-logo">
+    <a class="brand-pill" href="{% url 'main:home' %}">Biblical Hebrew</a>
+  </div>
+
+  <div class="card settings-card">
+    <h2>Your Profile</h2>
+
+    <div class="settings-row">
+      <span class="settings-label">Name</span>
+      <span>{{ user_info.name|default:"(not set)" }}</span>
+    </div>
+
+    <div class="settings-row">
+      <span class="settings-label">Email</span>
+      <span>{{ user_info.email|default:"(not set)" }}</span>
+    </div>
+  </div>
+
+  <div class="card settings-card">
+    <h2>Next Steps</h2>
+    <p class="settings-hint">
+      You can adjust your appearance and learning goals on the
+      <a href="{% url 'main:settings' %}">Settings page</a>, or return to your
+      <a href="{% url 'main:dashboard' %}">Dashboard</a> to continue learning.
+    </p>
+
+    <hr style="margin: 1.5rem 0; border: 0; border-top: 1px solid var(--border);" />
+
+    <h3 class="settings-label" style="margin-bottom: 0.5rem;">Delete Account</h3>
+    <p class="settings-hint">
+      Deleting your account will remove your learning data from this app and sign you out.
+      This action cannot be undone.
+    </p>
+    <form method="post" action="{% url 'users:delete_account' %}" style="margin-top: 1rem;">
+      {% csrf_token %}
+      <button type="submit" class="btn-secondary btn" style="border-color: var(--secondary-accent-foreground); color: var(--secondary-accent-foreground);">
+        Delete My Account
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1003,6 +1003,11 @@ html:not(.theme-light) .topbar.topbar-option-2e {
     margin: 0.5rem 0 0;
 }
 
+.settings-hint a {
+    color: var(--primary-accent);
+    text-decoration: underline;
+}
+
 .settings-card form {
     margin-top: 1rem;
 }

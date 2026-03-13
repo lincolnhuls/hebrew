@@ -7,7 +7,9 @@
 {% block content %}
 <section class="scripture-content scripture-book-list">
   <h1 class="scripture-title">Old Testament</h1>
-  <p><a href="{% url 'bible:search' %}">Search Scriptures</a></p>
+  <p class="scripture-search-cta">
+    <a href="{% url 'bible:search' %}" class="scripture-search-button">Search Scriptures</a>
+  </p>
   <ul class="book-list">
     {% for book in books %}
     <li>

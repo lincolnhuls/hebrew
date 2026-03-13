@@ -1,6 +1,7 @@
 from ..utils import error_response, verify_with_retry
 from ..models import UserInformation
 from django.http import JsonResponse
+from django.shortcuts import redirect
 import json
 
 def user_sessions(request):
@@ -104,3 +105,29 @@ def user_logout(request):
             return error_response("Error logging out user", status=500, details=str(e))
     else:
         return error_response("Only POST requests are allowed", status=405)
+
+
+def delete_account(request):
+    """Delete the currently authenticated user's account and log them out.
+
+    This is triggered from the Profile page via a POST form.
+    """
+    if request.method != "POST":
+        # For safety, only allow POST; redirect back to account page otherwise.
+        return redirect("users:account")
+
+    firebase_uid = request.session.get("firebase_uid")
+    if firebase_uid:
+        try:
+            user = UserInformation.objects.get(firebase_uid=firebase_uid)
+            user.delete()  # cascades to related LearningPreferences
+        except UserInformation.DoesNotExist:
+            pass
+
+    # Clear session and send the user to the home page
+    try:
+        request.session.flush()
+    except Exception:
+        request.session.clear()
+
+    return redirect("main:home")
