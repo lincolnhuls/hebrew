@@ -39,7 +39,8 @@
       Deleting your account will remove your learning data from this app and sign you out.
       This action cannot be undone.
     </p>
-    <form method="post" action="{% url 'users:delete_account' %}" style="margin-top: 1rem;">
+    <form method="post" action="{% url 'users:delete_account' %}" style="margin-top: 1rem;"
+          onsubmit="return confirm('Are you sure you want to delete your account? This cannot be undone.');">
       {% csrf_token %}
       <button type="submit" class="btn-secondary btn" style="border-color: var(--secondary-accent-foreground); color: var(--secondary-accent-foreground);">
         Delete My Account

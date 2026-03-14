@@ -1,7 +1,8 @@
-from ..utils import error_response, verify_with_retry
+from ..utils import error_response, verify_with_retry, _ensure_firebase_initialized
 from ..models import UserInformation
 from django.http import JsonResponse
 from django.shortcuts import redirect
+from firebase_admin import auth as firebase_auth
 import json
 
 def user_sessions(request):
@@ -118,9 +119,18 @@ def delete_account(request):
 
     firebase_uid = request.session.get("firebase_uid")
     if firebase_uid:
+        # Delete Firebase Auth user (frees the email for reuse)
+        try:
+            _ensure_firebase_initialized()
+            firebase_auth.delete_user(firebase_uid)
+        except Exception:
+            # If Firebase delete fails, continue with local cleanup so the app isn't stuck
+            pass
+
+        # Delete local user record (cascades to related LearningPreferences)
         try:
             user = UserInformation.objects.get(firebase_uid=firebase_uid)
-            user.delete()  # cascades to related LearningPreferences
+            user.delete()
         except UserInformation.DoesNotExist:
             pass
 
