@@ -1,0 +1,38 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block title %}Achievements{% endblock %}
+{% block meta_description %}View your Biblical Hebrew achievements and progress.{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="dashboard-header">
+    <div class="dashboard-header-main">
+      <span class="dashboard-title">Achievements</span>
+    </div>
+    <div class="dashboard-header-actions">
+      <a href="{% url 'main:dashboard' %}" class="dashboard-header-link">Dashboard</a>
+      <a href="{% url 'bible:book_list' %}" class="dashboard-header-link">Scriptures</a>
+      <a href="{% url 'main:profile' %}" class="dashboard-header-link">Profile</a>
+      <a href="{% url 'main:settings' %}" class="dashboard-header-link">Settings</a>
+    </div>
+  </div>
+
+  <p class="dashboard-greeting">You've earned {{ earned|length }} of {{ all_achievements|length }} achievements.</p>
+
+  <div class="achievements-grid achievements-page-grid">
+    {% for ach in all_achievements %}
+    <div class="achievement-badge {% if ach.slug in earned_slugs %}earned{% else %}locked{% endif %}">
+      <span class="achievement-emoji">{{ ach.icon|default:"🏅" }}</span>
+      <span class="achievement-name">{{ ach.name }}</span>
+      <p class="achievement-desc">{{ ach.description }}</p>
+      {% if ach.slug in earned_slugs %}
+        <span class="achievement-date">Earned</span>
+      {% else %}
+        <span class="achievement-locked">Locked</span>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

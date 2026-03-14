@@ -4,7 +4,8 @@ from lessons.models import Lesson, HebrewLetter, LessonSession
 from lessons.services import review_items, get_lesson_1_combined_progress, get_lesson_2_combined_progress
 from lessons.constants import DEFAULT_PASSES_REQUIRED
 from django.utils import timezone
-from users.models import UserInformation
+from users.models import UserInformation, Achievement, UserAchievement
+from users.achievements import update_streaks_and_award, award_achievement
 
 def ping(request):
     return HttpResponse("ok")
@@ -70,13 +71,14 @@ def dashboard(request):
         if prefs is not None and prefs.daily_lessons_target > 0:
             daily_target = prefs.daily_lessons_target
     except UserInformation.DoesNotExist:
+        user = None
         prefs = None
 
     today = timezone.now().date()
     today_completed = LessonSession.objects.filter(
         user_id=firebase_uid,
-        completed = True,
-        passed = True,
+        completed=True,
+        passed=True,
         completed_at__date=today,
     ).count()
 
@@ -84,6 +86,31 @@ def dashboard(request):
         today_goal_percent = int(min(100, round(100 * today_completed / daily_target)))
     else:
         today_goal_percent = 0
+
+    if user:
+        update_streaks_and_award(user, today_completed)
+        if lesson_1_combined["is_complete"]:
+            award_achievement(user, "lesson-complete-alphabet-1")
+        if lesson_2_combined["is_complete"]:
+            award_achievement(user, "lesson-complete-alphabet-2")
+    streak_days = user.current_activity_streak_days if user else 0
+
+    level = 2 if lesson_2_combined["is_complete"] else (1 if lesson_1_combined["is_complete"] else 0)
+
+    passed_sessions = LessonSession.objects.filter(
+        user_id=firebase_uid, completed=True, passed=True
+    )
+    regular_passes = passed_sessions.filter(seed__isnull=False).count()
+    review_passes = passed_sessions.filter(seed__isnull=True).count()
+    total_xp = regular_passes * 100 + review_passes * 50
+
+    earned_achievements = []
+    if user:
+        earned_achievements = list(
+            UserAchievement.objects.filter(user=user)
+            .select_related("achievement")
+            .order_by("-earned_at")
+        )
 
     return render(request, "main/dashboard.html", {
         "lesson_1_combined": lesson_1_combined,
@@ -93,6 +120,10 @@ def dashboard(request):
         "today_lessons_completed": today_completed,
         "today_lessons_target": daily_target,
         "today_goal_percent": today_goal_percent,
+        "streak_days": streak_days,
+        "level": level,
+        "total_xp": total_xp,
+        "earned_achievements": earned_achievements,
     })
 
 def settings_page(request):
@@ -100,6 +131,26 @@ def settings_page(request):
     if not login:
         return render(request, "users/users.html")
     return render(request, "main/settings.html")
+
+def achievements_page(request):
+    firebase_uid = request.session.get('firebase_uid')
+    if not firebase_uid:
+        return render(request, "users/users.html")
+    
+    try:
+        user = UserInformation.objects.get(firebase_uid=firebase_uid)
+    except UserInformation.DoesNotExist:
+        return render(request, "users/users.html")
+    
+    earned = UserAchievement.objects.filter(user=user).select_related("achievement").order_by("-earned_at")
+    all_achievements = Achievement.objects.filter(is_active=True).order_by("category", "slug")
+    earned_slugs = {ua.achievement.slug for ua in earned}
+    
+    return render(request, "main/achievements.html", {
+        "earned": earned,
+        "all_achievements": all_achievements,
+        "earned_slugs": earned_slugs,
+    })
 
 def profile_page(request):
     firebase_uid = request.session.get('firebase_uid')

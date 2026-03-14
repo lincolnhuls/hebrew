@@ -99,6 +99,9 @@
         var form = document.getElementById('learningGoalsForm');
         if (!form) return;
 
+        if (form.dataset.goalsSubmitAttached === 'true') return;
+        form.dataset.goalsSubmitAttached = 'true';
+
         fetch('/users/preferences/', { credentials: 'same-origin' })
             .then(function(r) { return r.json(); })
             .then(function(data) {
@@ -128,6 +131,10 @@
                 e.preventDefault();
                 var msgEl = document.getElementById('goalsMessage');
                 if (!msgEl) return;
+
+                var submitBtn = form.querySelector('button[type="submit"]');
+                if (submitBtn && submitBtn.disabled) return;
+                if (submitBtn) submitBtn.disabled = true;
 
                 var target = document.getElementById('dailyLessonsTarget');
                 var enabled = document.getElementById('reminderEnabled');
@@ -167,6 +174,9 @@
                     .catch(function() {
                         msgEl.textContent = 'Something went wrong.';
                         msgEl.style.color = 'var(--secondary-accent-foreground, #B45309)';
+                    })
+                    .finally(function() {
+                        if (submitBtn) submitBtn.disabled = false;
                     });
             });
     });

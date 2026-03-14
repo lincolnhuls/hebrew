@@ -8,6 +8,7 @@ urlpatterns = [
     path("ping/", views.ping, name="ping"),
     path("dashboard/", views.dashboard, name='dashboard'),
     path("settings/", views.settings_page, name="settings"),
+    path("achievements/", views.achievements_page, name="achievements"),
     path("profile/", views.profile_page, name="profile"),
     path("lesson-1/", views.lesson_1_hub, name="lesson_1_hub"),
     path("lesson-1/alphabet-learn/", views.alphabet_learn, name="alphabet_learn"),

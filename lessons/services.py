@@ -13,6 +13,8 @@ from django.core.exceptions import ValidationError
 from random import Random
 import logging
 from math import ceil
+from users.models import UserInformation
+from users.achievements import check_answer_achievements, check_lesson_achievements, update_streaks_and_award
 
 logger = logging.getLogger(__name__)
 
@@ -197,6 +199,16 @@ def submit_answer(session_id: int, question_index: int, user_answer_json: dict, 
         answered_at=timezone.now()
     )
     
+    try:
+        user = UserInformation.objects.get(firebase_uid=session.user_id)
+        user.total_answers = (user.total_answers or 0) + 1
+        if correct:
+            user.total_correct_answers = (user.total_correct_answers or 0) + 1
+        user.save(update_fields=["total_answers", "total_correct_answers"])
+        check_answer_achievements(user)
+    except UserInformation.DoesNotExist:
+        pass
+    
     session.current_index = max(session.current_index or 0, question_index + 1)
     
     if session.current_index >= len(questions):
@@ -218,6 +230,23 @@ def submit_answer(session_id: int, question_index: int, user_answer_json: dict, 
     if session.completed:
         update_fields.append("passed")
     session.save(update_fields=update_fields)
+
+    if session.completed and session.passed:
+        try:
+            user = UserInformation.objects.get(firebase_uid=session.user_id)
+            check_lesson_achievements(user, session.lesson, session)
+            
+            today = timezone.now().date()
+            today_count = LessonSession.objects.filter(
+                user_id=session.user_id,
+                completed=True,
+                passed=True,
+                completed_at__date=today,
+            ).count()
+            update_streaks_and_award(user, today_count)
+        except UserInformation.DoesNotExist:
+            pass
+            
 
     result = {
         "correct": correct,

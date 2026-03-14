@@ -1,5 +1,5 @@
 {% extends "main/base.html" %}
-{% load static %}
+{% load static humanize %}
 
 {% block title %}Dashboard{% endblock %}
 {% block meta_description %}View your Biblical Hebrew learning progress, track your daily goals, continue lessons, and see your achievements. Monitor your streak, level, and XP.{% endblock %}
@@ -15,6 +15,7 @@
         </div>
         <div class="dashboard-header-actions">
             <a href="{% url 'bible:book_list' %}" class="dashboard-header-link">Scriptures</a>
+            <a href="{% url 'main:achievements' %}" class="dashboard-header-link">Achievements</a>
             <a href="{% url 'main:profile' %}" class="dashboard-header-link">Profile</a>
             <a href="{% url 'main:settings' %}" class="dashboard-header-link">Settings</a>
             <button class="notification-bell" aria-label="Notifications">🔔</button>
@@ -25,9 +26,9 @@
     <div class="welcome-card">
         <h3>Welcome back! 👋</h3>
         <div class="welcome-stats">
-            <span class="welcome-stat">🔥 Streak: 7 days</span>
-            <span class="welcome-stat">📊 Level 5</span>
-            <span class="welcome-stat xp">⭐ 1,250 XP</span>
+            <span class="welcome-stat">🔥 Streak: {{ streak_days }} day{{ streak_days|pluralize }}</span>
+            <span class="welcome-stat">📊 Level {{ level }}</span>
+            <span class="welcome-stat xp">⭐ {{ total_xp|intcomma }} XP</span>
         </div>
         <div class="welcome-card-actions">
             <a href="{% url 'main:lesson_1_hub' %}" class="btn-continue">Continue Learning →</a>
@@ -194,26 +195,18 @@
         </div>
     </div>
 
-    <!-- Achievements Section -->
+    {% if earned_achievements %}
+    <!-- Achievements Section (only when at least one earned) -->
     <h2 class="section-title">Achievements</h2>
     <div class="achievements-grid">
-        <div class="achievement-badge">
-            <div class="achievement-emoji">🏆</div>
-            <p class="achievement-name">First Lesson</p>
+        {% for ua in earned_achievements %}
+        <div class="achievement-badge earned">
+            <span class="achievement-emoji">{{ ua.achievement.icon|default:"🏅" }}</span>
+            <p class="achievement-name">{{ ua.achievement.name }}</p>
         </div>
-        <div class="achievement-badge">
-            <div class="achievement-emoji">🔥</div>
-            <p class="achievement-name">7-Day Streak</p>
-        </div>
-        <div class="achievement-badge">
-            <div class="achievement-emoji">⭐</div>
-            <p class="achievement-name">Perfect Score</p>
-        </div>
-        <div class="achievement-badge">
-            <div class="achievement-emoji">📚</div>
-            <p class="achievement-name">Scholar Badge</p>
-        </div>
+        {% endfor %}
     </div>
+    {% endif %}
 </div>
 
 <div id="learningGoalsModal" class="modal hidden">

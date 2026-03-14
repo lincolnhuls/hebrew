@@ -84,5 +84,5 @@ class UserAchievement(models.Model):
     class Meta:
         unique_together = [("user", "achievement")]
 
-    def __Str__(self):
+    def __str__(self):
         return f"{self.user} → {self.achievement}"
