@@ -1,5 +1,5 @@
-from lessons.models import Lesson, LessonSession, HebrewLetter, LessonAnswer
-from lessons.generators import generate_alphabet_1_questions, generate_alphabet_2_questions, generate_similar_letters_questions, generate_begadkefat_questions, generate_final_letters_questions
+from lessons.models import Lesson, LessonSession, HebrewLetter, LessonAnswer, HebrewVowel
+from lessons.generators import generate_alphabet_1_questions, generate_alphabet_2_questions, generate_similar_letters_questions, generate_begadkefat_questions, generate_final_letters_questions, generate_vowels_1_questions
 from lessons.constants import (
     RANDOM_SEED_MIN, RANDOM_SEED_MAX,
     ALPHABET_1_START, ALPHABET_1_END,
@@ -60,6 +60,14 @@ def start_lesson_session(user_id: str, lesson_slug: str) -> LessonSession:
             .values("letter", "name_en")
         )
         questions = generate_alphabet_2_questions(letters, session.seed)
+
+    elif lesson_slug == "vowels-1":
+        vowels = list(
+            HebrewVowel.objects
+            .order_by("order")
+            .values("symbol", "name_en", "transliteration")
+        )
+        questions = generate_vowels_1_questions(vowels, session.seed)
 
     elif lesson_slug == "similar-letters":
         similar_orders = set()

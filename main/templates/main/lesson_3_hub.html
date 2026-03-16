@@ -1,0 +1,61 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block title %}Lesson 3: Vowels{% endblock %}
+{% block meta_description %}Learn the Biblical Hebrew vowels, then practice with the vowels quiz.{% endblock %}
+
+{% block content %}
+
+<div class="container">
+  <header class="lesson-hub-header">
+    <a href="{% url 'main:dashboard' %}" class="lesson-runner-back">← Back</a>
+    <h1 class="lesson-hub-title">Lesson 3: Vowels</h1>
+  </header>
+
+  <div class="lesson-hub-intro">
+    <p>Learn the basic Hebrew vowels and then test yourself with the vowels quiz.</p>
+  </div>
+
+  <div class="lessons-grid lesson-hub-grid">
+    <!-- Learn the vowels -->
+    <div class="lesson-card">
+      <h2 class="lesson-title">Learn the Vowels</h2>
+      <p class="lesson-subtitle">Study guide</p>
+      <a href="{% url 'main:vowels_learn' %}" class="lesson-button primary">Start</a>
+    </div>
+
+    <!-- Vowels quiz -->
+    <div class="lesson-card">
+      <h3 class="lesson-title">Vowels Quiz</h3>
+      <p class="lesson-subtitle">Test your knowledge</p>
+      {% if lesson_3_progress %}
+      <div class="lesson-progress-header">
+        <span class="lesson-progress-percent-above">{{ lesson_3_progress.progress_pct }}%</span>
+      </div>
+      <div class="lesson-progress-bar">
+        <div class="lesson-progress-fill lesson-1-progress-pct-{% if lesson_3_progress.progress_pct >= 100 %}100{% elif lesson_3_progress.progress_pct >= 75 %}75{% elif lesson_3_progress.progress_pct >= 50 %}50{% elif lesson_3_progress.progress_pct >= 25 %}25{% else %}0{% endif %}"></div>
+      </div>
+      <p class="lesson-status">
+        {% if lesson_3_progress.is_complete %}
+          ✓ Complete
+        {% else %}
+          {{ lesson_3_progress.pass_count }}/{{ lesson_3_progress.passes_required }} passes
+        {% endif %}
+      </p>
+      {% if lesson_3_progress.is_complete %}
+        <div class="lesson-buttons-row">
+          <a href="{% url 'main:lesson_runner' lesson_slug='vowels-1' %}" class="lesson-button secondary">Retake quiz</a>
+          <a href="{% url 'main:review_lesson' lesson_slug='vowels-1' %}" class="lesson-button primary">Review</a>
+        </div>
+      {% else %}
+        <a href="{% url 'main:lesson_runner' lesson_slug='vowels-1' %}" class="lesson-button primary">Continue</a>
+      {% endif %}
+      {% else %}
+      <p class="lesson-status">Vowels lesson not configured.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+

@@ -1,0 +1,150 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block title %}Lesson 3: Vowels – Learn the Vowels{% endblock %}
+{% block meta_description %}Learn the Biblical Hebrew vowels and their basic sounds.{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'main/css/alphabet_learn.css' %}">
+{% endblock %}
+{% block extra_js %}
+<script type="module" src="{% static 'main/js/alphabet_learn_audio.js' %}" defer></script>
+{% endblock %}
+
+{% block content %}
+
+<div class="alphabet-learn">
+  <header class="alphabet-learn-header">
+    <a href="{% url 'main:lesson_3_hub' %}" class="alphabet-learn-back">← Back</a>
+    <h1 class="alphabet-learn-title">Lesson 3: Vowels – Learn the Vowels</h1>
+  </header>
+
+  <!-- 1. Hero / Welcome -->
+  <section class="alphabet-learn-hero">
+    <h2 class="alphabet-learn-hero-title">Welcome to the Vowels</h2>
+    <p class="alphabet-learn-hero-text">
+      <!-- Add your intro text about how vowels work in Biblical Hebrew. -->
+    </p>
+  </section>
+
+  <!-- 2. Vowels Overview -->
+  <section class="alphabet-learn-card">
+    <h2 class="alphabet-learn-card-title">Hebrew Vowels at a Glance</h2>
+    <p class="alphabet-learn-card-text">
+      Hebrew is known as an abjad language, meaning that it is written with consonants only. However, in modern times, something called the niqqud, or vowel points, have been added to the text to help with pronunciation. When reading, pronounce the letter first, then the vowel sound.
+    </p>
+  </section>
+
+  <!-- 3. All Vowels Grid -->
+  <section class="alphabet-learn-section alphabet-learn-letters-grid-card">
+    <h2 class="alphabet-learn-section-title">All Vowels</h2>
+    <p class="alphabet-learn-section-subtitle">Each mark changes the sound of a consonant.</p>
+    <div class="alphabet-learn-grid">
+      {% for v in vowels %}
+      {% with n=v.order|stringformat:"02d" %}
+      {% with name_path='main/audio/vowels/vowel-'|add:n|add:'-name.mp3' sound_path='main/audio/vowels/vowel-'|add:n|add:'-sound.mp3' %}
+      <div class="alphabet-learn-letter-tile">
+        <span class="alphabet-learn-letter-glyph hebrew-rtl">{{ v.symbol }}</span>
+        <span class="alphabet-learn-letter-name">{{ v.name_en }}</span>
+        <button
+          type="button"
+          class="alphabet-learn-speaker-btn"
+          aria-label="Play {{ v.name_en }}"
+          data-audio-name="{% static name_path %}"
+          data-audio-sound="{% static sound_path %}"
+        >🔊</button>
+      </div>
+      {% endwith %}
+      {% endwith %}
+      {% empty %}
+      <p class="alphabet-learn-empty">No vowels loaded. Add Hebrew vowels in the admin.</p>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- 4. Learn Each Vowel -->
+  <h2 class="alphabet-learn-section-title">Learn Each Vowel</h2>
+  <p class="alphabet-learn-section-subtitle">
+    <!-- Add guidance on how to read the individual explanations below. -->
+  </p>
+
+  {% for v in vowels %}
+  {% with n=v.order|stringformat:"02d" %}
+  {% with name_path='main/audio/vowels/vowel-'|add:n|add:'-name.mp3' sound_path='main/audio/vowels/vowel-'|add:n|add:'-sound.mp3' %}
+  <section class="alphabet-learn-letter-card">
+    <div class="alphabet-learn-letter-box hebrew-rtl">{{ v.symbol }}</div>
+    <button
+      type="button"
+      class="alphabet-learn-speaker-btn-inline"
+      aria-label="Play {{ v.name_en }}"
+      data-audio-name="{% static name_path %}"
+      data-audio-sound="{% static sound_path %}"
+    >🔊</button>
+    <div class="alphabet-learn-letter-content">
+      <h3 class="alphabet-learn-letter-heading">
+        {{ v.name_en }}
+      </h3>
+      <p class="alphabet-learn-letter-description">
+        {% if v.name_en == "Patach" %}
+          Patach makes the same sound as <strong>a</strong> as in <em>father</em>.
+        {% elif v.name_en == "Segol" %}
+          Segol makes the same sound as <strong>e</strong> as in <em>bet</em>.
+        {% elif v.name_en == "Hiriq" %}
+          Hiriq makes the same sound as <strong>i</strong> as in <em>hit</em>.
+        {% elif v.name_en == "Qamets Hatuph" %}
+          Qamets Hatuph makes the same sound as <strong>o</strong> as in <em>soft</em>.
+        {% elif v.name_en == "Qibbuts" %}
+          Qibbuts makes the same sound as <strong>u</strong> as in <em>puts</em>.
+        {% elif v.name_en == "Qamets" %}
+          Qamets makes the same sound as <strong>a</strong> as in <em>father</em>.
+        {% elif v.name_en == "Tsere" %}
+          Tsere makes the same sound as <strong>e</strong> as in <em>they</em>.
+        {% elif v.name_en == "Hiriq Yod" %}
+          Hiriq Yod makes the same sound as <strong>i</strong> as in <em>machine</em>.
+        {% elif v.name_en == "Holem" %}
+          Holem makes the same sound as <strong>o</strong> as in <em>hole</em>.
+        {% elif v.name_en == "Shureq" %}
+          Shureq makes the same sound as <strong>u</strong> as in <em>lute</em>.
+        {% endif %}
+      </p>
+    </div>
+  </section>
+  {% endwith %}
+  {% endwith %}
+  {% empty %}
+  <p class="alphabet-learn-empty">No vowels loaded.</p>
+  {% endfor %}
+
+  <!-- 5. Extra Notes -->
+  <section class="alphabet-learn-card" style="margin-top: 2rem;">
+    <h2 class="alphabet-learn-card-title">A Note on Long and Short Vowels</h2>
+    <p class="alphabet-learn-card-text">
+      In Biblical Hebrew, some vowels are considered “long” and others “short”, and the same mark can sometimes behave differently
+      depending on its position in the word. Those details are important, but they go beyond the scope of this first vowels lesson.
+      For now, focus on recognizing each vowel’s basic sound.
+    </p>
+  </section>
+
+  <section class="alphabet-learn-card">
+    <h2 class="alphabet-learn-card-title">Qamets vs. Qamets Hatuph</h2>
+    <p class="alphabet-learn-card-text">
+      Qamets and Qamets Hatuph use the <em>same</em> written mark, but they sound different.
+      Qamets usually sounds like <strong>a</strong> as in <em>father</em>, while Qamets Hatuph sounds like a short <strong>o</strong> as in <em>soft</em>.
+      For the most part, when you see either of them, it is safe to assume that it is a Qamets. Only rarely does a true Qamets Hatuph appear. 
+    </p>
+  </section>
+
+  <section class="alphabet-learn-card">
+    <h2 class="alphabet-learn-card-title">Why You See a Bet in the Quiz</h2>
+    <p class="alphabet-learn-card-text">
+      In the quiz, each vowel is shown together with the consonant Bet (בּ) so that the small vowel marks are easier to see.
+      Think of the Bet as a simple “carrier” letter: it helps you see the vowel clearly, but the quiz is really testing the vowel,
+      not the consonant.
+    </p>
+  </section>
+
+  <a href="{% url 'main:lesson_runner' 'vowels-1' %}" class="alphabet-learn-continue">Continue to Quiz →</a>
+</div>
+
+{% endblock %}
+

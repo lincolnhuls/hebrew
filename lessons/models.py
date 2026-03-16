@@ -212,3 +212,18 @@ FILL: Prompt = "What is the name of this letter?" Shown = letter, Answer = name_
 Match: Prompt = "Match the letters to their names." Pairs = 4 letters and thier 4 names(shuffled)
 Determinism rule: "When a LessonSession is created, generate the full question set once using a stored seed, then save it to question_set_json."
 """
+
+class HebrewVowel(models.Model):
+    order = models.PositiveSmallIntegerField(unique=True)
+    symbol = models.CharField(max_length=10)
+    name_en = models.CharField(max_length=50)
+    transliteration = models.CharField(max_length=100, blank=True, null=True)
+    
+    class Meta:
+        verbose_name = "Hebrew Vowel"
+        verbose_name_plural = "Hebrew Vowels"
+        ordering = ["order"]
+
+    def __str__(self):
+        return f"{self.symbol} ({self.name_en})"
+	

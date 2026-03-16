@@ -329,6 +329,114 @@ def _generate_alphabet_questions(letters, seed, mc_count=MC_QUESTION_COUNT, fill
     rng.shuffle(questions)
     return questions
 
+from random import Random
+
+
+def generate_vowels_1_questions(vowels: list[dict], seed: int) -> list[dict]:
+    """
+    Build a small question set for vowels.
+
+    vowels: list of dicts with keys: symbol, name_en, transliteration (optional)
+    """
+    rng = Random(seed)
+    questions: list[dict] = []
+
+    # Base consonant so the niqqud is clearly visible
+    base = "בּ"
+
+    def display(symbol: str) -> str:
+        """Return what the learner sees for a given vowel symbol."""
+        return base + (symbol or "")
+
+    def _has_visible_symbol(symbol: str) -> bool:
+        """
+        Heuristic: treat symbols that render as effectively empty as unusable.
+        This guards against bad/placeholder data that would produce blank boxes.
+        """
+        if not symbol:
+            return False
+        # Strip common whitespace; keep combining marks themselves.
+        if symbol.strip() == "":
+            return False
+        return True
+
+    # Filter out any vowels without a usable symbol (defensive)
+    usable_vowels = [v for v in vowels if _has_visible_symbol(v.get("symbol"))]
+    if len(usable_vowels) < 2:
+        return []
+
+    # Build a canonical list of distinct symbols so distractors are visually unique
+    symbol_to_vowel = {}
+    for v in usable_vowels:
+        sym = v["symbol"]
+        if sym not in symbol_to_vowel:
+            symbol_to_vowel[sym] = v
+    distinct_symbols = list(symbol_to_vowel.keys())
+
+    # 1) Multiple-choice: name -> symbol
+    # "Which vowel is Patach?"
+    for v in usable_vowels:
+        correct_symbol = v["symbol"]
+        name = v["name_en"]
+
+        # Distinct other symbols for distractors
+        other_symbols = [s for s in distinct_symbols if s != correct_symbol]
+        if not other_symbols:
+            continue
+
+        # Aim for 4 total choices when possible
+        k = 3 if len(other_symbols) >= 3 else len(other_symbols)
+        distractor_symbols = rng.sample(other_symbols, k=k)
+        symbols = [correct_symbol] + distractor_symbols
+        rng.shuffle(symbols)
+
+        # Build choices and defensively drop anything that renders "empty"
+        choices = [display(s) for s in symbols]
+        choices = [c for c in choices if c and c.strip()]
+        # Require at least 2 visible options; otherwise skip this question
+        if len(choices) < 2 or display(correct_symbol) not in choices:
+            continue
+
+        answer = display(correct_symbol)
+
+        questions.append({
+            "type": "mc",
+            "prompt": f"Which vowel is {name}?",
+            "choices": choices,
+            "answer": answer,
+        })
+
+    # 2) Fill-in: symbol -> name
+    # "What is the name of this vowel?"
+    for v in usable_vowels:
+        questions.append({
+            "type": "fill",
+            "prompt": "What is the name of this vowel?",
+            "shown": display(v["symbol"]),
+            "answer": v["name_en"],
+        })
+
+    # 3) Match: groups of 4 vowels (symbol <-> name)
+    chunk_size = 4
+    for i in range(0, len(usable_vowels), chunk_size):
+        chunk = usable_vowels[i:i + chunk_size]
+        if len(chunk) < 2:
+            break  # not enough to make a useful match question
+
+        left = [display(item["symbol"]) for item in chunk]
+        right = [item["name_en"] for item in chunk]
+        rng.shuffle(right)
+
+        pairs = [{"left": s, "right": n} for s, n in zip(left, right)]
+
+        questions.append({
+            "type": "match",
+            "prompt": "Match each vowel symbol to its name.",
+            "pairs": pairs,
+        })
+
+    return questions
+
 
 def generate_alphabet_1_questions(letters, seed):
     """Generate questions for alphabet 1 (letters 1-11)."""

@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
-from lessons.models import Lesson, HebrewLetter, LessonSession
+from lessons.models import Lesson, HebrewLetter, LessonSession, HebrewVowel
 from lessons.services import review_items, get_lesson_1_combined_progress, get_lesson_2_combined_progress
 from lessons.constants import DEFAULT_PASSES_REQUIRED
 from django.utils import timezone
@@ -112,11 +112,27 @@ def dashboard(request):
             .order_by("-earned_at")
         )
 
+    # Lesson 3 (vowels) completion
+    lesson_3_complete = False
+    try:
+        vowels_lesson = Lesson.objects.get(slug="vowels-1")
+        lesson_3_pass_count = LessonSession.objects.filter(
+            user_id=firebase_uid,
+            lesson=vowels_lesson,
+            completed=True,
+            passed=True,
+        ).count()
+        if lesson_3_pass_count >= vowels_lesson.passes_required:
+            lesson_3_complete = True
+    except Lesson.DoesNotExist:
+        lesson_3_complete = False
+
     return render(request, "main/dashboard.html", {
         "lesson_1_combined": lesson_1_combined,
         "lesson_1_complete": lesson_1_combined["is_complete"],
         "lesson_2_combined": lesson_2_combined,
         "lesson_2_complete": lesson_2_combined["is_complete"],
+        "lesson_3_complete": lesson_3_complete,
         "today_lessons_completed": today_completed,
         "today_lessons_target": daily_target,
         "today_goal_percent": today_goal_percent,
@@ -151,6 +167,15 @@ def achievements_page(request):
         "all_achievements": all_achievements,
         "earned_slugs": earned_slugs,
     })
+
+
+def vowels_learn(request):
+    firebase_uid = request.session.get("firebase_uid")
+    if not firebase_uid:
+        return render(request, "users/users.html")
+
+    vowels = HebrewVowel.objects.all().order_by("order")
+    return render(request, "main/vowels_learn.html", {"vowels": vowels})
 
 def profile_page(request):
     firebase_uid = request.session.get('firebase_uid')
@@ -217,6 +242,45 @@ def lesson_2_hub(request):
 
     return render(request, "main/lesson_2_hub.html", {
         "lesson_2_combined": combined,
+    })
+
+
+def lesson_3_hub(request):
+    """Lesson 3 hub: Learn vowels + vowels quiz."""
+    firebase_uid = request.session.get('firebase_uid')
+    if not firebase_uid:
+        return redirect('users:account')
+
+    try:
+        vowels_lesson = Lesson.objects.get(slug="vowels-1")
+    except Lesson.DoesNotExist:
+        return render(request, "main/lesson_3_hub.html", {
+            "lesson_3_progress": None,
+            "lesson_error": "Vowels lesson not found.",
+        })
+
+    pass_count = LessonSession.objects.filter(
+        user_id=firebase_uid,
+        lesson=vowels_lesson,
+        completed=True,
+        passed=True,
+    ).count()
+    required = vowels_lesson.passes_required
+    if required > 0:
+        progress_pct = int(min(100, round(100 * pass_count / required)))
+    else:
+        progress_pct = 0
+    is_complete = pass_count >= required and required > 0
+
+    lesson_3_progress = {
+        "pass_count": pass_count,
+        "passes_required": required,
+        "progress_pct": progress_pct,
+        "is_complete": is_complete,
+    }
+
+    return render(request, "main/lesson_3_hub.html", {
+        "lesson_3_progress": lesson_3_progress,
     })
 
 
