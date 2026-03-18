@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
-from lessons.models import Lesson, HebrewLetter, LessonSession, HebrewVowel
+from lessons.models import Lesson, HebrewLetter, LessonSession, HebrewVowel, HebrewAspectForm
 from lessons.services import review_items, get_lesson_1_combined_progress, get_lesson_2_combined_progress
 from lessons.constants import DEFAULT_PASSES_REQUIRED
 from django.utils import timezone
@@ -127,12 +127,28 @@ def dashboard(request):
     except Lesson.DoesNotExist:
         lesson_3_complete = False
 
+    # Lesson 4 (aspect) completion
+    lesson_4_complete = False
+    try:
+        aspect_lesson = Lesson.objects.get(slug="aspect-1")
+        lesson_4_pass_count = LessonSession.objects.filter(
+            user_id=firebase_uid,
+            lesson=aspect_lesson,
+            completed=True,
+            passed=True,
+        ).count()
+        if lesson_4_pass_count >= aspect_lesson.passes_required:
+            lesson_4_complete = True
+    except Lesson.DoesNotExist:
+        lesson_4_complete = False
+
     return render(request, "main/dashboard.html", {
         "lesson_1_combined": lesson_1_combined,
         "lesson_1_complete": lesson_1_combined["is_complete"],
         "lesson_2_combined": lesson_2_combined,
         "lesson_2_complete": lesson_2_combined["is_complete"],
         "lesson_3_complete": lesson_3_complete,
+        "lesson_4_complete": lesson_4_complete,
         "today_lessons_completed": today_completed,
         "today_lessons_target": daily_target,
         "today_goal_percent": today_goal_percent,
@@ -176,6 +192,15 @@ def vowels_learn(request):
 
     vowels = HebrewVowel.objects.all().order_by("order")
     return render(request, "main/vowels_learn.html", {"vowels": vowels})
+
+
+def aspect_learn(request):
+    firebase_uid = request.session.get("firebase_uid")
+    if not firebase_uid:
+        return render(request, "users/users.html")
+
+    forms = HebrewAspectForm.objects.all().order_by("order")
+    return render(request, "main/aspect_learn.html", {"forms": forms})
 
 def profile_page(request):
     firebase_uid = request.session.get('firebase_uid')
@@ -283,6 +308,47 @@ def lesson_3_hub(request):
         "lesson_3_progress": lesson_3_progress,
     })
 
+
+def lesson_4_hub(request):
+    """Lesson 4 hub: Learn aspect + aspect quiz."""
+    firebase_uid = request.session.get("firebase_uid")
+    if not firebase_uid:
+        return redirect("users:account")
+
+    try:
+        aspect_lesson = Lesson.objects.get(slug="aspect-1")
+    except Lesson.DoesNotExist:
+        return render(
+            request,
+            "main/lesson_4_hub.html",
+            {"lesson_4_progress": None, "lesson_error": "Aspect lesson not found."},
+        )
+
+    pass_count = LessonSession.objects.filter(
+        user_id=firebase_uid,
+        lesson=aspect_lesson,
+        completed=True,
+        passed=True,
+    ).count()
+    required = aspect_lesson.passes_required
+    if required > 0:
+        progress_pct = int(min(100, round(100 * pass_count / required)))
+    else:
+        progress_pct = 0
+    is_complete = pass_count >= required and required > 0
+
+    lesson_4_progress = {
+        "pass_count": pass_count,
+        "passes_required": required,
+        "progress_pct": progress_pct,
+        "is_complete": is_complete,
+    }
+
+    return render(
+        request,
+        "main/lesson_4_hub.html",
+        {"lesson_4_progress": lesson_4_progress},
+    )
 
 def alphabet_learn(request):
     """Alphabet learning page: intro cards, letter grid, letter-by-letter sections."""

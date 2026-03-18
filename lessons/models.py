@@ -226,4 +226,52 @@ class HebrewVowel(models.Model):
 
     def __str__(self):
         return f"{self.symbol} ({self.name_en})"
-	
+
+
+class HebrewAspectForm(models.Model):
+    ASPECT_IMPERFECT = "imperfect"
+    ASPECT_PERFECT = "perfect"
+    ASPECT_CHOICES = [
+        (ASPECT_IMPERFECT, "Imperfect"),
+        (ASPECT_PERFECT, "Perfect"),
+    ]
+
+    NUMBER_SINGULAR = "singular"
+    NUMBER_PLURAL = "plural"
+    NUMBER_CHOICES = [
+        (NUMBER_SINGULAR, "Singular"),
+        (NUMBER_PLURAL, "Plural"),
+    ]
+
+    GENDER_MASC = "m"
+    GENDER_FEM = "f"
+    GENDER_COMMON = "c"
+    GENDER_CHOICES = [
+        (GENDER_MASC, "Masculine"),
+        (GENDER_FEM, "Feminine"),
+        (GENDER_COMMON, "Common"),
+    ]
+
+    order = models.PositiveSmallIntegerField(unique=True)
+    aspect = models.CharField(max_length=16, choices=ASPECT_CHOICES)
+    person = models.PositiveSmallIntegerField()  # 1, 2, 3
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES)
+    number = models.CharField(max_length=8, choices=NUMBER_CHOICES)
+
+    # Prefix/suffix shown on the chart; root is implied (___)
+    prefix = models.CharField(max_length=8, blank=True, default="")
+    suffix = models.CharField(max_length=8, blank=True, default="")
+
+    # Full display pattern including niqqud (e.g., יִ___וּ). Used in the learn page and quiz.
+    pattern = models.CharField(max_length=32, blank=True, default="")
+
+    gloss = models.CharField(max_length=20)  # he/she/they/you/I/we
+
+    class Meta:
+        verbose_name = "Hebrew Aspect Form"
+        verbose_name_plural = "Hebrew Aspect Forms"
+        ordering = ["order"]
+
+    def __str__(self):
+        shown = self.pattern or f"{self.prefix}___{self.suffix}"
+        return f"{self.aspect} {self.person}{self.gender}{'s' if self.number == 'singular' else 'p'}: {shown} ({self.gloss})"

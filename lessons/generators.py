@@ -423,11 +423,10 @@ def generate_vowels_1_questions(vowels: list[dict], seed: int) -> list[dict]:
         if len(chunk) < 2:
             break  # not enough to make a useful match question
 
-        left = [display(item["symbol"]) for item in chunk]
-        right = [item["name_en"] for item in chunk]
-        rng.shuffle(right)
-
-        pairs = [{"left": s, "right": n} for s, n in zip(left, right)]
+        # IMPORTANT: pairs must preserve the correct mapping.
+        # The UI will shuffle the available names in each dropdown.
+        pairs = [{"left": display(item["symbol"]), "right": item["name_en"]} for item in chunk]
+        rng.shuffle(pairs)
 
         questions.append({
             "type": "match",
@@ -435,6 +434,80 @@ def generate_vowels_1_questions(vowels: list[dict], seed: int) -> list[dict]:
             "pairs": pairs,
         })
 
+    return questions
+
+
+def generate_aspect_1_questions(forms: list[dict], seed: int) -> list[dict]:
+    """
+    Build a small question set for aspect (Perfect vs Imperfect) forms.
+
+    forms: list of dicts with keys:
+      - aspect (perfect|imperfect)
+      - person (1|2|3)
+      - gender (m|f|c)
+      - number (singular|plural)
+      - prefix, suffix
+      - gloss
+    """
+    rng = Random(seed)
+    questions: list[dict] = []
+
+    def display(f: dict) -> str:
+        shown = (f.get("pattern") or "").strip()
+        if shown:
+            return shown
+        return f"{f.get('prefix','')}___{f.get('suffix','')}"
+
+    # Canonical distinct displays so distractors are visually distinct
+    display_to_form: dict[str, dict] = {}
+    for f in forms:
+        d = display(f)
+        if d not in display_to_form:
+            display_to_form[d] = f
+    distinct_displays = list(display_to_form.keys())
+
+    def label(f: dict) -> str:
+        p = f["person"]
+        g = f["gender"].upper()
+        n = "S" if f["number"] == "singular" else "P"
+        a = "Imperfect" if f["aspect"] == "imperfect" else "Perfect"
+        return f"{a}: {p}{g}{n} ({f['gloss']})"
+
+    # 1) Multiple choice: label -> pick the correct form pattern
+    for f in forms:
+        correct = display(f)
+        other = [d for d in distinct_displays if d != correct]
+        if not other:
+            continue
+        k = 3 if len(other) >= 3 else len(other)
+        distractors = rng.sample(other, k=k)
+        choices = [correct] + distractors
+        rng.shuffle(choices)
+        questions.append(
+            {
+                "type": "mc",
+                "prompt": f"Which form matches: {label(f)}?",
+                "choices": choices,
+                "answer": correct,
+            }
+        )
+
+    # 2) Matching: 4 labels to 4 forms
+    if len(forms) >= 4:
+        sample = rng.sample(forms, 4)
+        left = [label(f) for f in sample]
+        right = [display(f) for f in sample]
+        rng.shuffle(right)
+        pairs = [{"left": l, "right": r} for l, r in zip(left, right)]
+        questions.append(
+            {
+                "type": "match",
+                "prompt": "Match each description to its form.",
+                "pairs": pairs,
+            }
+        )
+
+    rng.shuffle(questions)
     return questions
 
 

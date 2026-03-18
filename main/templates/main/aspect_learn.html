@@ -1,0 +1,110 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block title %}Lesson 4: Aspect — Learn{% endblock %}
+{% block meta_description %}Study the Perfect and Imperfect patterns (prefixes/suffixes) for Biblical Hebrew.{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'main/css/alphabet_learn.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="alphabet-learn">
+  <header class="alphabet-learn-header">
+    <a href="{% url 'main:lesson_4_hub' %}" class="alphabet-learn-back">← Back</a>
+    <h1 class="alphabet-learn-title">Lesson 4: Aspect — Learn</h1>
+  </header>
+
+  <!-- 1. Hero / Intro paragraph -->
+  <section class="alphabet-learn-hero">
+    <h2 class="alphabet-learn-hero-title">Perfect vs. Imperfect</h2>
+    <p class="alphabet-learn-hero-text">
+      Important to understanding Biblical Hebrew is understanding the aspect of verbs as you translate. Verbs in Biblical Hebrew hold much more information than just the action. Depending on the aspect, the verb will also tell you who is preforming the action. For example, אמֶר is the Hebrew verb meaning "to speak". וַיֹּאמֶר Is the imperfect 3MS aspect of the verb. This adds to the verb, taking it from just "to say", to "he said, or he says". When looking a verb up in a lexicon, the vowels are very important to getting the right entry. 
+    </p>
+  </section>
+
+  <!-- 2. How to read the chart -->
+  <section class="alphabet-learn-card">
+    <h2 class="alphabet-learn-card-title">How to read the chart</h2>
+    <p class="alphabet-learn-card-text">
+      The blank line <strong>___</strong> represents the verb root. This lesson focuses on the
+      <strong>prefix</strong> and <strong>suffix</strong> patterns for <strong>Perfect</strong> and <strong>Imperfect</strong>.
+    </p>
+  </section>
+
+  <!-- 3. Imperfect -->
+  <section class="alphabet-learn-card">
+    <h2 class="alphabet-learn-card-title">Imperfect</h2>
+    <div style="overflow-x:auto;">
+      <table style="width:100%; border-collapse: collapse;">
+        <thead>
+          <tr>
+            <th style="text-align:left; padding:0.5rem; border-bottom:1px solid var(--border);">Person</th>
+            <th style="text-align:left; padding:0.5rem; border-bottom:1px solid var(--border);">Gender</th>
+            <th style="text-align:left; padding:0.5rem; border-bottom:1px solid var(--border);">Number</th>
+            <th style="text-align:left; padding:0.5rem; border-bottom:1px solid var(--border);">Form</th>
+            <th style="text-align:left; padding:0.5rem; border-bottom:1px solid var(--border);">Meaning</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for f in forms %}
+            {% if f.aspect == "imperfect" %}
+            <tr>
+              <td style="padding:0.5rem; border-bottom:1px solid var(--border);">{{ f.person }}</td>
+              <td style="padding:0.5rem; border-bottom:1px solid var(--border);">
+                {% if f.gender == "m" %}M{% elif f.gender == "f" %}F{% else %}C{% endif %}
+              </td>
+              <td style="padding:0.5rem; border-bottom:1px solid var(--border);">
+                {% if f.number == "singular" %}Singular{% else %}Plural{% endif %}
+              </td>
+              <td style="padding:0.5rem; border-bottom:1px solid var(--border); font-size: 1.2rem;">
+                <span dir="rtl">{{ f.pattern|default:f.prefix }}{% if not f.pattern %}___{{ f.suffix }}{% endif %}</span>
+              </td>
+              <td style="padding:0.5rem; border-bottom:1px solid var(--border);">{{ f.gloss }}</td>
+            </tr>
+            {% endif %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 4. Perfect -->
+  <section class="alphabet-learn-card">
+    <h2 class="alphabet-learn-card-title">Perfect</h2>
+    <div style="overflow-x:auto;">
+      <table style="width:100%; border-collapse: collapse;">
+        <thead>
+          <tr>
+            <th style="text-align:left; padding:0.5rem; border-bottom:1px solid var(--border);">Person</th>
+            <th style="text-align:left; padding:0.5rem; border-bottom:1px solid var(--border);">Gender</th>
+            <th style="text-align:left; padding:0.5rem; border-bottom:1px solid var(--border);">Number</th>
+            <th style="text-align:left; padding:0.5rem; border-bottom:1px solid var(--border);">Form</th>
+            <th style="text-align:left; padding:0.5rem; border-bottom:1px solid var(--border);">Meaning</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for f in forms %}
+            {% if f.aspect == "perfect" %}
+            <tr>
+              <td style="padding:0.5rem; border-bottom:1px solid var(--border);">{{ f.person }}</td>
+              <td style="padding:0.5rem; border-bottom:1px solid var(--border);">
+                {% if f.gender == "m" %}M{% elif f.gender == "f" %}F{% else %}C{% endif %}
+              </td>
+              <td style="padding:0.5rem; border-bottom:1px solid var(--border);">
+                {% if f.number == "singular" %}Singular{% else %}Plural{% endif %}
+              </td>
+              <td style="padding:0.5rem; border-bottom:1px solid var(--border); font-size: 1.2rem;">
+                <span dir="rtl">{{ f.pattern|default:f.prefix }}{% if not f.pattern %}___{{ f.suffix }}{% endif %}</span>
+              </td>
+              <td style="padding:0.5rem; border-bottom:1px solid var(--border);">{{ f.gloss }}</td>
+            </tr>
+            {% endif %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+{% endblock %}
+
