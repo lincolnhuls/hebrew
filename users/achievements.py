@@ -22,6 +22,12 @@ def check_lesson_achievements(user: UserInformation, lesson, session) -> None:
         award_achievement(user, "lesson-complete-alphabet-1")
     elif slug == "alphabet-2":
         award_achievement(user, "lesson-complete-alphabet-2")
+    elif slug == "vowels-1":
+        award_achievement(user, "lesson-complete-vowels-1")
+    elif slug == "aspect-1":
+        award_achievement(user, "lesson-complete-aspect-1")
+    elif slug == "suffixes-1":
+        award_achievement(user, "lesson-complete-suffixes-1")
         
     from lessons.models import LessonAnswer
     total = LessonAnswer.objects.filter(session=session).values("question_index").distinct().count()

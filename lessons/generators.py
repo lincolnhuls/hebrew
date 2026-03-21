@@ -511,6 +511,72 @@ def generate_aspect_1_questions(forms: list[dict], seed: int) -> list[dict]:
     return questions
 
 
+def generate_suffixes_1_questions(suffixes: list[dict], seed: int) -> list[dict]:
+    """Build a question set for pronominal suffix patterns."""
+    rng = Random(seed)
+    questions: list[dict] = []
+
+    def label(s: dict) -> str:
+        p = s["person"]
+        g = s["gender"].upper()
+        n = "S" if s["number"] == "singular" else "P"
+        return f"{p}{g}{n} ({s['gloss']})"
+
+    patterns = list({s.get("pattern", "").strip() for s in suffixes if s.get("pattern", "").strip()})
+    if len(patterns) < 2:
+        return []
+
+    # MC: descriptor -> choose suffix pattern
+    for s in suffixes:
+        correct = s.get("pattern", "").strip()
+        if not correct:
+            continue
+        others = [p for p in patterns if p != correct]
+        if not others:
+            continue
+        k = 3 if len(others) >= 3 else len(others)
+        choices = [correct] + rng.sample(others, k=k)
+        rng.shuffle(choices)
+        questions.append(
+            {
+                "type": "mc",
+                "prompt": f"Which suffix matches: {label(s)}?",
+                "choices": choices,
+                "answer": correct,
+            }
+        )
+
+    # Fill: show pattern, ask gloss
+    for s in suffixes:
+        shown = s.get("pattern", "").strip()
+        if not shown:
+            continue
+        questions.append(
+            {
+                "type": "fill",
+                "prompt": "What is the meaning of this suffix? (Use format like: him/his, them/their, you/your)",
+                "shown": shown,
+                "answer": s.get("gloss", ""),
+            }
+        )
+
+    # Match: descriptor to pattern
+    if len(suffixes) >= 4:
+        sample = rng.sample(suffixes, 4)
+        pairs = [{"left": item.get("pattern", ""), "right": label(item)} for item in sample]
+        rng.shuffle(pairs)
+        questions.append(
+            {
+                "type": "match",
+                "prompt": "Match each suffix pattern to its person/gender/number meaning.",
+                "pairs": pairs,
+            }
+        )
+
+    rng.shuffle(questions)
+    return questions
+
+
 def generate_alphabet_1_questions(letters, seed):
     """Generate questions for alphabet 1 (letters 1-11)."""
     return _generate_alphabet_questions(letters, seed)

@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
-from lessons.models import Lesson, HebrewLetter, LessonSession, HebrewVowel, HebrewAspectForm
+from lessons.models import Lesson, HebrewLetter, LessonSession, HebrewVowel, HebrewAspectForm, HebrewPronominalSuffix
 from lessons.services import review_items, get_lesson_1_combined_progress, get_lesson_2_combined_progress
 from lessons.constants import DEFAULT_PASSES_REQUIRED
 from django.utils import timezone
@@ -127,6 +127,9 @@ def dashboard(request):
     except Lesson.DoesNotExist:
         lesson_3_complete = False
 
+    if user and lesson_3_complete:
+        award_achievement(user, "lesson-complete-vowels-1")
+
     # Lesson 4 (aspect) completion
     lesson_4_complete = False
     try:
@@ -142,6 +145,27 @@ def dashboard(request):
     except Lesson.DoesNotExist:
         lesson_4_complete = False
 
+    if user and lesson_4_complete:
+        award_achievement(user, "lesson-complete-aspect-1")
+
+    # Lesson 5 (pronominal suffixes) completion
+    lesson_5_complete = False
+    try:
+        suffixes_lesson = Lesson.objects.get(slug="suffixes-1")
+        lesson_5_pass_count = LessonSession.objects.filter(
+            user_id=firebase_uid,
+            lesson=suffixes_lesson,
+            completed=True,
+            passed=True,
+        ).count()
+        if lesson_5_pass_count >= suffixes_lesson.passes_required:
+            lesson_5_complete = True
+    except Lesson.DoesNotExist:
+        lesson_5_complete = False
+
+    if user and lesson_5_complete:
+        award_achievement(user, "lesson-complete-suffixes-1")
+
     return render(request, "main/dashboard.html", {
         "lesson_1_combined": lesson_1_combined,
         "lesson_1_complete": lesson_1_combined["is_complete"],
@@ -149,6 +173,7 @@ def dashboard(request):
         "lesson_2_complete": lesson_2_combined["is_complete"],
         "lesson_3_complete": lesson_3_complete,
         "lesson_4_complete": lesson_4_complete,
+        "lesson_5_complete": lesson_5_complete,
         "today_lessons_completed": today_completed,
         "today_lessons_target": daily_target,
         "today_goal_percent": today_goal_percent,
@@ -201,6 +226,15 @@ def aspect_learn(request):
 
     forms = HebrewAspectForm.objects.all().order_by("order")
     return render(request, "main/aspect_learn.html", {"forms": forms})
+
+
+def suffixes_learn(request):
+    firebase_uid = request.session.get("firebase_uid")
+    if not firebase_uid:
+        return render(request, "users/users.html")
+
+    suffixes = HebrewPronominalSuffix.objects.all().order_by("order")
+    return render(request, "main/suffixes_learn.html", {"suffixes": suffixes})
 
 def profile_page(request):
     firebase_uid = request.session.get('firebase_uid')
@@ -348,6 +382,48 @@ def lesson_4_hub(request):
         request,
         "main/lesson_4_hub.html",
         {"lesson_4_progress": lesson_4_progress},
+    )
+
+
+def lesson_5_hub(request):
+    """Lesson 5 hub: Learn pronominal suffixes + suffixes quiz."""
+    firebase_uid = request.session.get("firebase_uid")
+    if not firebase_uid:
+        return redirect("users:account")
+
+    try:
+        suffixes_lesson = Lesson.objects.get(slug="suffixes-1")
+    except Lesson.DoesNotExist:
+        return render(
+            request,
+            "main/lesson_5_hub.html",
+            {"lesson_5_progress": None, "lesson_error": "Suffixes lesson not found."},
+        )
+
+    pass_count = LessonSession.objects.filter(
+        user_id=firebase_uid,
+        lesson=suffixes_lesson,
+        completed=True,
+        passed=True,
+    ).count()
+    required = suffixes_lesson.passes_required
+    if required > 0:
+        progress_pct = int(min(100, round(100 * pass_count / required)))
+    else:
+        progress_pct = 0
+    is_complete = pass_count >= required and required > 0
+
+    lesson_5_progress = {
+        "pass_count": pass_count,
+        "passes_required": required,
+        "progress_pct": progress_pct,
+        "is_complete": is_complete,
+    }
+
+    return render(
+        request,
+        "main/lesson_5_hub.html",
+        {"lesson_5_progress": lesson_5_progress},
     )
 
 def alphabet_learn(request):

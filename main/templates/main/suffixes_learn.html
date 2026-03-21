@@ -1,0 +1,74 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block title %}Lesson 5: Pronominal Suffixes — Learn{% endblock %}
+{% block meta_description %}Study Biblical Hebrew pronominal suffix patterns by person, gender, and number.{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'main/css/alphabet_learn.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="alphabet-learn">
+  <header class="alphabet-learn-header">
+    <a href="{% url 'main:lesson_5_hub' %}" class="alphabet-learn-back">← Back</a>
+    <h1 class="alphabet-learn-title">Lesson 5: Pronominal Suffixes — Learn</h1>
+  </header>
+
+  <section class="alphabet-learn-hero">
+    <h2 class="alphabet-learn-hero-title">Pronominal Suffixes</h2>
+    <p class="alphabet-learn-hero-text">
+      Suffixes are attached to base words to show ownership. Like aspect, these come in 1st, 2nd, and 3rd person, masculine, feminine, and common, and singular and plural.
+    </p>
+  </section>
+
+  <section class="alphabet-learn-card">
+    <h2 class="alphabet-learn-card-title">How to read this chart</h2>
+    <p class="alphabet-learn-card-text">
+      The blank line <strong>___</strong> represents the base word. Focus on the suffix pattern and what it means
+      (for example, <em>you/your</em> or <em>us/our</em>).
+    </p>
+  </section>
+
+  <section class="alphabet-learn-card">
+    <h2 class="alphabet-learn-card-title">Pronominal Suffixes</h2>
+    <div style="overflow-x:auto;">
+      <table style="width:100%; border-collapse: collapse;">
+        <thead>
+          <tr>
+            <th style="text-align:left; padding:0.5rem; border-bottom:1px solid var(--border);">Person</th>
+            <th style="text-align:left; padding:0.5rem; border-bottom:1px solid var(--border);">Gender</th>
+            <th style="text-align:left; padding:0.5rem; border-bottom:1px solid var(--border);">Number</th>
+            <th style="text-align:left; padding:0.5rem; border-bottom:1px solid var(--border);">Pattern</th>
+            <th style="text-align:left; padding:0.5rem; border-bottom:1px solid var(--border);">Meaning</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for s in suffixes %}
+          <tr>
+            <td style="padding:0.5rem; border-bottom:1px solid var(--border);">{{ s.person }}</td>
+            <td style="padding:0.5rem; border-bottom:1px solid var(--border);">
+              {% if s.gender == "m" %}M{% elif s.gender == "f" %}F{% else %}C{% endif %}
+            </td>
+            <td style="padding:0.5rem; border-bottom:1px solid var(--border);">
+              {% if s.number == "singular" %}Singular{% else %}Plural{% endif %}
+            </td>
+            <td style="padding:0.5rem; border-bottom:1px solid var(--border); font-size: 1.2rem;">
+              <span dir="rtl">{{ s.pattern }}</span>
+            </td>
+            <td style="padding:0.5rem; border-bottom:1px solid var(--border);">{{ s.gloss }}</td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="5" style="padding:0.75rem;">No suffix rows loaded.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <a href="{% url 'main:lesson_runner' 'suffixes-1' %}" class="alphabet-learn-continue">Continue to Quiz →</a>
+</div>
+{% endblock %}
+

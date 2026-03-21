@@ -275,3 +275,36 @@ class HebrewAspectForm(models.Model):
     def __str__(self):
         shown = self.pattern or f"{self.prefix}___{self.suffix}"
         return f"{self.aspect} {self.person}{self.gender}{'s' if self.number == 'singular' else 'p'}: {shown} ({self.gloss})"
+
+
+class HebrewPronominalSuffix(models.Model):
+    NUMBER_SINGULAR = "singular"
+    NUMBER_PLURAL = "plural"
+    NUMBER_CHOICES = [
+        (NUMBER_SINGULAR, "Singular"),
+        (NUMBER_PLURAL, "Plural"),
+    ]
+
+    GENDER_MASC = "m"
+    GENDER_FEM = "f"
+    GENDER_COMMON = "c"
+    GENDER_CHOICES = [
+        (GENDER_MASC, "Masculine"),
+        (GENDER_FEM, "Feminine"),
+        (GENDER_COMMON, "Common"),
+    ]
+
+    order = models.PositiveSmallIntegerField(unique=True)
+    person = models.PositiveSmallIntegerField()  # 1, 2, 3
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES)
+    number = models.CharField(max_length=8, choices=NUMBER_CHOICES)
+    pattern = models.CharField(max_length=32)  # e.g., ___ךָ, ___נוּ
+    gloss = models.CharField(max_length=24)  # e.g., your (ms), us/our
+
+    class Meta:
+        verbose_name = "Hebrew Pronominal Suffix"
+        verbose_name_plural = "Hebrew Pronominal Suffixes"
+        ordering = ["order"]
+
+    def __str__(self):
+        return f"{self.person}{self.gender}{'s' if self.number == 'singular' else 'p'}: {self.pattern} ({self.gloss})"

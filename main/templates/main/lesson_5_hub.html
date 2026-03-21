@@ -1,0 +1,59 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block title %}Lesson 5: Pronominal Suffixes{% endblock %}
+{% block meta_description %}Learn Biblical Hebrew pronominal suffix patterns, then practice with a quiz.{% endblock %}
+
+{% block content %}
+
+<div class="container">
+  <header class="lesson-hub-header">
+    <a href="{% url 'main:dashboard' %}" class="lesson-runner-back">← Back</a>
+    <h1 class="lesson-hub-title">Lesson 5: Pronominal Suffixes</h1>
+  </header>
+
+  <div class="lesson-hub-intro">
+    <p>Learn pronominal suffix forms, then test yourself with a quiz.</p>
+  </div>
+
+  <div class="lessons-grid lesson-hub-grid">
+    <div class="lesson-card">
+      <h2 class="lesson-title">Learn Suffixes</h2>
+      <p class="lesson-subtitle">Study guide</p>
+      <a href="{% url 'main:suffixes_learn' %}" class="lesson-button primary">Start</a>
+    </div>
+
+    <div class="lesson-card">
+      <h3 class="lesson-title">Suffixes Quiz</h3>
+      <p class="lesson-subtitle">Person, gender, and number</p>
+      {% if lesson_5_progress %}
+      <div class="lesson-progress-header">
+        <span class="lesson-progress-percent-above">{{ lesson_5_progress.progress_pct }}%</span>
+      </div>
+      <div class="lesson-progress-bar">
+        <div class="lesson-progress-fill lesson-1-progress-pct-{% if lesson_5_progress.progress_pct >= 100 %}100{% elif lesson_5_progress.progress_pct >= 75 %}75{% elif lesson_5_progress.progress_pct >= 50 %}50{% elif lesson_5_progress.progress_pct >= 25 %}25{% else %}0{% endif %}"></div>
+      </div>
+      <p class="lesson-status">
+        {% if lesson_5_progress.is_complete %}
+          ✓ Complete
+        {% else %}
+          {{ lesson_5_progress.pass_count }}/{{ lesson_5_progress.passes_required }} passes
+        {% endif %}
+      </p>
+      {% if lesson_5_progress.is_complete %}
+        <div class="lesson-buttons-row">
+          <a href="{% url 'main:lesson_runner' lesson_slug='suffixes-1' %}" class="lesson-button secondary">Retake quiz</a>
+          <a href="{% url 'main:review_lesson' lesson_slug='suffixes-1' %}" class="lesson-button primary">Review</a>
+        </div>
+      {% else %}
+        <a href="{% url 'main:lesson_runner' lesson_slug='suffixes-1' %}" class="lesson-button primary">Continue</a>
+      {% endif %}
+      {% else %}
+      <p class="lesson-status">Suffixes lesson not configured.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+

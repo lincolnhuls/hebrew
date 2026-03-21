@@ -187,17 +187,39 @@
         </div>
 
         <!-- Lesson 5 -->
-        <div class="lesson-card locked">
+        <div class="lesson-card {% if not lesson_4_complete %}locked{% endif %}">
             <h3 class="lesson-title">Lesson 5</h3>
-            <p class="lesson-subtitle">Prenominal Suffix</p>
+            <p class="lesson-subtitle">Pronominal Suffixes</p>
             <div class="lesson-progress-header">
-                <span class="lesson-progress-percent-above">Locked</span>
+                <span class="lesson-progress-percent-above">
+                    {% if not lesson_4_complete %}
+                        Locked
+                    {% elif lesson_5_complete %}
+                        100%
+                    {% else %}
+                        0%
+                    {% endif %}
+                </span>
             </div>
             <div class="lesson-progress-bar">
-                <div class="lesson-progress-fill-static width-0"></div>
+                <div class="{% if not lesson_4_complete %}lesson-progress-fill-static width-0{% else %}lesson-progress-fill lesson-1-progress-pct-{% if lesson_5_complete %}100{% else %}0{% endif %}{% endif %}"></div>
             </div>
-            <p class="lesson-status">Locked</p>
-            <button class="lesson-button locked">Locked 🔒</button>
+            <p class="lesson-status">
+                {% if not lesson_4_complete %}
+                    Locked
+                {% elif lesson_5_complete %}
+                    ✓ Complete
+                {% else %}
+                    Not started
+                {% endif %}
+            </p>
+            {% if not lesson_4_complete %}
+                <button class="lesson-button locked">Locked 🔒</button>
+            {% elif lesson_5_complete %}
+                <a href="{% url 'main:lesson_5_hub' %}" class="lesson-button secondary">Review</a>
+            {% else %}
+                <a href="{% url 'main:lesson_5_hub' %}" class="lesson-button primary">Continue</a>
+            {% endif %}
         </div>
 
         <!-- Lesson 6 -->

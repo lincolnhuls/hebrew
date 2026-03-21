@@ -122,15 +122,23 @@ function showQuestion(q, idx, total) {
     hebrewBox?.classList.remove("hidden");
     fillSection?.classList.remove("hidden");
     if (hebrewText) hebrewText.textContent = q.shown || "";
+    const promptText = String(q.prompt || "").toLowerCase();
+    const isMeaningPrompt = promptText.includes("meaning of this suffix");
     if (fillInput) {
       fillInput.value = "";
-      fillInput.placeholder = "Type your answer…";
+      fillInput.placeholder = isMeaningPrompt
+        ? "Type meaning (e.g., him/his)"
+        : "Type your answer…";
       fillInput.addEventListener("input", () => {
         submitBtn.disabled = !fillInput.value.trim();
       });
       fillInput.focus();
     }
-    if (tipText) tipText.textContent = "Type the name of the letter.";
+    if (tipText) {
+      tipText.textContent = isMeaningPrompt
+        ? "Use meaning format like: him/his, them/their, you/your."
+        : "Type the name of the letter.";
+    }
   } else if (q.type === "match") {
     matchSection?.classList.remove("hidden");
     matchPairs.innerHTML = "";
