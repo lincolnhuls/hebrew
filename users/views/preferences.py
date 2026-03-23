@@ -1,8 +1,10 @@
 from django.http import JsonResponse
 import json
-from datetime import datetime
+from datetime import datetime, time
 from users.models import UserInformation, LearningPreferences
 from users.utils import send_learning_goals_confirmation
+
+DEFAULT_REMINDER_TIME = time(9, 0)
 
 def learning_preferences(request):
     firebase_uid = request.session.get('firebase_uid')
@@ -86,7 +88,8 @@ def learning_preferences(request):
                     status=400,
                 )
         else:
-            reminder_time = None
+            # If not set, default to 9:00 AM in the user's selected timezone.
+            reminder_time = DEFAULT_REMINDER_TIME
         timezone = data.get("timezone") or "UTC"
         prefs, _created = LearningPreferences.objects.update_or_create(
             user=user,

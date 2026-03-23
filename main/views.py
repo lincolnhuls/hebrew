@@ -95,8 +95,6 @@ def dashboard(request):
             award_achievement(user, "lesson-complete-alphabet-2")
     streak_days = user.current_activity_streak_days if user else 0
 
-    level = 2 if lesson_2_combined["is_complete"] else (1 if lesson_1_combined["is_complete"] else 0)
-
     passed_sessions = LessonSession.objects.filter(
         user_id=firebase_uid, completed=True, passed=True
     )
@@ -165,6 +163,20 @@ def dashboard(request):
 
     if user and lesson_5_complete:
         award_achievement(user, "lesson-complete-suffixes-1")
+
+    # Level tracks the highest fully completed lesson.
+    if lesson_5_complete:
+        level = 5
+    elif lesson_4_complete:
+        level = 4
+    elif lesson_3_complete:
+        level = 3
+    elif lesson_2_combined["is_complete"]:
+        level = 2
+    elif lesson_1_combined["is_complete"]:
+        level = 1
+    else:
+        level = 0
 
     return render(request, "main/dashboard.html", {
         "lesson_1_combined": lesson_1_combined,

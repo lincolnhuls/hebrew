@@ -1,10 +1,14 @@
 from zoneinfo import ZoneInfo
+from datetime import time
 
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
 from users.models import LearningPreferences
 from users.utils import send_reminder_email
+
+DEFAULT_REMINDER_TIME = time(9, 0)
+WEEKLY_REMINDER_WEEKDAY = 0  # Monday
 
 class Command(BaseCommand):
     help = 'Send study reminder emails to users based on their preferences and timezone'
@@ -22,7 +26,6 @@ class Command(BaseCommand):
         
         prefs = LearningPreferences.objects.filter(
             reminder_enabled=True,
-            reminder_time__isnull=False,
         ).select_related("user")
         
         sent_count = 0
@@ -39,7 +42,7 @@ class Command(BaseCommand):
             local_now = now_utc.astimezone(tz)
             local_date = local_now.date()
             local_time = local_now.time()
-            reminder_time = prefs_obj.reminder_time
+            reminder_time = prefs_obj.reminder_time or DEFAULT_REMINDER_TIME
             
             if local_time.hour != reminder_time.hour:
                 continue
@@ -58,7 +61,11 @@ class Command(BaseCommand):
                 if last_sent and last_sent_date >= local_date:
                     continue
             elif prefs_obj.reminder_frequency == LearningPreferences.WEEKLY:
-                if last_sent and (local_date - last_sent_date).days < 7:
+                # Weekly reminders are sent on Monday only.
+                if local_date.weekday() != WEEKLY_REMINDER_WEEKDAY:
+                    continue
+                # Avoid duplicate sends the same day.
+                if last_sent and last_sent_date >= local_date:
                     continue
                 
             if dry_run:
