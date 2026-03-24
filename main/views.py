@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
-from lessons.models import Lesson, HebrewLetter, LessonSession, HebrewVowel, HebrewAspectForm, HebrewPronominalSuffix
+from lessons.models import Lesson, HebrewLetter, LessonSession, HebrewVowel, HebrewAspectForm, HebrewPronominalSuffix, HebrewPreposition
 from lessons.services import review_items, get_lesson_1_combined_progress, get_lesson_2_combined_progress
 from lessons.constants import DEFAULT_PASSES_REQUIRED
 from django.utils import timezone
@@ -164,8 +164,28 @@ def dashboard(request):
     if user and lesson_5_complete:
         award_achievement(user, "lesson-complete-suffixes-1")
 
+    # Lesson 6 (prepositions) completion
+    lesson_6_complete = False
+    try:
+        preps_lesson = Lesson.objects.get(slug="prepositions-1")
+        lesson_6_pass_count = LessonSession.objects.filter(
+            user_id=firebase_uid,
+            lesson=preps_lesson,
+            completed=True,
+            passed=True,
+        ).count()
+        if lesson_6_pass_count >= preps_lesson.passes_required:
+            lesson_6_complete = True
+    except Lesson.DoesNotExist:
+        lesson_6_complete = False
+
+    if user and lesson_6_complete:
+        award_achievement(user, "lesson-complete-prepositions-1")
+
     # Level tracks the highest fully completed lesson.
-    if lesson_5_complete:
+    if lesson_6_complete:
+        level = 6
+    elif lesson_5_complete:
         level = 5
     elif lesson_4_complete:
         level = 4
@@ -186,6 +206,7 @@ def dashboard(request):
         "lesson_3_complete": lesson_3_complete,
         "lesson_4_complete": lesson_4_complete,
         "lesson_5_complete": lesson_5_complete,
+        "lesson_6_complete": lesson_6_complete,
         "today_lessons_completed": today_completed,
         "today_lessons_target": daily_target,
         "today_goal_percent": today_goal_percent,
@@ -247,6 +268,15 @@ def suffixes_learn(request):
 
     suffixes = HebrewPronominalSuffix.objects.all().order_by("order")
     return render(request, "main/suffixes_learn.html", {"suffixes": suffixes})
+
+
+def prepositions_learn(request):
+    firebase_uid = request.session.get("firebase_uid")
+    if not firebase_uid:
+        return render(request, "users/users.html")
+
+    preps = HebrewPreposition.objects.all().order_by("order")
+    return render(request, "main/prepositions_learn.html", {"preps": preps})
 
 def profile_page(request):
     firebase_uid = request.session.get('firebase_uid')
@@ -436,6 +466,48 @@ def lesson_5_hub(request):
         request,
         "main/lesson_5_hub.html",
         {"lesson_5_progress": lesson_5_progress},
+    )
+
+
+def lesson_6_hub(request):
+    """Lesson 6 hub: Learn prepositions + prepositions quiz."""
+    firebase_uid = request.session.get("firebase_uid")
+    if not firebase_uid:
+        return redirect("users:account")
+
+    try:
+        preps_lesson = Lesson.objects.get(slug="prepositions-1")
+    except Lesson.DoesNotExist:
+        return render(
+            request,
+            "main/lesson_6_hub.html",
+            {"lesson_6_progress": None, "lesson_error": "Prepositions lesson not found."},
+        )
+
+    pass_count = LessonSession.objects.filter(
+        user_id=firebase_uid,
+        lesson=preps_lesson,
+        completed=True,
+        passed=True,
+    ).count()
+    required = preps_lesson.passes_required
+    if required > 0:
+        progress_pct = int(min(100, round(100 * pass_count / required)))
+    else:
+        progress_pct = 0
+    is_complete = pass_count >= required and required > 0
+
+    lesson_6_progress = {
+        "pass_count": pass_count,
+        "passes_required": required,
+        "progress_pct": progress_pct,
+        "is_complete": is_complete,
+    }
+
+    return render(
+        request,
+        "main/lesson_6_hub.html",
+        {"lesson_6_progress": lesson_6_progress},
     )
 
 def alphabet_learn(request):

@@ -28,6 +28,8 @@ def check_lesson_achievements(user: UserInformation, lesson, session) -> None:
         award_achievement(user, "lesson-complete-aspect-1")
     elif slug == "suffixes-1":
         award_achievement(user, "lesson-complete-suffixes-1")
+    elif slug == "prepositions-1":
+        award_achievement(user, "lesson-complete-prepositions-1")
         
     from lessons.models import LessonAnswer
     total = LessonAnswer.objects.filter(session=session).values("question_index").distinct().count()

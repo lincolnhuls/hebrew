@@ -1,4 +1,4 @@
-from lessons.models import Lesson, LessonSession, HebrewLetter, LessonAnswer, HebrewVowel, HebrewAspectForm, HebrewPronominalSuffix
+from lessons.models import Lesson, LessonSession, HebrewLetter, LessonAnswer, HebrewVowel, HebrewAspectForm, HebrewPronominalSuffix, HebrewPreposition
 from lessons.generators import (
     generate_alphabet_1_questions,
     generate_alphabet_2_questions,
@@ -8,6 +8,7 @@ from lessons.generators import (
     generate_vowels_1_questions,
     generate_aspect_1_questions,
     generate_suffixes_1_questions,
+    generate_prepositions_1_questions,
 )
 from lessons.constants import (
     RANDOM_SEED_MIN, RANDOM_SEED_MAX,
@@ -104,6 +105,17 @@ def start_lesson_session(user_id: str, lesson_slug: str) -> LessonSession:
             )
         )
         questions = generate_suffixes_1_questions(suffixes, session.seed)
+
+    elif lesson_slug == "prepositions-1":
+        preps = list(
+            HebrewPreposition.objects.order_by("order").values(
+                "kind",
+                "form",
+                "meaning",
+                "notes",
+            )
+        )
+        questions = generate_prepositions_1_questions(preps, session.seed)
 
     elif lesson_slug == "similar-letters":
         similar_orders = set()

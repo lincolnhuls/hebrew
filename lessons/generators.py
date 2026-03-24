@@ -577,6 +577,63 @@ def generate_suffixes_1_questions(suffixes: list[dict], seed: int) -> list[dict]
     return questions
 
 
+def generate_prepositions_1_questions(preps: list[dict], seed: int) -> list[dict]:
+    """Build a question set for Hebrew prepositions."""
+    rng = Random(seed)
+    questions: list[dict] = []
+
+    usable = [p for p in preps if p.get("form") and p.get("meaning")]
+    if len(usable) < 2:
+        return []
+
+    forms = list({p.get("form", "").strip() for p in usable if p.get("form", "").strip()})
+
+    # MC: meaning -> choose Hebrew form
+    for p in usable:
+        correct = p.get("form", "").strip()
+        others = [f for f in forms if f != correct]
+        if not correct or not others:
+            continue
+        k = 3 if len(others) >= 3 else len(others)
+        choices = [correct] + rng.sample(others, k=k)
+        rng.shuffle(choices)
+        questions.append(
+            {
+                "type": "mc",
+                "prompt": f"Which preposition means: {p.get('meaning', '')}?",
+                "choices": choices,
+                "answer": correct,
+            }
+        )
+
+    # Fill: form -> meaning
+    for p in usable:
+        questions.append(
+            {
+                "type": "fill",
+                "prompt": "What is the meaning of this preposition? (e.g., to/toward, from/of, with)",
+                "shown": p.get("form", "").strip(),
+                "answer": p.get("meaning", "").strip(),
+            }
+        )
+
+    # Match: form <-> meaning
+    if len(usable) >= 4:
+        sample = rng.sample(usable, 4)
+        pairs = [{"left": x.get("form", ""), "right": x.get("meaning", "")} for x in sample]
+        rng.shuffle(pairs)
+        questions.append(
+            {
+                "type": "match",
+                "prompt": "Match each preposition form to its meaning.",
+                "pairs": pairs,
+            }
+        )
+
+    rng.shuffle(questions)
+    return questions
+
+
 def generate_alphabet_1_questions(letters, seed):
     """Generate questions for alphabet 1 (letters 1-11)."""
     return _generate_alphabet_questions(letters, seed)
