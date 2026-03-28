@@ -1,6 +1,15 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
-from lessons.models import Lesson, HebrewLetter, LessonSession, HebrewVowel, HebrewAspectForm, HebrewPronominalSuffix, HebrewPreposition
+from lessons.models import (
+    Lesson,
+    HebrewLetter,
+    LessonSession,
+    HebrewVowel,
+    HebrewAspectForm,
+    HebrewPronominalSuffix,
+    HebrewPreposition,
+    HebrewRootRestorationLetter,
+)
 from lessons.services import review_items, get_lesson_1_combined_progress, get_lesson_2_combined_progress
 from lessons.constants import DEFAULT_PASSES_REQUIRED
 from django.utils import timezone
@@ -182,8 +191,28 @@ def dashboard(request):
     if user and lesson_6_complete:
         award_achievement(user, "lesson-complete-prepositions-1")
 
+    # Lesson 7 (root restoration) completion
+    lesson_7_complete = False
+    try:
+        roots_lesson = Lesson.objects.get(slug="roots-1")
+        lesson_7_pass_count = LessonSession.objects.filter(
+            user_id=firebase_uid,
+            lesson=roots_lesson,
+            completed=True,
+            passed=True,
+        ).count()
+        if lesson_7_pass_count >= roots_lesson.passes_required:
+            lesson_7_complete = True
+    except Lesson.DoesNotExist:
+        lesson_7_complete = False
+
+    if user and lesson_7_complete:
+        award_achievement(user, "lesson-complete-roots-1")
+
     # Level tracks the highest fully completed lesson.
-    if lesson_6_complete:
+    if lesson_7_complete:
+        level = 7
+    elif lesson_6_complete:
         level = 6
     elif lesson_5_complete:
         level = 5
@@ -207,6 +236,7 @@ def dashboard(request):
         "lesson_4_complete": lesson_4_complete,
         "lesson_5_complete": lesson_5_complete,
         "lesson_6_complete": lesson_6_complete,
+        "lesson_7_complete": lesson_7_complete,
         "today_lessons_completed": today_completed,
         "today_lessons_target": daily_target,
         "today_goal_percent": today_goal_percent,
@@ -277,6 +307,28 @@ def prepositions_learn(request):
 
     preps = HebrewPreposition.objects.all().order_by("order")
     return render(request, "main/prepositions_learn.html", {"preps": preps})
+
+
+def roots_learn(request):
+    firebase_uid = request.session.get("firebase_uid")
+    if not firebase_uid:
+        return render(request, "users/users.html")
+
+    root_rows = list(HebrewRootRestorationLetter.objects.all().order_by("order"))
+    prefix_rows = [r for r in root_rows if r.slot == HebrewRootRestorationLetter.SLOT_PREFIX]
+    middle_rows = [r for r in root_rows if r.slot == HebrewRootRestorationLetter.SLOT_MIDDLE]
+    suffix_rows = [r for r in root_rows if r.slot == HebrewRootRestorationLetter.SLOT_SUFFIX]
+    return render(
+        request,
+        "main/roots_learn.html",
+        {
+            "root_rows": root_rows,
+            "prefix_rows": prefix_rows,
+            "middle_rows": middle_rows,
+            "suffix_rows": suffix_rows,
+        },
+    )
+
 
 def profile_page(request):
     firebase_uid = request.session.get('firebase_uid')
@@ -509,6 +561,49 @@ def lesson_6_hub(request):
         "main/lesson_6_hub.html",
         {"lesson_6_progress": lesson_6_progress},
     )
+
+
+def lesson_7_hub(request):
+    """Lesson 7 hub: Learn root restoration + quiz."""
+    firebase_uid = request.session.get("firebase_uid")
+    if not firebase_uid:
+        return redirect("users:account")
+
+    try:
+        roots_lesson = Lesson.objects.get(slug="roots-1")
+    except Lesson.DoesNotExist:
+        return render(
+            request,
+            "main/lesson_7_hub.html",
+            {"lesson_7_progress": None, "lesson_error": "Root restoration lesson not found."},
+        )
+
+    pass_count = LessonSession.objects.filter(
+        user_id=firebase_uid,
+        lesson=roots_lesson,
+        completed=True,
+        passed=True,
+    ).count()
+    required = roots_lesson.passes_required
+    if required > 0:
+        progress_pct = int(min(100, round(100 * pass_count / required)))
+    else:
+        progress_pct = 0
+    is_complete = pass_count >= required and required > 0
+
+    lesson_7_progress = {
+        "pass_count": pass_count,
+        "passes_required": required,
+        "progress_pct": progress_pct,
+        "is_complete": is_complete,
+    }
+
+    return render(
+        request,
+        "main/lesson_7_hub.html",
+        {"lesson_7_progress": lesson_7_progress},
+    )
+
 
 def alphabet_learn(request):
     """Alphabet learning page: intro cards, letter grid, letter-by-letter sections."""

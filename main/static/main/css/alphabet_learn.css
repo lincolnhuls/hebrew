@@ -306,3 +306,147 @@
   text-align: center;
   padding: 2rem;
 }
+
+/* Lesson 7 — root restoration diagram (theme-aware, matches cards/tiles) */
+.root-restoration-diagram {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem 1rem 1.5rem;
+  max-width: 640px;
+  margin: 0 auto;
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--border) 80%, transparent);
+}
+
+.root-restoration-diagram-inner {
+  display: grid;
+  grid-template-columns: 1fr minmax(7rem, auto) 1fr;
+  grid-template-areas:
+    "prefix stem suffix"
+    "middle middle middle";
+  gap: 1rem 0.75rem;
+  align-items: start;
+}
+
+.root-restoration-branch--prefix {
+  grid-area: prefix;
+  text-align: center;
+}
+
+.root-restoration-branch--suffix {
+  grid-area: suffix;
+  text-align: center;
+}
+
+.root-restoration-branch--middle {
+  grid-area: middle;
+  text-align: center;
+  padding-top: 0.25rem;
+  border-top: 1px solid var(--border);
+  margin-top: 0.25rem;
+}
+
+.root-restoration-stem {
+  grid-area: stem;
+  justify-self: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.75rem 1rem;
+  min-width: 6.5rem;
+  border: 2px solid color-mix(in srgb, var(--primary-accent-fill) 65%, var(--border));
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--primary-accent-fill) 10%, var(--surface));
+}
+
+.root-restoration-stem-glyphs {
+  font-size: 1.65rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  font-family: ui-monospace, "Cascadia Code", "Segoe UI Mono", monospace;
+  color: var(--main-text);
+  line-height: 1.2;
+}
+
+.root-restoration-stem-caption {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted-text);
+}
+
+.root-restoration-branch-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--main-text);
+  margin: 0 0 0.2rem 0;
+  letter-spacing: 0.02em;
+}
+
+.root-restoration-branch-hint {
+  font-size: 0.75rem;
+  color: var(--muted-text);
+  margin: 0 0 0.5rem 0;
+  line-height: 1.4;
+}
+
+.root-restoration-hint-stem {
+  font-family: ui-monospace, "Cascadia Code", "Segoe UI Mono", monospace;
+  font-weight: 600;
+  color: var(--main-text);
+}
+
+.root-restoration-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  justify-content: center;
+}
+
+.root-restoration-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.35rem;
+  padding: 0.4rem 0.55rem;
+  font-size: 1.2rem;
+  line-height: 1.2;
+  color: var(--main-text);
+  background: color-mix(in srgb, var(--primary-accent-fill) 8%, var(--surface));
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.root-restoration-chip--empty {
+  font-size: 0.95rem;
+  color: var(--muted-text);
+  background: transparent;
+  border-style: dashed;
+  min-width: 2rem;
+}
+
+@media (max-width: 520px) {
+  .root-restoration-diagram-inner {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "stem"
+      "prefix"
+      "middle"
+      "suffix";
+    gap: 0;
+  }
+
+  .root-restoration-branch--prefix,
+  .root-restoration-branch--middle,
+  .root-restoration-branch--suffix {
+    padding-top: 1rem;
+    margin-top: 1rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .root-restoration-stem {
+    margin: 0 auto;
+  }
+}

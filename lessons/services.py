@@ -1,4 +1,14 @@
-from lessons.models import Lesson, LessonSession, HebrewLetter, LessonAnswer, HebrewVowel, HebrewAspectForm, HebrewPronominalSuffix, HebrewPreposition
+from lessons.models import (
+    Lesson,
+    LessonSession,
+    HebrewLetter,
+    LessonAnswer,
+    HebrewVowel,
+    HebrewAspectForm,
+    HebrewPronominalSuffix,
+    HebrewPreposition,
+    HebrewRootRestorationLetter,
+)
 from lessons.generators import (
     generate_alphabet_1_questions,
     generate_alphabet_2_questions,
@@ -9,6 +19,7 @@ from lessons.generators import (
     generate_aspect_1_questions,
     generate_suffixes_1_questions,
     generate_prepositions_1_questions,
+    generate_roots_1_questions,
 )
 from lessons.constants import (
     RANDOM_SEED_MIN, RANDOM_SEED_MAX,
@@ -116,6 +127,16 @@ def start_lesson_session(user_id: str, lesson_slug: str) -> LessonSession:
             )
         )
         questions = generate_prepositions_1_questions(preps, session.seed)
+
+    elif lesson_slug == "roots-1":
+        roots = list(
+            HebrewRootRestorationLetter.objects.order_by("order").values(
+                "letter",
+                "slot",
+                "notes",
+            )
+        )
+        questions = generate_roots_1_questions(roots, session.seed)
 
     elif lesson_slug == "similar-letters":
         similar_orders = set()
@@ -356,14 +377,47 @@ def _log_match_mismatch(question, user_answer, user_by_name, correct_by_name, re
     )
 
 
+def _norm_slot_set(acceptable_answers: list | None) -> set[str]:
+    """Lowercase set of acceptable slot names (Prefix, Middle, Suffix)."""
+    if not acceptable_answers:
+        return set()
+    return {_norm(a) for a in acceptable_answers if a}
+
+
+def _check_roots_match(question: dict, user_answer: dict) -> tuple[bool, None]:
+    """Match grading when each pair lists acceptable_answers (root restoration lesson)."""
+    user_pairs = user_answer.get("pairs") or []
+    correct_pairs = question.get("pairs") or []
+    if len(user_pairs) != len(correct_pairs):
+        return (False, None)
+    umap = {_norm_key(p.get("left")): (p.get("right") or "") for p in user_pairs}
+    for cp in correct_pairs:
+        key = _norm_key(cp.get("left"))
+        acc = cp.get("acceptable_answers") or [cp.get("right")]
+        ur = umap.get(key)
+        if ur is None or _norm(ur) not in _norm_slot_set(acc):
+            return (False, None)
+    return (True, None)
+
+
 def check_correctness(question: dict, user_answer: dict) -> tuple[bool, dict | None]:
     """Returns (is_correct, match_debug_dict or None). match_debug_dict is set only for match type when wrong."""
     qtype = question.get("type")
 
     if qtype == "mc":
+        acc = question.get("acceptable_answers")
+        if isinstance(acc, list) and len(acc) > 0:
+            choice = user_answer.get("choice")
+            return (_norm(choice) in _norm_slot_set(acc), None)
         return (user_answer.get("choice") == question.get("answer"), None)
 
     if qtype == "fill":
+        acc = question.get("acceptable_answers")
+        if isinstance(acc, list) and len(acc) > 0:
+            user_raw = user_answer.get("answer") or ""
+            if _norm(user_raw) in _norm_slot_set(acc):
+                return (True, None)
+            return (False, None)
         correct_raw = question.get("answer") or ""
         user_raw = user_answer.get("answer") or ""
         if _norm(user_raw) == _norm(correct_raw):
@@ -377,6 +431,10 @@ def check_correctness(question: dict, user_answer: dict) -> tuple[bool, dict | N
     if qtype == "match":
         user_pairs = user_answer.get("pairs") or []
         correct_pairs = question.get("pairs") or []
+        if correct_pairs and any(
+            isinstance(p, dict) and p.get("acceptable_answers") for p in correct_pairs
+        ):
+            return _check_roots_match(question, user_answer)
 
         if len(user_pairs) != len(correct_pairs):
             return (False, None)
@@ -445,7 +503,8 @@ def review_items(user_id: str, lesson_slug:str):
                 "prompt": q.get("prompt"),
                 "type": q.get("type"),
                 "correct_answer": correct_answer,
-                "user_answer": answer.user_answer_json
+                "acceptable_answers": q.get("acceptable_answers"),
+                "user_answer": answer.user_answer_json,
             }
             items.append(question_info)
     

@@ -263,16 +263,28 @@
   border-color: var(--primary-accent);
 }
 
-/* Tip card */
+/* Tip card(s) */
+.lesson-runner-tips {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
 .lesson-runner-tip {
   padding: 1rem 1.25rem;
   background-color: var(--footer-bg);
   border-radius: 12px;
-  margin-bottom: 1.5rem;
+  border: 1px solid var(--border);
+}
+
+.lesson-runner-tip-secondary {
+  margin-top: 0;
 }
 
 html.theme-light .lesson-runner-tip {
   background-color: #FEF3C7;
+  border-color: color-mix(in srgb, var(--border) 70%, #FCD34D);
 }
 
 .lesson-runner-tip-icon {

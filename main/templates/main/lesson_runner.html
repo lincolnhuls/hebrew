@@ -12,7 +12,7 @@
 <div class="lesson-runner" id="lessonRunner">
   <!-- Header -->
   <header class="lesson-runner-header">
-    <a href="{% if lesson_slug == 'alphabet-1' or lesson_slug == 'alphabet-2' %}{% url 'main:lesson_1_hub' %}{% elif lesson_slug == 'similar-letters' or lesson_slug == 'begadkefat-letters' or lesson_slug == 'final-letters' %}{% url 'main:lesson_2_hub' %}{% elif lesson_slug == 'vowels-1' %}{% url 'main:lesson_3_hub' %}{% elif lesson_slug == 'aspect-1' %}{% url 'main:lesson_4_hub' %}{% elif lesson_slug == 'suffixes-1' %}{% url 'main:lesson_5_hub' %}{% elif lesson_slug == 'prepositions-1' %}{% url 'main:lesson_6_hub' %}{% else %}{% url 'main:dashboard' %}{% endif %}" class="lesson-runner-back">← Back</a>
+    <a href="{% if lesson_slug == 'alphabet-1' or lesson_slug == 'alphabet-2' %}{% url 'main:lesson_1_hub' %}{% elif lesson_slug == 'similar-letters' or lesson_slug == 'begadkefat-letters' or lesson_slug == 'final-letters' %}{% url 'main:lesson_2_hub' %}{% elif lesson_slug == 'vowels-1' %}{% url 'main:lesson_3_hub' %}{% elif lesson_slug == 'aspect-1' %}{% url 'main:lesson_4_hub' %}{% elif lesson_slug == 'suffixes-1' %}{% url 'main:lesson_5_hub' %}{% elif lesson_slug == 'prepositions-1' %}{% url 'main:lesson_6_hub' %}{% elif lesson_slug == 'roots-1' %}{% url 'main:lesson_7_hub' %}{% else %}{% url 'main:dashboard' %}{% endif %}" class="lesson-runner-back">← Back</a>
     <h1 class="lesson-runner-title">{{ lesson_title }}</h1>
     <button type="button" class="lesson-runner-start-over hidden" id="startOverBtn" title="Start a fresh lesson with mixed question types">Start Over</button>
     <div class="lesson-runner-stats">
@@ -67,10 +67,16 @@
       </div>
     </div>
 
-    <!-- Tip card -->
-    <div class="lesson-runner-tip">
-      <span class="lesson-runner-tip-icon">💡 Tip:</span>
-      <span class="lesson-runner-tip-text" id="tipText">Complete each question to advance.</span>
+    <!-- Tip card(s) -->
+    <div class="lesson-runner-tips" id="lessonRunnerTips">
+      <div class="lesson-runner-tip" id="tipCardPrimary">
+        <span class="lesson-runner-tip-icon">💡 Tip:</span>
+        <span class="lesson-runner-tip-text" id="tipText">Complete each question to advance.</span>
+      </div>
+      <div class="lesson-runner-tip lesson-runner-tip-secondary hidden" id="tipCardSecondary">
+        <span class="lesson-runner-tip-icon">💡 Tip:</span>
+        <span class="lesson-runner-tip-text" id="tipTextSecondary"></span>
+      </div>
     </div>
 
     <!-- Submit button -->

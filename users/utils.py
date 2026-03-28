@@ -1,12 +1,14 @@
 import logging
+from datetime import time
 
+from django.conf import settings
 from django.core.mail import send_mail
 from django.http import JsonResponse
 import firebase_admin
 from firebase_admin import credentials, auth
 import json
 import os
-import time
+import time as time_module
 from users.models import LearningPreferences
 
 
@@ -51,12 +53,34 @@ def verify_with_retry(token, max_retries=7, base_delay=.25):
         except Exception as e:
             msg = str(e)
             if "Token used too early" in msg and attempt < max_retries - 1:
-                time.sleep(base_delay * (2 ** attempt))
+                time_module.sleep(base_delay * (2 ** attempt))
                 continue
             raise
 
 
 logger = logging.getLogger(__name__)
+
+DEFAULT_REMINDER_TIME = time(9, 0)
+
+
+def _send_mail_safe(subject, body, recipient_list):
+    """Send email; log real errors (SMTP misconfig, auth, etc.)."""
+    from_email = getattr(settings, "DEFAULT_FROM_EMAIL", None) or None
+    try:
+        send_mail(
+            subject,
+            body,
+            from_email,
+            recipient_list,
+            fail_silently=False,
+        )
+        return True
+    except Exception:
+        logger.exception(
+            "Email send failed (check EMAIL_HOST / credentials on production). "
+            "If EMAIL_HOST is unset, Django uses the console backend (no real inbox)."
+        )
+        return False
 
 
 def send_learning_goals_confirmation(user, preferences):
@@ -67,7 +91,8 @@ def send_learning_goals_confirmation(user, preferences):
 
     freq_labels = dict(LearningPreferences.REMINDER_FREQUENCY_CHOICES)
     freq_display = freq_labels.get(preferences.reminder_frequency, preferences.reminder_frequency)
-    time_str = preferences.reminder_time.strftime("%H:%M") if preferences.reminder_time else "Not set"
+    eff_time = preferences.reminder_time or DEFAULT_REMINDER_TIME
+    time_str = eff_time.strftime("%H:%M") if eff_time else "Not set"
     
     subject = "Your Biblical Hebrew Learning Goals"
     body = f"""Hi {user.name or 'there'},
@@ -86,14 +111,13 @@ Happy learning!
 Hebrew for Everyone
 """
 
-    sent = send_mail(subject, body, None, [user.email], fail_silently=True)
-    if not sent:
-        logger.warning("Confirmation email failed to send to %s", user.email)
+    if not _send_mail_safe(subject, body, [user.email]):
+        logger.warning("Confirmation email was not delivered to %s", user.email)
 
 
 def send_reminder_email(user, preferences):
     """Send a 'time to study' reminder email. Updates last_reminder_sent_at on success"""
-    if not user.email or not preferences.reminder_time:
+    if not user.email:
         return False
     subject = "Time to study Biblical Hebrew!"
     body = f"""Hi {user.name or 'there'},
@@ -105,9 +129,9 @@ Your goal: {preferences.daily_lessons_target} lesson(s) per day.
 Keep up the great work!
 Hebrew for Everyone
 """
-    sent = send_mail(subject, body, None, [user.email], fail_silently=True)
-    if sent:
+    if _send_mail_safe(subject, body, [user.email]):
         from django.utils import timezone
+
         LearningPreferences.objects.filter(pk=preferences.pk).update(
             last_reminder_sent_at=timezone.now()
         )

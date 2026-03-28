@@ -1,0 +1,56 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block title %}Lesson 7: Root Restoration{% endblock %}
+{% block meta_description %}Learn how to find missing Hebrew root letters, then practice with a quiz.{% endblock %}
+
+{% block content %}
+<div class="container">
+  <header class="lesson-hub-header">
+    <a href="{% url 'main:dashboard' %}" class="lesson-runner-back">← Back</a>
+    <h1 class="lesson-hub-title">Lesson 7: Root Restoration</h1>
+  </header>
+
+  <div class="lesson-hub-intro">
+    <p>Study where missing root letters can appear, then test yourself with a quiz.</p>
+  </div>
+
+  <div class="lessons-grid lesson-hub-grid">
+    <div class="lesson-card">
+      <h2 class="lesson-title">Learn Root Restoration</h2>
+      <p class="lesson-subtitle">Study guide</p>
+      <a href="{% url 'main:roots_learn' %}" class="lesson-button primary">Start</a>
+    </div>
+
+    <div class="lesson-card">
+      <h3 class="lesson-title">Root Restoration Quiz</h3>
+      <p class="lesson-subtitle">Prefix, middle, suffix</p>
+      {% if lesson_7_progress %}
+      <div class="lesson-progress-header">
+        <span class="lesson-progress-percent-above">{{ lesson_7_progress.progress_pct }}%</span>
+      </div>
+      <div class="lesson-progress-bar">
+        <div class="lesson-progress-fill lesson-1-progress-pct-{% if lesson_7_progress.progress_pct >= 100 %}100{% elif lesson_7_progress.progress_pct >= 75 %}75{% elif lesson_7_progress.progress_pct >= 50 %}50{% elif lesson_7_progress.progress_pct >= 25 %}25{% else %}0{% endif %}"></div>
+      </div>
+      <p class="lesson-status">
+        {% if lesson_7_progress.is_complete %}
+          ✓ Complete
+        {% else %}
+          {{ lesson_7_progress.pass_count }}/{{ lesson_7_progress.passes_required }} passes
+        {% endif %}
+      </p>
+      {% if lesson_7_progress.is_complete %}
+        <div class="lesson-buttons-row">
+          <a href="{% url 'main:lesson_runner' lesson_slug='roots-1' %}" class="lesson-button secondary">Retake quiz</a>
+          <a href="{% url 'main:review_lesson' lesson_slug='roots-1' %}" class="lesson-button primary">Review</a>
+        </div>
+      {% else %}
+        <a href="{% url 'main:lesson_runner' lesson_slug='roots-1' %}" class="lesson-button primary">Continue</a>
+      {% endif %}
+      {% else %}
+      <p class="lesson-status">Lesson not configured.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

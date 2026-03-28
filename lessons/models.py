@@ -333,3 +333,29 @@ class HebrewPreposition(models.Model):
 
     def __str__(self):
         return f"{self.kind}: {self.form} ({self.meaning})"
+
+
+class HebrewRootRestorationLetter(models.Model):
+    """Possible missing root letters relative to two remaining consonants (_ _)."""
+
+    SLOT_PREFIX = "prefix"
+    SLOT_MIDDLE = "middle"
+    SLOT_SUFFIX = "suffix"
+    SLOT_CHOICES = [
+        (SLOT_PREFIX, "Prefix"),
+        (SLOT_MIDDLE, "Middle"),
+        (SLOT_SUFFIX, "Suffix"),
+    ]
+
+    order = models.PositiveSmallIntegerField(unique=True)
+    letter = models.CharField(max_length=8)
+    slot = models.CharField(max_length=16, choices=SLOT_CHOICES)
+    notes = models.CharField(max_length=120, blank=True, default="")
+
+    class Meta:
+        verbose_name = "Hebrew Root Restoration Letter"
+        verbose_name_plural = "Hebrew Root Restoration Letters"
+        ordering = ["order"]
+
+    def __str__(self):
+        return f"{self.slot} {self.letter} ({self.notes or '—'})"

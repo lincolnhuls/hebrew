@@ -2,6 +2,9 @@
  * Lesson Runner – loads lesson via resume/start API, renders questions (mc, fill, match), handles submit.
  */
 
+const ROOTS_POSITION_DISCLAIMER =
+  "If this letter can fall off in more than one place on the chart, give any one correct position; every valid chart position for that letter is accepted. ";
+
 // Feedback display timeout (milliseconds)
 const FEEDBACK_DISPLAY_TIMEOUT = 800;
 
@@ -43,7 +46,20 @@ const matchSection = document.getElementById("matchSection");
 const matchPairs = document.getElementById("matchPairs");
 const submitBtn = document.getElementById("submitBtn");
 const tipText = document.getElementById("tipText");
+const tipTextSecondary = document.getElementById("tipTextSecondary");
+const tipCardSecondary = document.getElementById("tipCardSecondary");
 const startOverBtn = document.getElementById("startOverBtn");
+
+/** One tip card, or two when `secondary` is a non-empty string (e.g. roots disclaimer + how to answer). */
+function setTips(primary, secondary = null) {
+  if (tipText) tipText.textContent = primary ?? "";
+  if (secondary != null && String(secondary).trim() !== "") {
+    if (tipTextSecondary) tipTextSecondary.textContent = secondary;
+    tipCardSecondary?.classList.remove("hidden");
+  } else {
+    tipCardSecondary?.classList.add("hidden");
+  }
+}
 const completedScore = document.getElementById("completedScore");
 const completedResult = document.getElementById("completedResult");
 const restartBtn = document.getElementById("restartBtn");
@@ -117,7 +133,11 @@ function showQuestion(q, idx, total) {
       });
       mcChoices.appendChild(btn);
     });
-    if (tipText) tipText.textContent = "Select one answer.";
+    if (q.roots_position_quiz) {
+      setTips(ROOTS_POSITION_DISCLAIMER.trim(), "Select one answer.");
+    } else {
+      setTips("Select one answer.");
+    }
   } else if (q.type === "fill") {
     hebrewBox?.classList.remove("hidden");
     fillSection?.classList.remove("hidden");
@@ -134,19 +154,27 @@ function showQuestion(q, idx, total) {
       });
       fillInput.focus();
     }
-    if (tipText) {
-      tipText.textContent = isMeaningPrompt
-        ? "Use meaning format like: him/his, them/their, you/your."
-        : "Type the name of the letter.";
+    if (isMeaningPrompt) {
+      setTips("Use meaning format like: him/his, them/their, you/your.");
+    } else if (q.roots_position_quiz) {
+      setTips(
+        ROOTS_POSITION_DISCLAIMER.trim(),
+        "Answer with exactly one word: Prefix, Middle, or Suffix (capitalize like the chart)."
+      );
+    } else {
+      setTips("Type the name of the letter.");
     }
   } else if (q.type === "match") {
     matchSection?.classList.remove("hidden");
     matchPairs.innerHTML = "";
     const pairs = q.pairs || [];
     const normLetter = (l) => (typeof l === "string" ? l.normalize("NFC") : l);
-    const names = shuffle(
-      pairs.map((p) => p.right).filter((r) => r != null && String(r).trim() !== "")
-    );
+    const poolRaw =
+      q.match_choice_pool?.length > 0
+        ? q.match_choice_pool
+        : pairs.map((p) => p.right).filter((r) => r != null && String(r).trim() !== "");
+    const names = shuffle([...new Set(poolRaw)]);
+    const isRootsPositionMatch = Boolean(q.roots_position_quiz && q.match_choice_pool?.length > 0);
     pairs.forEach((p, i) => {
       const letterKey = normLetter(p.left);
       const hasDagesh = /\u05bc/.test((p.left || "").normalize("NFC"));
@@ -159,9 +187,11 @@ function showQuestion(q, idx, total) {
       const lbl = document.createElement("label");
       lbl.htmlFor = selId;
       lbl.className = "lesson-runner-match-label";
-      lbl.textContent = hasDagesh
-        ? `Select name for letter ${p.left} (with dagesh)`
-        : `Select name for letter ${p.left}`;
+      lbl.textContent = isRootsPositionMatch
+        ? `Which chart position matches this entry?`
+        : hasDagesh
+          ? `Select name for letter ${p.left} (with dagesh)`
+          : `Select name for letter ${p.left}`;
       const sel = document.createElement("select");
       sel.id = selId;
       sel.className = "lesson-runner-match-right";
@@ -186,7 +216,14 @@ function showQuestion(q, idx, total) {
       row.appendChild(sel);
       matchPairs.appendChild(row);
     });
-    if (tipText) tipText.textContent = "Match each letter to its name.";
+    if (isRootsPositionMatch) {
+      setTips(
+        ROOTS_POSITION_DISCLAIMER.trim(),
+        "Choose a position for each row; any valid option for that letter is accepted."
+      );
+    } else {
+      setTips("Match each letter to its name.");
+    }
   }
 
   startOverBtn?.classList.remove("hidden");
