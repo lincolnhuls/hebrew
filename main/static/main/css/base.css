@@ -1007,6 +1007,10 @@ html:not(.theme-light) .topbar.topbar-option-2e {
     gap: 10px;
 }
 
+.inline-form {
+    margin: 0;
+}
+
 .topbar-actions .btn {
     font-family: "Nunito Sans", system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-size: 14px;

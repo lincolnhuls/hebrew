@@ -37,29 +37,34 @@
       <!-- Actions -->
       <nav class="topbar-actions">
         <a href="{% url 'bible:book_list' %}" class="btn-secondary btn">Scriptures</a>
-        <a
-          href="{% url 'users:account' %}"
-          id="signInLink"
-          class="btn-secondary btn"
-        >
-          Sign In
-        </a>
+        {% if request.session.firebase_uid %}
+          <form method="post" action="{% url 'users:user_logout' %}" class="inline-form">
+            {% csrf_token %}
+            <button
+              type="submit"
+              id="signOutButton"
+              class="btn-secondary btn"
+            >
+              Sign Out
+            </button>
+          </form>
+        {% else %}
+          <a
+            href="{% url 'users:account' %}"
+            id="signInLink"
+            class="btn-secondary btn"
+          >
+            Sign In
+          </a>
 
-        <a
-          href="{% url 'users:account' %}"
-          id="getStartedLink"
-          class="btn-primary btn"
-        >
-          Get Started
-        </a>
-
-        <button
-          type="button"
-          id="signOutButton"
-          class="btn-secondary btn hidden"
-        >
-          Sign Out
-        </button>
+          <a
+            href="{% url 'users:account' %}"
+            id="getStartedLink"
+            class="btn-primary btn"
+          >
+            Get Started
+          </a>
+        {% endif %}
       </nav>
     </div>
   </header>

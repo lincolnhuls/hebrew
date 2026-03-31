@@ -11,7 +11,11 @@
     <div class="dashboard-header">
         <div class="dashboard-header-main">
             <span class="dashboard-title">Dashboard</span>
-            <span id="userGreeting" class="dashboard-greeting hidden"></span>
+            {% if request.session.username %}
+                <span id="userGreeting" class="dashboard-greeting">Welcome, {{ request.session.username }}</span>
+            {% else %}
+                <span id="userGreeting" class="dashboard-greeting hidden"></span>
+            {% endif %}
         </div>
         <div class="dashboard-header-actions">
             <a href="{% url 'bible:book_list' %}" class="dashboard-header-link">Scriptures</a>
