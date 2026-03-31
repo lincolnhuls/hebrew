@@ -1,5 +1,6 @@
 import logging
 
+from django.conf import settings
 from django.core.mail import send_mail
 from django.http import JsonResponse
 import firebase_admin
@@ -86,9 +87,19 @@ Happy learning!
 Hebrew for Everyone
 """
 
-    sent = send_mail(subject, body, None, [user.email], fail_silently=True)
+    try:
+        sent = send_mail(
+            subject,
+            body,
+            settings.DEFAULT_FROM_EMAIL,
+            [user.email],
+            fail_silently=False,
+        )
+    except Exception:
+        logger.exception("Confirmation email send raised an error for %s", user.email)
+        return
     if not sent:
-        logger.warning("Confirmation email failed to send to %s", user.email)
+        logger.warning("Confirmation email was not accepted by backend for %s", user.email)
 
 
 def send_reminder_email(user, preferences):
@@ -105,11 +116,22 @@ Your goal: {preferences.daily_lessons_target} lesson(s) per day.
 Keep up the great work!
 Hebrew for Everyone
 """
-    sent = send_mail(subject, body, None, [user.email], fail_silently=True)
+    try:
+        sent = send_mail(
+            subject,
+            body,
+            settings.DEFAULT_FROM_EMAIL,
+            [user.email],
+            fail_silently=False,
+        )
+    except Exception:
+        logger.exception("Reminder email send raised an error for %s", user.email)
+        return False
     if sent:
         from django.utils import timezone
         LearningPreferences.objects.filter(pk=preferences.pk).update(
             last_reminder_sent_at=timezone.now()
         )
         return True
+    logger.warning("Reminder email was not accepted by backend for %s", user.email)
     return False

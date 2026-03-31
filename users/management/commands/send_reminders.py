@@ -19,9 +19,16 @@ class Command(BaseCommand):
             action="store_true",
             help="Show who would receive reminders without sending",
         )
+        parser.add_argument(
+            "--grace-minutes",
+            type=int,
+            default=5,
+            help="Allow sends up to N minutes after reminder time (default: 5)",
+        )
         
     def handle(self, *args, **options):
         dry_run = options["dry_run"]
+        grace_minutes = max(0, options["grace_minutes"])
         now_utc = timezone.now()
         
         prefs = LearningPreferences.objects.filter(
@@ -43,8 +50,12 @@ class Command(BaseCommand):
             local_date = local_now.date()
             local_time = local_now.time()
             reminder_time = prefs_obj.reminder_time or DEFAULT_REMINDER_TIME
-            
-            if local_time.hour != reminder_time.hour:
+
+            local_minutes = local_time.hour * 60 + local_time.minute
+            reminder_minutes = reminder_time.hour * 60 + reminder_time.minute
+            minutes_after = local_minutes - reminder_minutes
+            # Send only after the user's reminder time, within a small grace window.
+            if minutes_after < 0 or minutes_after > grace_minutes:
                 continue
             
             last_sent = prefs_obj.last_reminder_sent_at
@@ -77,6 +88,10 @@ class Command(BaseCommand):
                     sent_count += 1
                     self.stdout.write(
                         self.style.SUCCESS(f"Sent reminder to {user.email}")
+                    )
+                else:
+                    self.stdout.write(
+                        self.style.WARNING(f"Failed to send reminder to {user.email}")
                     )
         if dry_run:
             self.stdout.write(self.style.WARNING(f'\nDry run complete. No emails sent.'))
