@@ -308,3 +308,54 @@ class HebrewPronominalSuffix(models.Model):
 
     def __str__(self):
         return f"{self.person}{self.gender}{'s' if self.number == 'singular' else 'p'}: {self.pattern} ({self.gloss})"
+
+
+class HebrewPreposition(models.Model):
+    TYPE_INSEPARABLE = "inseparable"
+    TYPE_SEPARABLE = "separable"
+    TYPE_INDEPENDENT = "independent"
+    TYPE_CHOICES = [
+        (TYPE_INSEPARABLE, "Inseparable"),
+        (TYPE_SEPARABLE, "Separable"),
+        (TYPE_INDEPENDENT, "Independent"),
+    ]
+
+    order = models.PositiveSmallIntegerField(unique=True)
+    kind = models.CharField(max_length=16, choices=TYPE_CHOICES)
+    form = models.CharField(max_length=24)   # Hebrew form as shown in chart
+    meaning = models.CharField(max_length=48)
+    notes = models.CharField(max_length=80, blank=True, default="")
+
+    class Meta:
+        verbose_name = "Hebrew Preposition"
+        verbose_name_plural = "Hebrew Prepositions"
+        ordering = ["order"]
+
+    def __str__(self):
+        return f"{self.kind}: {self.form} ({self.meaning})"
+
+
+class HebrewRootRestorationLetter(models.Model):
+    """Possible missing root letters relative to two remaining consonants (_ _)."""
+
+    SLOT_PREFIX = "prefix"
+    SLOT_MIDDLE = "middle"
+    SLOT_SUFFIX = "suffix"
+    SLOT_CHOICES = [
+        (SLOT_PREFIX, "Prefix"),
+        (SLOT_MIDDLE, "Middle"),
+        (SLOT_SUFFIX, "Suffix"),
+    ]
+
+    order = models.PositiveSmallIntegerField(unique=True)
+    letter = models.CharField(max_length=8)
+    slot = models.CharField(max_length=16, choices=SLOT_CHOICES)
+    notes = models.CharField(max_length=120, blank=True, default="")
+
+    class Meta:
+        verbose_name = "Hebrew Root Restoration Letter"
+        verbose_name_plural = "Hebrew Root Restoration Letters"
+        ordering = ["order"]
+
+    def __str__(self):
+        return f"{self.slot} {self.letter} ({self.notes or '—'})"

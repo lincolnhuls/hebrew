@@ -38,7 +38,7 @@
                             <span class="review-answer-label">Correct:</span>
                             <ul class="review-pairs">
                                 {% for pair in item.correct_answer %}
-                                <li class="review-pair"><span class="hebrew-rtl">{{ pair.left }}</span> → {{ pair.right }}</li>
+                                <li class="review-pair"><span class="hebrew-rtl">{{ pair.left }}</span> → {% if pair.acceptable_answers %}any of {{ pair.acceptable_answers|join:", " }}{% else %}{{ pair.right }}{% endif %}</li>
                                 {% empty %}
                                 <li>—</li>
                                 {% endfor %}
@@ -61,7 +61,11 @@
                     <div class="review-answers">
                         <div class="review-answer-block review-correct">
                             <span class="review-answer-label">Correct:</span>
+                            {% if item.acceptable_answers %}
+                            <p class="review-answer-text">Any of: {{ item.acceptable_answers|join:", " }}</p>
+                            {% else %}
                             <p class="review-answer-text hebrew-rtl">{{ item.correct_answer|default:"—" }}</p>
+                            {% endif %}
                         </div>
                         <div class="review-answer-block review-yours">
                             <span class="review-answer-label">Your answer:</span>

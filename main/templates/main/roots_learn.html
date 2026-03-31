@@ -1,0 +1,116 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block title %}Lesson 7: Root Restoration — Learn{% endblock %}
+{% block meta_description %}Find missing letters in Hebrew verb roots using prefix, middle, and suffix positions.{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'main/css/alphabet_learn.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="alphabet-learn">
+  <header class="alphabet-learn-header">
+    <a href="{% url 'main:lesson_7_hub' %}" class="alphabet-learn-back">← Back</a>
+    <h1 class="alphabet-learn-title">Lesson 7: Root Restoration — Learn</h1>
+  </header>
+
+  <section class="alphabet-learn-hero">
+    <h2 class="alphabet-learn-hero-title">Finding the third root letter</h2>
+    <p class="alphabet-learn-hero-text">
+      Remember that there are always three root letters for a verb. There are a limited number of letters that can fall off of a Hebrew verb root. Until you become more familiar with Hebrew, a practical approach to finding the missing letter would be trial and error. For that purpose, here is a list of letters that could fall off of a verb and where they fall off.
+    </p>
+    <p class="alphabet-learn-hero-text" style="margin-top: 1rem;">
+      The underscores represent the two consonants of the verb that remain after removing conjunctions, prepositions, and pronouns. Try one of the following and then consult the lexicon.
+    </p>
+  </section>
+
+  <!-- <section class="alphabet-learn-card">
+    <p class="alphabet-learn-card-text">
+      Remember that there are always three root    for a verb. There are a limited number of letters that can fall off of a Hebrew verb root. Until you become more familiar with Hebrew, a practical approach to finding the missing letter would be trial and error. For that purpose, here is a list of letters that could fall off of a verb and where they fall off.
+    </p>
+    <p class="alphabet-learn-card-text">
+      The underscores represent the two consonants of the verb that remain after removing conjunctions/prepositions/pronouns. Try one of the following and then consult the lexicon.
+    </p>
+  </section> -->
+
+  <section class="alphabet-learn-card">
+    <h2 class="alphabet-learn-card-title">Diagram</h2>
+    <p class="alphabet-learn-card-text" style="margin-bottom: 1.25rem;">
+      Possible missing letters relative to the two consonants you still see (<strong>_ _</strong>). If the first letter of the vrb fell off, it could be a He or Vav, if the middle letter fell off, it could be a Yod or Vav, and if the last letter fell off, it could be a Yod, or Nun, with He or Lamed only occuring with specific verbs.
+    </p>
+    <p class="alphabet-learn-card-text" style="margin-bottom: 1.25rem;">
+      On the quiz, if a letter can fall off in <strong>more than one</strong> place on this chart, you can answer with <strong>any</strong> of those positions; they are all marked correct.
+    </p>
+    <div class="root-restoration-diagram" role="img" aria-label="Letters that may appear before, between, or after the two stem consonants">
+      <div class="root-restoration-diagram-inner">
+        <div class="root-restoration-branch root-restoration-branch--prefix">
+          <h3 class="root-restoration-branch-title">Prefix</h3>
+          <p class="root-restoration-branch-hint">before <span class="root-restoration-hint-stem">_ _</span></p>
+          <div class="root-restoration-chips">
+            {% for row in prefix_rows %}
+            <span class="root-restoration-chip hebrew-rtl" title="{{ row.notes|default:'' }}">{{ row.letter }}</span>
+            {% empty %}
+            <span class="root-restoration-chip root-restoration-chip--empty">—</span>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="root-restoration-stem" aria-hidden="true">
+          <span class="root-restoration-stem-glyphs">_ _</span>
+          <span class="root-restoration-stem-caption">two consonants left</span>
+        </div>
+        <div class="root-restoration-branch root-restoration-branch--suffix">
+          <h3 class="root-restoration-branch-title">Suffix</h3>
+          <p class="root-restoration-branch-hint">after <span class="root-restoration-hint-stem">_ _</span></p>
+          <div class="root-restoration-chips">
+            {% for row in suffix_rows %}
+            <span class="root-restoration-chip hebrew-rtl" title="{{ row.notes|default:'' }}">{{ row.letter }}</span>
+            {% empty %}
+            <span class="root-restoration-chip root-restoration-chip--empty">—</span>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="root-restoration-branch root-restoration-branch--middle">
+          <h3 class="root-restoration-branch-title">Middle</h3>
+          <p class="root-restoration-branch-hint">between the two consonants</p>
+          <div class="root-restoration-chips">
+            {% for row in middle_rows %}
+            <span class="root-restoration-chip hebrew-rtl" title="{{ row.notes|default:'' }}">{{ row.letter }}</span>
+            {% empty %}
+            <span class="root-restoration-chip root-restoration-chip--empty">—</span>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="alphabet-learn-card">
+    <h2 class="alphabet-learn-card-title">Letters by position</h2>
+    <div style="overflow-x: auto;">
+      <table style="width:100%; border-collapse: collapse;">
+        <thead>
+          <tr>
+            <th style="text-align:left; padding:0.5rem; border-bottom:1px solid var(--border);">Position</th>
+            <th style="text-align:left; padding:0.5rem; border-bottom:1px solid var(--border);">Letter</th>
+            <th style="text-align:left; padding:0.5rem; border-bottom:1px solid var(--border);">Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in root_rows %}
+          <tr>
+            <td style="padding:0.5rem; border-bottom:1px solid var(--border);">{{ row.get_slot_display }}</td>
+            <td style="padding:0.5rem; border-bottom:1px solid var(--border); font-size: 1.25rem;"><span dir="rtl">{{ row.letter }}</span></td>
+            <td style="padding:0.5rem; border-bottom:1px solid var(--border);">{{ row.notes|default:"—" }}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="3" style="padding:0.75rem;">No data loaded.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <a href="{% url 'main:lesson_runner' 'roots-1' %}" class="alphabet-learn-continue">Continue to Quiz →</a>
+</div>
+{% endblock %}

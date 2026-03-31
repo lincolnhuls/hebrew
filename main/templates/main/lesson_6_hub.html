@@ -1,0 +1,57 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block title %}Lesson 6: Prepositions{% endblock %}
+{% block meta_description %}Learn Biblical Hebrew prepositions, then practice with a quiz.{% endblock %}
+
+{% block content %}
+<div class="container">
+  <header class="lesson-hub-header">
+    <a href="{% url 'main:dashboard' %}" class="lesson-runner-back">← Back</a>
+    <h1 class="lesson-hub-title">Lesson 6: Prepositions</h1>
+  </header>
+
+  <div class="lesson-hub-intro">
+    <p>Study inseparable, separable, and independent prepositions, then test yourself with a quiz.</p>
+  </div>
+
+  <div class="lessons-grid lesson-hub-grid">
+    <div class="lesson-card">
+      <h2 class="lesson-title">Learn Prepositions</h2>
+      <p class="lesson-subtitle">Study guide</p>
+      <a href="{% url 'main:prepositions_learn' %}" class="lesson-button primary">Start</a>
+    </div>
+
+    <div class="lesson-card">
+      <h3 class="lesson-title">Prepositions Quiz</h3>
+      <p class="lesson-subtitle">Forms and meanings</p>
+      {% if lesson_6_progress %}
+      <div class="lesson-progress-header">
+        <span class="lesson-progress-percent-above">{{ lesson_6_progress.progress_pct }}%</span>
+      </div>
+      <div class="lesson-progress-bar">
+        <div class="lesson-progress-fill lesson-1-progress-pct-{% if lesson_6_progress.progress_pct >= 100 %}100{% elif lesson_6_progress.progress_pct >= 75 %}75{% elif lesson_6_progress.progress_pct >= 50 %}50{% elif lesson_6_progress.progress_pct >= 25 %}25{% else %}0{% endif %}"></div>
+      </div>
+      <p class="lesson-status">
+        {% if lesson_6_progress.is_complete %}
+          ✓ Complete
+        {% else %}
+          {{ lesson_6_progress.pass_count }}/{{ lesson_6_progress.passes_required }} passes
+        {% endif %}
+      </p>
+      {% if lesson_6_progress.is_complete %}
+        <div class="lesson-buttons-row">
+          <a href="{% url 'main:lesson_runner' lesson_slug='prepositions-1' %}" class="lesson-button secondary">Retake quiz</a>
+          <a href="{% url 'main:review_lesson' lesson_slug='prepositions-1' %}" class="lesson-button primary">Review</a>
+        </div>
+      {% else %}
+        <a href="{% url 'main:lesson_runner' lesson_slug='prepositions-1' %}" class="lesson-button primary">Continue</a>
+      {% endif %}
+      {% else %}
+      <p class="lesson-status">Prepositions lesson not configured.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+

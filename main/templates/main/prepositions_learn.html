@@ -1,0 +1,104 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block title %}Lesson 6: Prepositions — Learn{% endblock %}
+{% block meta_description %}Study Biblical Hebrew prepositions from the core chart.{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'main/css/alphabet_learn.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="alphabet-learn">
+  <header class="alphabet-learn-header">
+    <a href="{% url 'main:lesson_6_hub' %}" class="alphabet-learn-back">← Back</a>
+    <h1 class="alphabet-learn-title">Lesson 6: Prepositions — Learn</h1>
+  </header>
+
+  <section class="alphabet-learn-hero">
+    <h2 class="alphabet-learn-hero-title">Prepositions in Biblical Hebrew</h2>
+    <p class="alphabet-learn-hero-text">
+      Add your intro paragraph here. This lesson groups prepositions into inseparable, separable, and independent forms.
+    </p>
+  </section>
+
+  <section class="alphabet-learn-card">
+    <h2 class="alphabet-learn-card-title">Inseparable Prepositions</h2>
+    <div style="overflow-x:auto;">
+      <table style="width:100%; border-collapse: collapse;">
+        <thead>
+          <tr>
+            <th style="text-align:left; padding:0.5rem; border-bottom:1px solid var(--border);">Form</th>
+            <th style="text-align:left; padding:0.5rem; border-bottom:1px solid var(--border);">Meaning</th>
+            <th style="text-align:left; padding:0.5rem; border-bottom:1px solid var(--border);">Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in preps %}
+          {% if p.kind == "inseparable" %}
+          <tr>
+            <td style="padding:0.5rem; border-bottom:1px solid var(--border); font-size:1.2rem;"><span dir="rtl">{{ p.form }}</span></td>
+            <td style="padding:0.5rem; border-bottom:1px solid var(--border);">{{ p.meaning }}</td>
+            <td style="padding:0.5rem; border-bottom:1px solid var(--border);">{{ p.notes|default:"-" }}</td>
+          </tr>
+          {% endif %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="alphabet-learn-card">
+    <h2 class="alphabet-learn-card-title">Separable Prepositions</h2>
+    <div style="overflow-x:auto;">
+      <table style="width:100%; border-collapse: collapse;">
+        <thead>
+          <tr>
+            <th style="text-align:left; padding:0.5rem; border-bottom:1px solid var(--border);">Form</th>
+            <th style="text-align:left; padding:0.5rem; border-bottom:1px solid var(--border);">Meaning</th>
+            <th style="text-align:left; padding:0.5rem; border-bottom:1px solid var(--border);">Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in preps %}
+          {% if p.kind == "separable" %}
+          <tr>
+            <td style="padding:0.5rem; border-bottom:1px solid var(--border); font-size:1.2rem;"><span dir="rtl">{{ p.form }}</span></td>
+            <td style="padding:0.5rem; border-bottom:1px solid var(--border);">{{ p.meaning }}</td>
+            <td style="padding:0.5rem; border-bottom:1px solid var(--border);">{{ p.notes|default:"-" }}</td>
+          </tr>
+          {% endif %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="alphabet-learn-card">
+    <h2 class="alphabet-learn-card-title">Independent Prepositions</h2>
+    <div style="overflow-x:auto;">
+      <table style="width:100%; border-collapse: collapse;">
+        <thead>
+          <tr>
+            <th style="text-align:left; padding:0.5rem; border-bottom:1px solid var(--border);">Form</th>
+            <th style="text-align:left; padding:0.5rem; border-bottom:1px solid var(--border);">Meaning</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in preps %}
+          {% if p.kind == "independent" %}
+          <tr>
+            <td style="padding:0.5rem; border-bottom:1px solid var(--border); font-size:1.2rem;"><span dir="rtl">{{ p.form }}</span></td>
+            <td style="padding:0.5rem; border-bottom:1px solid var(--border);">{{ p.meaning }}</td>
+          </tr>
+          {% endif %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <a href="{% url 'main:lesson_runner' 'prepositions-1' %}" class="alphabet-learn-continue">Continue to Quiz →</a>
+</div>
+{% endblock %}
+

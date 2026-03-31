@@ -577,6 +577,161 @@ def generate_suffixes_1_questions(suffixes: list[dict], seed: int) -> list[dict]
     return questions
 
 
+def generate_prepositions_1_questions(preps: list[dict], seed: int) -> list[dict]:
+    """Build a question set for Hebrew prepositions."""
+    rng = Random(seed)
+    questions: list[dict] = []
+
+    usable = [p for p in preps if p.get("form") and p.get("meaning")]
+    if len(usable) < 2:
+        return []
+
+    forms = list({p.get("form", "").strip() for p in usable if p.get("form", "").strip()})
+
+    # MC: meaning -> choose Hebrew form
+    for p in usable:
+        correct = p.get("form", "").strip()
+        others = [f for f in forms if f != correct]
+        if not correct or not others:
+            continue
+        k = 3 if len(others) >= 3 else len(others)
+        choices = [correct] + rng.sample(others, k=k)
+        rng.shuffle(choices)
+        questions.append(
+            {
+                "type": "mc",
+                "prompt": f"Which preposition means: {p.get('meaning', '')}?",
+                "choices": choices,
+                "answer": correct,
+            }
+        )
+
+    # Fill: form -> meaning
+    for p in usable:
+        questions.append(
+            {
+                "type": "fill",
+                "prompt": "What is the meaning of this preposition? (e.g., to/toward, from/of, with)",
+                "shown": p.get("form", "").strip(),
+                "answer": p.get("meaning", "").strip(),
+            }
+        )
+
+    # Match: form <-> meaning
+    if len(usable) >= 4:
+        sample = rng.sample(usable, 4)
+        pairs = [{"left": x.get("form", ""), "right": x.get("meaning", "")} for x in sample]
+        rng.shuffle(pairs)
+        questions.append(
+            {
+                "type": "match",
+                "prompt": "Match each preposition form to its meaning.",
+                "pairs": pairs,
+            }
+        )
+
+    rng.shuffle(questions)
+    return questions
+
+
+def generate_roots_1_questions(rows: list[dict], seed: int) -> list[dict]:
+    """Quiz for missing Hebrew root letter positions (prefix / middle / suffix).
+
+    Letters that appear in multiple chart rows accept any of those positions as correct
+    (see ``acceptable_answers`` on each question).
+    """
+    rng = Random(seed)
+    questions: list[dict] = []
+
+    slot_label = {
+        "prefix": "Prefix",
+        "middle": "Middle",
+        "suffix": "Suffix",
+    }
+    all_slots = ["Prefix", "Middle", "Suffix"]
+
+    usable = [r for r in rows if r.get("letter") and r.get("slot")]
+    if len(usable) < 2:
+        return []
+
+    letter_slots: dict[str, set[str]] = {}
+    for r in usable:
+        letter = (r.get("letter") or "").strip()
+        sk = r.get("slot", "")
+        letter_slots.setdefault(letter, set()).add(slot_label.get(sk, sk))
+
+    unique_letters = list(letter_slots.keys())
+    rng.shuffle(unique_letters)
+
+    # MC: one per letter (same prompt would repeat for duplicate chart rows)
+    for letter in unique_letters:
+        acceptable = sorted(letter_slots[letter])
+        distractors = [s for s in all_slots if s not in acceptable]
+        rng.shuffle(distractors)
+        target_choices = 4
+        need_extra = max(0, target_choices - len(acceptable))
+        extra = distractors[: min(need_extra, len(distractors))]
+        choices = list(acceptable) + extra
+        rng.shuffle(choices)
+        questions.append(
+            {
+                "type": "mc",
+                "prompt": f"Which position on the chart can apply to {letter}?",
+                "choices": choices,
+                "answer": acceptable[0],
+                "acceptable_answers": acceptable,
+                "roots_position_quiz": True,
+            }
+        )
+
+    rng.shuffle(unique_letters)
+    for letter in unique_letters:
+        acceptable = sorted(letter_slots[letter])
+        questions.append(
+            {
+                "type": "fill",
+                "prompt": "Which position applies to the letter shown?",
+                "shown": letter,
+                "answer": acceptable[0],
+                "acceptable_answers": acceptable,
+                "roots_position_quiz": True,
+            }
+        )
+
+    if len(usable) >= 4:
+        sample = rng.sample(usable, 4)
+
+        def left_display(x: dict) -> str:
+            letter = x.get("letter", "")
+            note = (x.get("notes") or "").strip()
+            return f"{letter} ({note})" if note else letter
+
+        pairs = []
+        for x in sample:
+            letter = (x.get("letter") or "").strip()
+            acceptable = sorted(letter_slots[letter])
+            pairs.append(
+                {
+                    "left": left_display(x),
+                    "right": slot_label.get(x.get("slot", ""), ""),
+                    "acceptable_answers": acceptable,
+                }
+            )
+        rng.shuffle(pairs)
+        questions.append(
+            {
+                "type": "match",
+                "prompt": "Match each entry to a position it can have on the chart (Prefix, Middle, or Suffix).",
+                "pairs": pairs,
+                "match_choice_pool": all_slots,
+                "roots_position_quiz": True,
+            }
+        )
+
+    rng.shuffle(questions)
+    return questions
+
+
 def generate_alphabet_1_questions(letters, seed):
     """Generate questions for alphabet 1 (letters 1-11)."""
     return _generate_alphabet_questions(letters, seed)
