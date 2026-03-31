@@ -11,11 +11,6 @@
     {% block title %}Hebrew for Everyone{% endblock %}
   </title>
 
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet">
-
   <!-- Base CSS -->
   <link rel="stylesheet" href="{% static 'main/css/base.css' %}">
   {% block extra_css %}{% endblock %}
@@ -74,8 +69,12 @@
     {% block content %}{% endblock %}
   </main>
 
-  <!-- Base JS -->
-  <script type="module" src="{% static 'main/js/base.js' %}" defer></script>
+  <!-- Firebase/nav JS is opt-in and defaults to signed-in pages only. -->
+  {% block firebase_js %}
+    {% if request.session.firebase_uid %}
+      <script type="module" src="{% static 'main/js/base.js' %}" defer></script>
+    {% endif %}
+  {% endblock %}
   {% block extra_js %}{% endblock %}
 
 </body>
