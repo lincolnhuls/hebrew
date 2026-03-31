@@ -69,11 +69,8 @@
     {% block content %}{% endblock %}
   </main>
 
-  <!-- Firebase/nav JS is opt-in and defaults to signed-in pages only. -->
+  <!-- Firebase/nav JS is fully opt-in per template/page. -->
   {% block firebase_js %}
-    {% if request.session.firebase_uid %}
-      <script type="module" src="{% static 'main/js/base.js' %}" defer></script>
-    {% endif %}
   {% endblock %}
   {% block extra_js %}{% endblock %}
 
