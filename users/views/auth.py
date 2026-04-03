@@ -94,18 +94,24 @@ def user_sessions(request):
     return JsonResponse(data, status=200)
 
 def user_logout(request):
-    if request.method == "POST":
-        try:
-            request.session.flush()
-            data = {
-                'ok': True,
-                'message': 'User logged out successfully'
-            }
-            return JsonResponse(data, status=200)
-        except Exception as e:
-            return error_response("Error logging out user", status=500, details=str(e))
-    else:
+    if request.method != "POST":
         return error_response("Only POST requests are allowed", status=405)
+
+    try:
+        request.session.flush()
+    except Exception as e:
+        return error_response("Error logging out user", status=500, details=str(e))
+
+    # HTML form POST (top bar sign-out) should navigate to the home page, not show raw JSON.
+    # fetch() from base.js uses Sec-Fetch-Mode: cors and still works with JSON.
+    accept = request.headers.get("Accept", "")
+    sec_mode = request.headers.get("Sec-Fetch-Mode")
+    wants_html = "text/html" in accept
+    if sec_mode == "navigate" or (sec_mode is None and wants_html):
+        return redirect("main:home")
+
+    data = {"ok": True, "message": "User logged out successfully"}
+    return JsonResponse(data, status=200)
 
 
 def delete_account(request):

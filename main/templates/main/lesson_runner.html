@@ -9,7 +9,15 @@
 {% endblock %}
 
 {% block content %}
-<div class="lesson-runner" id="lessonRunner">
+<div class="lesson-runner" id="lessonRunner"
+    data-lesson-slug="{{ lesson_slug }}"
+    data-lesson-title="{{ lesson_title }}"
+    data-user-id="{{ user_id }}"
+    data-lesson-error="{{ lesson_error|default:'' }}"
+    data-session-id="{{ session_id|default:'' }}"
+    data-resume-url="{% url 'lessons:resume_lesson' %}"
+    data-start-url="{% url 'lessons:start_lesson' %}"
+    data-submit-url-pattern="{% url 'lessons:submit_answer' session_id=99999 %}">
   <!-- Header -->
   <header class="lesson-runner-header">
     <a href="{% if lesson_slug == 'alphabet-1' or lesson_slug == 'alphabet-2' %}{% url 'main:lesson_1_hub' %}{% elif lesson_slug == 'similar-letters' or lesson_slug == 'begadkefat-letters' or lesson_slug == 'final-letters' %}{% url 'main:lesson_2_hub' %}{% elif lesson_slug == 'vowels-1' %}{% url 'main:lesson_3_hub' %}{% elif lesson_slug == 'aspect-1' %}{% url 'main:lesson_4_hub' %}{% elif lesson_slug == 'suffixes-1' %}{% url 'main:lesson_5_hub' %}{% elif lesson_slug == 'prepositions-1' %}{% url 'main:lesson_6_hub' %}{% elif lesson_slug == 'roots-1' %}{% url 'main:lesson_7_hub' %}{% else %}{% url 'main:dashboard' %}{% endif %}" class="lesson-runner-back">← Back</a>
@@ -99,17 +107,5 @@
   </div>
 </div>
 
-<script>
-  window.LESSON_RUNNER_CONFIG = {
-    lessonSlug: "{{ lesson_slug|escapejs }}",
-    lessonTitle: "{{ lesson_title|escapejs }}",
-    userId: "{{ user_id|escapejs }}",
-    lessonError: "{{ lesson_error|default:''|escapejs }}",
-    sessionId: "{{ session_id|default:''|escapejs }}",
-    resumeUrl: "{% url 'lessons:resume_lesson' %}",
-    startUrl: "{% url 'lessons:start_lesson' %}",
-    submitUrlTemplate: "{% url 'lessons:submit_answer' session_id=99999 %}".replace("99999", "{session_id}"),
-  };
-</script>
 <script type="module" src="{% static 'main/js/lesson_runner.js' %}" defer></script>
 {% endblock %}

@@ -8,9 +8,27 @@ const ROOTS_POSITION_DISCLAIMER =
 // Feedback display timeout (milliseconds)
 const FEEDBACK_DISPLAY_TIMEOUT = 800;
 
-const cfg = window.LESSON_RUNNER_CONFIG || {};
+function readLessonRunnerConfig() {
+  const el = document.getElementById("lessonRunner");
+  if (el?.dataset?.lessonSlug !== undefined) {
+    const d = el.dataset;
+    return {
+      lessonSlug: d.lessonSlug ?? "",
+      lessonTitle: d.lessonTitle ?? "",
+      userId: d.userId ?? "",
+      lessonError: d.lessonError ?? "",
+      sessionId: d.sessionId ?? "",
+      resumeUrl: d.resumeUrl ?? "",
+      startUrl: d.startUrl ?? "",
+      submitUrlTemplate: (d.submitUrlPattern || "").replace(/99999/g, "{session_id}"),
+    };
+  }
+  return window.LESSON_RUNNER_CONFIG || {};
+}
+
+const cfg = readLessonRunnerConfig();
 if (!cfg.resumeUrl || !cfg.userId || !cfg.lessonSlug) {
-  console.error("LESSON_RUNNER_CONFIG missing required fields");
+  console.error("Lesson runner config missing required fields (data attributes or LESSON_RUNNER_CONFIG)");
 }
 
 // Import shared utilities

@@ -12,9 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
-from dotenv import load_dotenv
-
-load_dotenv()
+from dotenv import dotenv_values, load_dotenv
 
 
 def env_bool(name, default=False):
@@ -26,6 +24,33 @@ def env_bool(name, default=False):
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Load .env from project root (next to manage.py), not only the shell cwd.
+# utf-8-sig strips a UTF-8 BOM so the first variable is still recognized on Windows editors.
+_ENV_PATH = BASE_DIR / ".env"
+load_dotenv(_ENV_PATH, encoding="utf-8-sig")
+
+# If something prevented the vars above from sticking, merge Firebase-related keys explicitly.
+if _ENV_PATH.is_file():
+    _raw = dotenv_values(_ENV_PATH, encoding="utf-8-sig")
+    for _key in ("GOOGLE_APPLICATION_CREDENTIALS", "FIREBASE_CREDENTIALS_JSON"):
+        _val = _raw.get(_key)
+        if _val and str(_val).strip() and not os.getenv(_key):
+            os.environ[_key] = str(_val).strip().strip('"').strip("'")
+
+
+def _bootstrap_firebase_admin_credentials():
+    """Local dev helper: use service account JSON in config/ if env is still unset."""
+    if os.getenv("FIREBASE_CREDENTIALS_JSON") or os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
+        return
+    _config_dir = BASE_DIR / "config"
+    if not _config_dir.is_dir():
+        return
+    _matches = sorted(_config_dir.glob("*firebase-adminsdk*.json"))
+    if _matches:
+        os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = str(_matches[0].resolve())
+
+
+_bootstrap_firebase_admin_credentials()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -37,6 +62,14 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 DEBUG = os.getenv('DJANGO_DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
+
+# Render (and similar) terminate TLS at the proxy; trust X-Forwarded-Proto for HTTPS/cookies/CSRF.
+if env_bool("RENDER", False) or env_bool("DJANGO_USE_PROXY_SSL", False):
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+_csrf_trusted = os.getenv("DJANGO_CSRF_TRUSTED_ORIGINS", "").strip()
+if _csrf_trusted:
+    CSRF_TRUSTED_ORIGINS = [o.strip() for o in _csrf_trusted.split(",") if o.strip()]
 
 if not SECRET_KEY:
     raise ValueError("DJANGO_SECRET_KEY environment variable is required")

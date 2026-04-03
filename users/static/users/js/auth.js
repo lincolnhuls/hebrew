@@ -132,9 +132,26 @@ async function createSession(idToken, name='') {
     });
     
     if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Error creating session on server:", response.status, errorText);
-        throw new Error(`Failed to create session on server: ${response.status}`);
+        const raw = await response.text();
+        console.error("Error creating session on server:", response.status, raw);
+        let detail = raw.slice(0, 400);
+        try {
+            const errJson = JSON.parse(raw);
+            if (errJson.error || errJson.details) {
+                detail = [errJson.error, errJson.details].filter(Boolean).join(" — ");
+            }
+        } catch {
+            /* use raw slice */
+        }
+        let hint = "";
+        if (response.status === 403) {
+            hint =
+                " (CSRF: hard-refresh this page, then sign in again. Do not open the app in multiple tabs with an old page.)";
+        } else if (response.status === 401) {
+            hint =
+                " (Server could not verify the Firebase token — usually missing or wrong Firebase Admin credentials on the server.)";
+        }
+        throw new Error(`Failed to create session: HTTP ${response.status} — ${detail}${hint}`);
     }
     
     const data = await response.json();
@@ -150,22 +167,17 @@ async function signupUser(name, email, password) {
         
         console.log('User created:', userCredential.user);
         
-        // Create session and wait for it to complete
-        try {
-            await createSession(userToken, name);
-            console.log('Session created successfully, redirecting...');
-        } catch (sessionError) {
-            console.error('Session creation error:', sessionError);
-            // Still try to redirect - session might be created by base.js
-        }
-        
+        await createSession(userToken, name);
+        console.log("Session created successfully, redirecting...");
         messages.textContent = "User created successfully.";
-        
-        // Use window.location.replace for immediate redirect
         window.location.replace("/dashboard/");
     } catch (error) {
-        console.error('Error creating user:', error);
-        displayError(error.code);
+        console.error("Error creating user:", error);
+        if (error && error.message && error.message.includes("Failed to create session")) {
+            messages.textContent = error.message;
+        } else {
+            displayError(error.code);
+        }
     }
 }
 
@@ -177,28 +189,17 @@ async function loginUser(name, email, password) {
         
         console.log('User logged in:', userCredential.user);
         
-        // Create session and wait for it to complete
-        let sessionCreated = false;
-        try {
-            const sessionData = await createSession(userToken, name || '');
-            console.log('Session created successfully:', sessionData);
-            sessionCreated = true;
-        } catch (sessionError) {
-            console.error('Session creation error:', sessionError);
-            // Try redirect anyway - base.js might handle session creation
-        }
-        
+        await createSession(userToken, name || "");
+        console.log("Session created successfully, redirecting...");
         messages.textContent = "User logged in successfully.";
-        
-        // Wait a bit longer to ensure session is fully set on server
-        await new Promise(resolve => setTimeout(resolve, 200));
-        
-        // Use window.location.replace for immediate redirect
-        console.log('Redirecting to dashboard...');
         window.location.replace("/dashboard/");
     } catch (error) {
-        console.error('Error logging in user:', error);
-        displayError(error.code);
+        console.error("Error logging in user:", error);
+        if (error && error.message && error.message.includes("Failed to create session")) {
+            messages.textContent = error.message;
+        } else {
+            displayError(error.code);
+        }
     }
 }
 

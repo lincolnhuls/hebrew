@@ -1,0 +1,5 @@
+(function () {
+  try {
+    if (localStorage.getItem('theme') === 'light') document.documentElement.classList.add('theme-light');
+  } catch (e) {}
+})();

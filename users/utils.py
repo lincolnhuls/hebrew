@@ -1,7 +1,7 @@
 import logging
 from datetime import time
+from pathlib import Path
 
-from django.conf import settings
 from django.conf import settings
 from django.core.mail import send_mail
 from django.http import JsonResponse
@@ -13,12 +13,26 @@ import time as time_module
 from users.models import LearningPreferences
 
 
+def _resolve_firebase_cred_path(raw: str) -> str | None:
+    """Resolve GOOGLE_APPLICATION_CREDENTIALS regardless of process cwd."""
+    if not raw:
+        return None
+    p = Path(raw)
+    if p.is_file():
+        return str(p.resolve())
+    base = Path(settings.BASE_DIR)
+    candidate = (base / raw).resolve()
+    if candidate.is_file():
+        return str(candidate)
+    return None
+
+
 def _ensure_firebase_initialized():
     """Initialize Firebase Admin lazily so app boot is not blocked by missing creds."""
     if firebase_admin._apps:
         return
 
-    cred_path = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
+    cred_path_raw = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
     json_str = os.environ.get("FIREBASE_CREDENTIALS_JSON")
 
     if json_str:
@@ -30,12 +44,23 @@ def _ensure_firebase_initialized():
         firebase_admin.initialize_app(cred)
         return
 
-    if cred_path and os.path.exists(cred_path):
-        cred = credentials.Certificate(cred_path)
+    resolved = _resolve_firebase_cred_path(cred_path_raw or "")
+    if resolved:
+        cred = credentials.Certificate(resolved)
         firebase_admin.initialize_app(cred)
         return
 
-    raise RuntimeError("GOOGLE_APPLICATION_CREDENTIALS or FIREBASE_CREDENTIALS_JSON is not set")
+    hint = ""
+    if cred_path_raw:
+        hint = (
+            f" GOOGLE_APPLICATION_CREDENTIALS is set to {cred_path_raw!r} but that file was not found "
+            f"(also tried {Path(settings.BASE_DIR) / cred_path_raw})."
+        )
+    raise RuntimeError(
+        "Firebase Admin is not configured: set FIREBASE_CREDENTIALS_JSON or place the service account "
+        "JSON at GOOGLE_APPLICATION_CREDENTIALS (path relative to the Django project root / BASE_DIR is ok)."
+        + hint
+    )
 
 
 def error_response(message, status=400, details=None):

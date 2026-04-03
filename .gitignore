@@ -1,4 +1,6 @@
 .env
+.venv/
+venv/
 secrets/
 config/*.json
 *.key
