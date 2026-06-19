@@ -2,6 +2,8 @@
 
 A **Duolingo-style web application** designed to teach **Biblical Hebrew** in a structured, accessible, and beginner-friendly way.
 
+https://hebrewforeveryone.onrender.com/
+
 
 ## Hebrew Bible Text
 
